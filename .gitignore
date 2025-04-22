@@ -1,0 +1,60 @@
+# Visual Studio / .NET specific
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa]rm/
+[Aa]rm64/
+[Ww]in[Dd]ebug/
+[Ww]in[Rr]elease/
+[Ww]in-x[68]4/
+[Ww]in-a[rm]64/
+[Bb]in/
+[Oo]bj/
+artifacts/
+
+# MAUI platform builds
+Platforms/Android/bin/
+Platforms/Android/obj/
+Platforms/iOS/bin/
+Platforms/iOS/obj/
+Platforms/MacCatalyst/bin/
+Platforms/MacCatalyst/obj/
+Platforms/Windows/bin/
+Platforms/Windows/obj/
+
+# Secrets (Be careful!)
+# Consider not committing appsettings.Development.json if it contains secrets
+# appsettings.Development.json
+
+# Other
+*.rsuser
+*.[Cc]ache
+*.ilk
+*.psess
+*.log
+*.tlog
+*.tmp
+*.orig
+*_i.c
+*_p.c
+*_h.h
+*.opensdf
+*.sdf
+*.pdb
+*.VC.db
+*.VC.VC.opendb
+AppXPackages/
+Generated Files/
+UpgradeLog*.XML
+*.appxsym
+*.appxupload
