@@ -1,20 +1,92 @@
 ﻿<?xml version="1.0" encoding="UTF-8" ?>
 <?xaml-comp compile="true" ?>
-<ResourceDictionary 
+<ResourceDictionary
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
-    <!-- Note: For Android please see also Platforms\Android\Resources\values\colors.xml -->
+    <!-- ===================================================================== -->
+    <!-- =                            LIGHT THEME                            = -->
+    <!-- ===================================================================== -->
 
-    <Color x:Key="Primary">#512BD4</Color>
-    <!-- Màu chính -->
-    <Color x:Key="Secondary">#DFD8F7</Color>
-    <!-- Màu phụ -->
-    <Color x:Key="Tertiary">#2B0B98</Color>
-    <Color x:Key="White">White</Color>
-    <Color x:Key="Black">Black</Color>
-    <!-- Thêm các màu khác: Gray100-900, Success, Error... -->
-    <Color x:Key="LightBackground">#F5F5F5</Color>
-    <Color x:Key="DarkText">#242424</Color>
-    <Color x:Key="LightText">#757575</Color>
+    <Color x:Key="PrimaryLight">#2196F3</Color>
+    <Color x:Key="PrimaryVariantLight">#1976D2</Color>
+    <Color x:Key="OnPrimaryLight">#FFFFFF</Color>
+
+    <!-- Màu Phụ / Nền -->
+    <Color x:Key="SecondaryLight">#BBDEFB</Color>
+    <Color x:Key="OnSecondaryLight">#0D47A1</Color>
+    <Color x:Key="BackgroundLight">#F5F5F5</Color>
+    <Color x:Key="OnBackgroundLight">#212121</Color>
+    <!-- Chữ đậm trên nền Background -->
+    <Color x:Key="SurfaceLight">#FFFFFF</Color>
+    <Color x:Key="OnSurfaceLight">#212121</Color>
+    <Color x:Key="SurfaceVariantLight">#E0E0E0</Color>
+
+    <!-- Màu Nhấn (Accent - ví dụ: Cam) -->
+    <Color x:Key="AccentLight">#FF9800</Color>
+    <Color x:Key="OnAccentLight">#FFFFFF</Color>
+
+    <!-- Màu Trạng thái -->
+    <Color x:Key="ErrorLight">#D32F2F</Color>
+    <Color x:Key="OnErrorLight">#FFFFFF</Color>
+    <Color x:Key="SuccessLight">#388E3C</Color>
+    <Color x:Key="OnSuccessLight">#FFFFFF</Color>
+    <Color x:Key="WarningLight">#FFA000</Color>
+    <Color x:Key="OnWarningLight">#212121</Color>
+
+    <!-- Dải màu Xám (Light) -->
+    <Color x:Key="Gray100Light">#F5F5F5</Color>
+    <Color x:Key="Gray200Light">#EEEEEE</Color>
+    <Color x:Key="Gray300Light">#E0E0E0</Color>
+    <Color x:Key="Gray400Light">#BDBDBD</Color>
+    <Color x:Key="Gray500Light">#9E9E9E</Color>
+    <Color x:Key="Gray600Light">#757575</Color>
+
+
+    <!-- ===================================================================== -->
+    <!-- =                             DARK THEME                            = -->
+    <!-- ===================================================================== -->
+
+    <!-- Màu Chính (Blue nhạt hơn) -->
+    <Color x:Key="PrimaryDark">#90CAF9</Color>
+    <Color x:Key="PrimaryVariantDark">#64B5F6</Color>
+    <Color x:Key="OnPrimaryDark">#121212</Color>
+
+    <!-- Màu Phụ / Nền -->
+    <Color x:Key="SecondaryDark">#1E88E5</Color>
+    <Color x:Key="OnSecondaryDark">#FFFFFF</Color>
+
+    <Color x:Key="BackgroundDark">#121212</Color>
+    <Color x:Key="OnBackgroundDark">#E0E0E0</Color>
+    <Color x:Key="SurfaceDark">#1E1E1E</Color>
+    <Color x:Key="OnSurfaceDark">#E0E0E0</Color>
+    <Color x:Key="SurfaceVariantDark">#424242</Color>
+
+    <Color x:Key="AccentDark">#FFB74D</Color>
+    <Color x:Key="OnAccentDark">#121212</Color>
+
+    <!-- Màu Trạng thái -->
+    <Color x:Key="ErrorDark">#EF5350</Color>
+    <Color x:Key="OnErrorDark">#121212</Color>
+    <Color x:Key="SuccessDark">#66BB6A</Color>
+    <Color x:Key="OnSuccessDark">#121212</Color>
+    <Color x:Key="WarningDark">#FFCA28</Color>
+    <Color x:Key="OnWarningDark">#121212</Color>
+
+    <!-- Dải màu Xám (Dark) -->
+    <Color x:Key="Gray100Dark">#BDBDBD</Color>
+    <Color x:Key="Gray200Dark">#9E9E9E</Color>
+    <Color x:Key="Gray300Dark">#757575</Color>
+    <Color x:Key="Gray400Dark">#616161</Color>
+    <Color x:Key="Gray500Dark">#424242</Color>
+    <Color x:Key="Gray600Dark">#303030</Color>
+
+
+    <!-- ===================================================================== -->
+    <!-- =                       MÀU TRUNG GIAN (TIỆN ÍCH)                    = -->
+    <!-- ===================================================================== -->
+    <Color x:Key="White">#FFFFFF</Color>
+    <Color x:Key="Black">#000000</Color>
+    <Color x:Key="Transparent">Transparent</Color>
+
 </ResourceDictionary>

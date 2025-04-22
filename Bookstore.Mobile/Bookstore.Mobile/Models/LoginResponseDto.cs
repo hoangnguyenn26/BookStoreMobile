@@ -1,5 +1,4 @@
-﻿
-namespace Bookstore.Application.Dtos
+﻿namespace Bookstore.Mobile.Models
 {
     public class LoginResponseDto
     {

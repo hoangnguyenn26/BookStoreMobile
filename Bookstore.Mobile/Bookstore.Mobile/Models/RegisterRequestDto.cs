@@ -1,7 +1,6 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Bookstore.Mobile.Interfaces.Apis
+namespace Bookstore.Mobile.Models
 {
     public class RegisterRequestDto
     {

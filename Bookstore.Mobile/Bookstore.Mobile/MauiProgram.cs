@@ -1,5 +1,6 @@
 ﻿
 using Bookstore.Mobile.Interfaces.Apis;
+using Bookstore.Mobile.ViewModels;
 using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using Refit;
@@ -44,7 +45,7 @@ namespace Bookstore.Mobile
 
             // ViewModels (Transient - Mỗi lần mở trang tạo mới ViewModel)
             builder.Services.AddTransient<LoginViewModel>();
-            builder.Services.AddTransient<RegisterViewModel>();
+            //builder.Services.AddTransient<RegisterViewModel>();
             //builder.Services.AddTransient<HomeViewModel>();  
             //builder.Services.AddTransient<CategoriesViewModel>();  
             //builder.Services.AddTransient<BooksViewModel>();  

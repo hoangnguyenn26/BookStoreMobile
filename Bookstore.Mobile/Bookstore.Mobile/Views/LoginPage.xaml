@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
+             x:DataType="vm:LoginViewModel"
+             x:Class="Bookstore.Mobile.Views.LoginPage"
+             Title="Login"
+             Shell.NavBarIsVisible="False">
+    <!-- Ẩn Navigation Bar cho trang Login -->
+
+    <Grid Padding="20" RowDefinitions="Auto,*,Auto">
+
+        <!-- Phần Header (Ví dụ) -->
+        <Label Text="Welcome Back!"
+               Style="{StaticResource Headline}"
+               HorizontalOptions="Center"
+               Margin="0,40,0,20"
+               Grid.Row="0"/>
+
+        <!-- Phần Form Đăng nhập -->
+        <VerticalStackLayout Spacing="15" Grid.Row="1" VerticalOptions="Center">
+            <Label Text="Login to continue" HorizontalOptions="Center" Style="{StaticResource Subheadline}"/>
+
+            <Frame Style="{StaticResource EntryFrame}">
+                <!-- Ví dụ dùng Frame bọc Entry -->
+                <Entry Placeholder="Username or Email"
+                        Text="{Binding LoginIdentifier}"
+                        Keyboard="Email"
+                        ReturnType="Next"/>
+            </Frame>
+
+            <Frame Style="{StaticResource EntryFrame}">
+                <Entry Placeholder="Password"
+                        Text="{Binding Password}"
+                        IsPassword="True"
+                        ReturnType="Go"/>
+            </Frame>
+
+            <Button Text="Login"
+                    Command="{Binding LoginCommand}"
+                    IsEnabled="{Binding IsNotBusy}"
+                    Margin="0,20,0,0"/>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                IsVisible="{Binding IsBusy}"
+                                HorizontalOptions="Center"
+                                Color="{StaticResource Primary}"/>
+
+            <Label Text="{Binding ErrorMessage}"
+                    TextColor="Red"
+                    IsVisible="{Binding HasError}"
+                    HorizontalOptions="Center"
+                    Margin="0,10,0,0"/>
+
+        </VerticalStackLayout>
+
+        <!-- Phần Footer (Link tới Register) -->
+        <HorizontalStackLayout Grid.Row="2" Spacing="5" HorizontalOptions="Center" Margin="0,0,0,20">
+            <Label Text="Don't have an account?" VerticalOptions="Center"/>
+            <Label Text="Register" TextColor="{StaticResource Primary}" FontAttributes="Bold" VerticalOptions="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding GoToRegisterCommand}"/>
+                </Label.GestureRecognizers>
+            </Label>
+        </HorizontalStackLayout>
+    </Grid>
+</ContentPage>

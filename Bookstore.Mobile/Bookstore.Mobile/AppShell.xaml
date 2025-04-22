@@ -1,4 +1,4 @@
-<!-- Bookstore.Mobile/AppShell.xaml -->
+
 <Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
        xmlns:local="clr-namespace:Bookstore.Mobile"
@@ -15,8 +15,8 @@
     </Shell.FlyoutHeader>
 
     <!-- Các mục trong Flyout -->
-    <FlyoutItem Title="Home" Icon="home.png">
-        <!-- Thay icon -->
+    <!--<FlyoutItem Title="Home" Icon="home.png">
+        --><!-- Thay icon --><!--
         <ShellContent Title="Home"
                       ContentTemplate="{DataTemplate views:HomePage}"
                       Route="HomePage" />
@@ -40,12 +40,12 @@
                        Route="CartPage" />
     </FlyoutItem>
 
-    <!-- Mục chỉ hiển thị khi đăng nhập (sẽ xử lý logic sau) -->
+    --><!-- Mục chỉ hiển thị khi đăng nhập (sẽ xử lý logic sau) --><!--
     <FlyoutItem Title="My Profile" Icon="profile.png">
         <ShellContent Title="Profile"
                        ContentTemplate="{DataTemplate views:ProfilePage}"
                        Route="ProfilePage" />
-    </FlyoutItem>
+    </FlyoutItem>-->
 
     <!-- Các trang không hiện trong Flyout nhưng có thể điều hướng tới -->
     <ShellContent Title="Login"
@@ -54,7 +54,7 @@
                    Shell.FlyoutItemIsVisible="False"
                    Shell.NavBarIsVisible="False"/>
 
-    <ShellContent Title="Register"
+    <!--<ShellContent Title="Register"
                    ContentTemplate="{DataTemplate views:RegisterPage}"
                    Route="RegisterPage"
                     Shell.FlyoutItemIsVisible="False"
@@ -64,12 +64,12 @@
                    ContentTemplate="{DataTemplate views:BooksPage}"
                    Route="BooksPage"
                    Shell.FlyoutItemIsVisible="False"/>
-    <!-- Trang sách sẽ được điều hướng tới -->
+    --><!-- Trang sách sẽ được điều hướng tới --><!--
 
     <ShellContent Title="Book Details"
                    ContentTemplate="{DataTemplate views:BookDetailsPage}"
                    Route="BookDetailsPage"
-                   Shell.FlyoutItemIsVisible="False"/>
+                   Shell.FlyoutItemIsVisible="False"/>-->
 
     <!-- Thêm các trang khác: AddressList, OrderHistory, OrderDetails, Checkout... -->
 
