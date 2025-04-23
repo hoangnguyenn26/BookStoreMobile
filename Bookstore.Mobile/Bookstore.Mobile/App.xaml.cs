@@ -1,15 +1,34 @@
-﻿namespace Bookstore.Mobile
+﻿using Bookstore.Mobile.Interfaces.Services;
+using Bookstore.Mobile.Views;
+
+namespace Bookstore.Mobile
 {
     public partial class App : Application
     {
-        public App()
+        private readonly IAuthService _authService;
+        public App(IAuthService authService)
         {
             InitializeComponent();
+            _authService = authService;
+
+            MainPage = new AppShell();
         }
 
-        protected override Window CreateWindow(IActivationState? activationState)
+        protected override async void OnStart()
         {
-            return new Window(new AppShell());
+            base.OnStart();
+            await _authService.InitializeAsync();
+
+            if (_authService.IsLoggedIn)
+            {
+                // await Shell.Current.GoToAsync($"//{nameof(HomePage)}"); // Cần đảm bảo Shell đã sẵn sàng
+            }
+            else
+            {
+                // Nếu chưa đăng nhập, điều hướng đến Login
+                await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
+            }
+
         }
     }
 }

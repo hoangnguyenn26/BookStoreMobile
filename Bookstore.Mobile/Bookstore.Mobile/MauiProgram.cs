@@ -1,5 +1,7 @@
 ﻿
 using Bookstore.Mobile.Interfaces.Apis;
+using Bookstore.Mobile.Interfaces.Services;
+using Bookstore.Mobile.Services;
 using Bookstore.Mobile.ViewModels;
 using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
@@ -45,34 +47,7 @@ namespace Bookstore.Mobile
 
             // ViewModels (Transient - Mỗi lần mở trang tạo mới ViewModel)
             builder.Services.AddTransient<LoginViewModel>();
-            //builder.Services.AddTransient<RegisterViewModel>();
-            //builder.Services.AddTransient<HomeViewModel>();  
-            //builder.Services.AddTransient<CategoriesViewModel>();  
-            //builder.Services.AddTransient<BooksViewModel>();  
-            //builder.Services.AddTransient<BookDetailsViewModel>();  
-            //builder.Services.AddTransient<WishlistViewModel>();  
-            //builder.Services.AddTransient<CartViewModel>();  
-            //builder.Services.AddTransient<ProfileViewModel>();  
-            //builder.Services.AddTransient<AddressViewModel>();  
-            //builder.Services.AddTransient<OrderHistoryViewModel>();  
-            //builder.Services.AddTransient<OrderDetailsViewModel>();  
-            //builder.Services.AddTransient<CheckoutViewModel>();  
-
-
-            //// Views (Transient - Trang được tạo mới mỗi lần điều hướng tới)
-            //builder.Services.AddTransient<LoginPage>();  
-            //builder.Services.AddTransient<RegisterPage>();  
-            //builder.Services.AddTransient<HomePage>();  
-            //builder.Services.AddTransient<CategoriesPage>();  
-            //builder.Services.AddTransient<BooksPage>();  
-            //builder.Services.AddTransient<BookDetailsPage>();  
-            //builder.Services.AddTransient<WishlistPage>();  
-            //builder.Services.AddTransient<CartPage>();  
-            //builder.Services.AddTransient<ProfilePage>();  
-            //builder.Services.AddTransient<AddressListPage>();  
-            //builder.Services.AddTransient<OrderHistoryPage>();  
-            //builder.Services.AddTransient<OrderDetailsPage>();  
-            //builder.Services.AddTransient<CheckoutPage>();  
+            builder.Services.AddSingleton<IAuthService, AuthService>();
 
             // ----- Kết thúc Đăng ký DI -----
 

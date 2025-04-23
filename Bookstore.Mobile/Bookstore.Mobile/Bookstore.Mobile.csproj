@@ -71,11 +71,13 @@
 	<ItemGroup>
 	  <Folder Include="Converters\" />
 	  <Folder Include="Helpers\" />
-	  <Folder Include="Services\" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <MauiXaml Update="Views\LoginPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\RegisterPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>

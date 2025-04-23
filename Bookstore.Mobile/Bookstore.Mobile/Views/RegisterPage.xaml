@@ -1,0 +1,68 @@
+<!-- Bookstore.Mobile/Views/RegisterPage.xaml -->
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
+             x:DataType="vm:RegisterViewModel"
+             x:Class="Bookstore.Mobile.Views.RegisterPage"
+             Title="Register"
+             Shell.PresentationMode="ModalAnimated">
+    <!-- Hiển thị dạng Modal -->
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="10">
+            <Label Text="Create Account" Style="{StaticResource Headline}" HorizontalOptions="Center" Margin="0,20,0,10"/>
+
+            <Frame Style="{StaticResource EntryFrame}">
+                <Entry Placeholder="Username" Text="{Binding UserName}" ReturnType="Next"/>
+            </Frame>
+            <Frame Style="{StaticResource EntryFrame}">
+                <Entry Placeholder="Email" Text="{Binding Email}" Keyboard="Email" ReturnType="Next"/>
+            </Frame>
+            <Frame Style="{StaticResource EntryFrame}">
+                <Entry Placeholder="First Name (Optional)" Text="{Binding FirstName}" ReturnType="Next"/>
+            </Frame>
+            <Frame Style="{StaticResource EntryFrame}">
+                <Entry Placeholder="Last Name (Optional)" Text="{Binding LastName}" ReturnType="Next"/>
+            </Frame>
+            <Frame Style="{StaticResource EntryFrame}">
+                <Entry Placeholder="Phone Number (Optional)" Text="{Binding PhoneNumber}" Keyboard="Telephone" ReturnType="Next"/>
+            </Frame>
+            <Frame Style="{StaticResource EntryFrame}">
+                <Entry Placeholder="Password" Text="{Binding Password}" IsPassword="True" ReturnType="Next"/>
+            </Frame>
+            <Frame Style="{StaticResource EntryFrame}">
+                <Entry Placeholder="Confirm Password" Text="{Binding ConfirmPassword}" IsPassword="True" ReturnType="Go"/>
+            </Frame>
+
+            <Button Text="Register"
+                     Command="{Binding RegisterCommand}"
+                     IsEnabled="{Binding IsNotBusy}"
+                     Margin="0,20,0,0"/>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center"/>
+
+            <Label Text="{Binding ErrorMessage}"
+                    Style="{StaticResource ErrorLabel}"
+                    IsVisible="{Binding HasError}"/>
+
+            <!-- Nút quay lại Login -->
+            <Label HorizontalOptions="Center" Margin="0,15,0,0">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="Already have an account? "/>
+                        <Span Text="Login"
+                                  TextColor="{StaticResource PrimaryLight}"
+                                  FontAttributes="Bold"
+                                  TextDecorations="Underline">
+                            <Span.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding GoToLoginCommand}"/>
+                            </Span.GestureRecognizers>
+                        </Span>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

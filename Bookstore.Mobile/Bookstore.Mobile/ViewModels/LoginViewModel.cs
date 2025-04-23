@@ -1,23 +1,24 @@
-﻿
+﻿using Bookstore.Mobile.Interfaces.Services;
+using Bookstore.Mobile.Models;
+using Bookstore.Mobile.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+
 namespace Bookstore.Mobile.ViewModels
 {
     public partial class LoginViewModel : BaseViewModel
     {
-        // Inject các service cần thiết (sẽ thêm sau)
-        // private readonly IAuthService _authService;
-        // private readonly INavigationService _navigationService;
+        private readonly IAuthService _authService;
         private readonly ILogger<LoginViewModel> _logger;
-        public LoginViewModel(ILogger<LoginViewModel> logger/*IAuthService authService, INavigationService navigationService*/)
-        {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            Title = "Login";
-            // _authService = authService;
-            // _navigationService = navigationService;
-        }
 
+        // Constructor nhận dependencies qua DI
+        public LoginViewModel(IAuthService authService, ILogger<LoginViewModel> logger)
+        {
+            Title = "Login";
+            _authService = authService;
+            _logger = logger;
+        }
 
         // --- Observable Properties cho Binding ---
         [ObservableProperty]
@@ -38,32 +39,45 @@ namespace Bookstore.Mobile.ViewModels
             !string.IsNullOrWhiteSpace(Password) &&
             IsNotBusy;
 
-        // Lệnh thực thi việc đăng nhập
         [RelayCommand(CanExecute = nameof(CanLogin))]
         private async Task LoginAsync()
         {
-            if (IsBusy) return;
+            if (IsBusy || !CanLogin()) return; // Kiểm tra lại CanExecute ở đây
 
             IsBusy = true;
-            ErrorMessage = null;
+            ErrorMessage = null; // Xóa lỗi cũ
 
             try
             {
-                // TODO: Ngày 9 - Gọi AuthService để thực hiện đăng nhập API
-                await Task.Delay(2000); // Giả lập việc gọi API
-                _logger.LogInformation("Login attempt for: {LoginId}", LoginIdentifier); // Cần inject ILogger
+                _logger.LogInformation("Login attempt for: {LoginId}", LoginIdentifier);
 
-                // Giả sử đăng nhập thành công
-                // await _navigationService.NavigateToAsync("//HomePage");
+                var loginRequest = new LoginRequestDto
+                {
+                    LoginIdentifier = LoginIdentifier!,
+                    Password = Password!
+                };
 
-                // Giả sử đăng nhập thất bại
-                // throw new AuthenticationException("Invalid username or password.");
+                // Gọi AuthService để thực hiện đăng nhập API
+                var loginSuccess = await _authService.LoginAsync(loginRequest);
 
+                if (loginSuccess)
+                {
+                    _logger.LogInformation("Login successful for {LoginId}. Navigating to main page.", LoginIdentifier);
+                    await Shell.Current.GoToAsync($"//{nameof(HomePage)}");
+                }
+                else
+                {
+                    // Lấy thông báo lỗi từ AuthService
+                    ErrorMessage = _authService.LastErrorMessage ?? "Invalid username or password.";
+                    _logger.LogWarning("Login failed for {LoginId}: {Error}", LoginIdentifier, ErrorMessage);
+                    await DisplayAlertAsync("Login Failed", ErrorMessage);
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Login failed for {LoginId}", LoginIdentifier);
-                ErrorMessage = $"Login failed: {ex.Message}";
+                _logger.LogError(ex, "Exception during login for {LoginId}", LoginIdentifier);
+                ErrorMessage = $"An unexpected error occurred: {ex.Message}";
+                await DisplayAlertAsync("Error", ErrorMessage);
             }
             finally
             {
@@ -71,15 +85,13 @@ namespace Bookstore.Mobile.ViewModels
             }
         }
 
-        //[RelayCommand]
-        //private async Task GoToRegisterAsync()
-        //{
-        //    if (IsBusy) return;
-        //    _logger.LogInformation("Navigating to Register Page");
-        //    // TODO: Ngày 9 - Sử dụng NavigationService để điều hướng
-        //    // await _navigationService.NavigateToAsync(nameof(RegisterPage));
-        //    await Shell.Current.GoToAsync(nameof(RegisterPage));
-        //}
+        [RelayCommand]
+        private async Task GoToRegisterAsync()
+        {
+            if (IsBusy) return;
+            _logger.LogInformation("Navigating to Register Page");
+            await Shell.Current.GoToAsync(nameof(RegisterPage));
+        }
 
 
     }
