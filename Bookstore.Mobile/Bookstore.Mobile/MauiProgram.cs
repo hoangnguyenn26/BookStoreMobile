@@ -47,6 +47,7 @@ namespace Bookstore.Mobile
 
             // ViewModels (Transient - Mỗi lần mở trang tạo mới ViewModel)
             builder.Services.AddTransient<LoginViewModel>();
+            builder.Services.AddTransient<RegisterViewModel>();
             builder.Services.AddSingleton<IAuthService, AuthService>();
 
             // ----- Kết thúc Đăng ký DI -----

@@ -4,6 +4,7 @@ using Bookstore.Mobile.Interfaces.Services;
 using Bookstore.Mobile.Models;
 using Bookstore.Mobile.Views;
 using Microsoft.Extensions.Logging;
+using Refit;
 using System.Text.Json;
 
 namespace Bookstore.Mobile.Services
@@ -80,11 +81,27 @@ namespace Bookstore.Mobile.Services
                 }
                 else
                 {
-                    string errorContent = await response.Error?.GetContentAsStringAsync() ?? response.ReasonPhrase ?? "Unknown login error";
-                    _logger.LogWarning("Login failed for {LoginId}. Status: {StatusCode}. Reason: {Reason}", loginRequest.LoginIdentifier, response.StatusCode, errorContent);
-                    _lastErrorMessage = $"Login failed: {errorContent}";
+                    string errorDetail = "Invalid username or password.";
+                    if (response.Error != null)
+                    {
+                        _logger.LogWarning("Login failed for {LoginId}. Status: {StatusCode}. Reason: {Reason}",
+                            loginRequest.LoginIdentifier, response.StatusCode, response.Error.ReasonPhrase);
+                        _lastErrorMessage = errorDetail;
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Login failed for {LoginId}. Status: {StatusCode}. Reason: {Reason}",
+                            loginRequest.LoginIdentifier, response.StatusCode, response.ReasonPhrase);
+                        _lastErrorMessage = errorDetail;
+                    }
                     return false;
                 }
+            }
+            catch (ApiException apiEx)
+            {
+                _logger.LogError(apiEx, "API Exception during login for {LoginId}", loginRequest.LoginIdentifier);
+                _lastErrorMessage = "An error occurred during login."; // Lỗi chung
+                return false;
             }
             catch (Exception ex)
             {
@@ -109,24 +126,43 @@ namespace Bookstore.Mobile.Services
                 }
                 else
                 {
-                    string errorContent = await response.Error?.GetContentAsStringAsync() ?? response.ReasonPhrase ?? "Unknown registration error";
-                    _logger.LogWarning("Registration failed for {Username}. Status: {StatusCode}. Reason: {Reason}", registerRequest.UserName, response.StatusCode, errorContent);
-                    // Cố gắng parse lỗi trả về từ API (ví dụ: lỗi validation)
-                    try
+                    string errorDetail = "Unknown registration error";
+                    if (response.Error != null)
                     {
-                        var problem = JsonSerializer.Deserialize<ValidationProblemDetails>(errorContent);
-                        if (problem?.Errors != null && problem.Errors.Any())
+                        _logger.LogWarning("Registration failed for {Username}. Status: {StatusCode}. Reason: {Reason}",
+                            registerRequest.UserName, response.StatusCode, response.Error.ReasonPhrase);
+
+                        if (response.Error.Content is string errorString && !string.IsNullOrWhiteSpace(errorString))
                         {
-                            _lastErrorMessage = string.Join("; ", problem.Errors.SelectMany(e => e.Value));
+                            errorDetail = errorString;
+                            try
+                            {
+                                var problem = JsonSerializer.Deserialize<ValidationProblemDetails>(errorDetail);
+                                if (problem?.Errors != null && problem.Errors.Any())
+                                {
+                                    _lastErrorMessage = string.Join("; ", problem.Errors.SelectMany(e => e.Value));
+                                }
+                                else
+                                {
+                                    _lastErrorMessage = problem?.Detail ?? problem?.Title ?? errorDetail;
+                                }
+                            }
+                            catch (JsonException jsonEx)
+                            {
+                                _logger.LogWarning(jsonEx, "Could not deserialize error content as JSON: {ErrorContent}", errorDetail);
+                                _lastErrorMessage = errorDetail;
+                            }
                         }
                         else
                         {
-                            _lastErrorMessage = problem?.Detail ?? problem?.Title ?? errorContent;
+                            _lastErrorMessage = response.Error.ReasonPhrase ?? errorDetail;
                         }
                     }
-                    catch
+                    else
                     {
-                        _lastErrorMessage = errorContent;
+                        _logger.LogWarning("Registration failed for {Username}. Status: {StatusCode}. Reason: {Reason}",
+                            registerRequest.UserName, response.StatusCode, response.ReasonPhrase);
+                        _lastErrorMessage = response.ReasonPhrase ?? errorDetail;
                     }
                     return false;
                 }

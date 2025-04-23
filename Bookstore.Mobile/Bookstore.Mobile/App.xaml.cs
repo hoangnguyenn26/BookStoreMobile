@@ -25,7 +25,6 @@ namespace Bookstore.Mobile
             }
             else
             {
-                // Nếu chưa đăng nhập, điều hướng đến Login
                 await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
             }
 

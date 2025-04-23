@@ -1,6 +1,7 @@
 ﻿
 using Bookstore.Mobile.Interfaces.Services;
 using Bookstore.Mobile.Models;
+using Bookstore.Mobile.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
@@ -59,7 +60,7 @@ namespace Bookstore.Mobile.ViewModels
         [RelayCommand(CanExecute = nameof(CanRegister))]
         private async Task RegisterAsync()
         {
-            if (IsBusy || !CanRegister()) return; // Kiểm tra lại CanExecute
+            if (IsBusy || !CanRegister()) return;
             IsBusy = true;
             ErrorMessage = null;
 
@@ -112,7 +113,7 @@ namespace Bookstore.Mobile.ViewModels
         {
             if (IsBusy) return;
             _logger.LogInformation("Navigating back to Login Page");
-            await Shell.Current.GoToAsync("..");
+            await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
         }
     }
 }

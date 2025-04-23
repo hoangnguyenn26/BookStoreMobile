@@ -54,17 +54,17 @@
                    Shell.FlyoutItemIsVisible="False"
                    Shell.NavBarIsVisible="False"/>
 
-    <!--<ShellContent Title="Register"
+    <ShellContent Title="Register"
                    ContentTemplate="{DataTemplate views:RegisterPage}"
                    Route="RegisterPage"
                     Shell.FlyoutItemIsVisible="False"
                    Shell.NavBarIsVisible="False"/>
 
-    <ShellContent Title="Books"
+    <!--<ShellContent Title="Books"
                    ContentTemplate="{DataTemplate views:BooksPage}"
                    Route="BooksPage"
-                   Shell.FlyoutItemIsVisible="False"/>
-    --><!-- Trang sách sẽ được điều hướng tới --><!--
+                   Shell.FlyoutItemIsVisible="False"/>-->
+    <!-- Trang sách sẽ được điều hướng tới --><!--
 
     <ShellContent Title="Book Details"
                    ContentTemplate="{DataTemplate views:BookDetailsPage}"
