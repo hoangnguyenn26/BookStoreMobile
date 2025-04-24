@@ -21,13 +21,13 @@
                       Route="HomePage" />
     </FlyoutItem>
 
-    <!--<FlyoutItem Title="Categories" Icon="categories.png">
+    <FlyoutItem Title="Categories" Icon="categories.png">
         <ShellContent Title="Categories"
                        ContentTemplate="{DataTemplate views:CategoriesPage}"
                        Route="CategoriesPage" />
     </FlyoutItem>
 
-    <FlyoutItem Title="My Wishlist" Icon="wishlist.png">
+    <!--<FlyoutItem Title="My Wishlist" Icon="wishlist.png">
         <ShellContent Title="Wishlist"
                        ContentTemplate="{DataTemplate views:WishlistPage}"
                        Route="WishlistPage" />
@@ -59,10 +59,10 @@
                     Shell.FlyoutItemIsVisible="False"
                    Shell.NavBarIsVisible="False"/>
 
-    <!--<ShellContent Title="Books"
+    <ShellContent Title="Books"
                    ContentTemplate="{DataTemplate views:BooksPage}"
                    Route="BooksPage"
-                   Shell.FlyoutItemIsVisible="False"/>-->
+                   Shell.FlyoutItemIsVisible="False"/>
     <!-- Trang sách sẽ được điều hướng tới --><!--
 
     <ShellContent Title="Book Details"

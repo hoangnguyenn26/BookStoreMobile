@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
+             xmlns:dto="clr-namespace:Bookstore.Mobile.Models"
+             x:DataType="vm:BooksViewModel"
+             x:Class="Bookstore.Mobile.Views.BooksPage"
+             Title="{Binding Title}">
+    <!-- Title có thể hiển thị tên Category -->
+
+    <Grid RowDefinitions="Auto, *">
+        <!-- Có thể thêm SearchBar ở đây nếu muốn -->
+        <!-- <SearchBar Grid.Row="0" Placeholder="Search books..." Text="{Binding SearchTerm}" SearchCommand="{Binding SearchBooksCommand}"/> -->
+
+        <ActivityIndicator Grid.Row="0" Grid.RowSpan="2" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center"/>
+
+        <RefreshView Grid.Row="1" Command="{Binding LoadBooksCommand}" IsRefreshing="{Binding IsBusy}">
+            <CollectionView ItemsSource="{Binding Books}"
+                             SelectionMode="Single"
+                             SelectionChangedCommand="{Binding GoToBookDetailsCommand}"
+                             SelectionChangedCommandParameter="{Binding Source={RelativeSource Self}, Path=SelectedItem}"
+                             RemainingItemsThreshold="5" 
+                RemainingItemsThresholdReachedCommand="{Binding LoadMoreBooksCommand}"
+
+                IsVisible="{Binding IsNotBusy}">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="10" VerticalItemSpacing="10"/>
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="dto:BookDto">
+                        <!-- Item Template giống HomePage hoặc tùy chỉnh -->
+                        <Frame Style="{StaticResource CardFrame}" Padding="0">
+                            <StackLayout>
+                                <Image Source="{Binding CoverImageUrl, TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}" Aspect="AspectFill" HeightRequest="150"/>
+                                <VerticalStackLayout Padding="10" Spacing="4">
+                                    <Label Text="{Binding Title}" FontSize="Small" FontAttributes="Bold" LineBreakMode="TailTruncation"/>
+                                    <!-- <Label Text="{Binding Author?.Name}" FontSize="Micro"/> Nếu BookDto có Author -->
+                                    <Label Text="{Binding Price, StringFormat='{0:C}'}" FontSize="Small" FontAttributes="Bold" TextColor="{StaticResource PrimaryLight}"/>
+                                </VerticalStackLayout>
+                            </StackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.EmptyView>
+                    <Label Text="No books found in this category." HorizontalOptions="Center" VerticalOptions="Center"/>
+                </CollectionView.EmptyView>
+            </CollectionView>
+        </RefreshView>
+
+        <Label Grid.Row="1" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}" VerticalOptions="Center" HorizontalOptions="Center"/>
+
+    </Grid>
+</ContentPage>

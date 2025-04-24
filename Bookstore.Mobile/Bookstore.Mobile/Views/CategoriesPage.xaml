@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
+             xmlns:dto="clr-namespace:Bookstore.Mobile.Models" 
+             x:DataType="vm:CategoriesViewModel"
+             x:Class="Bookstore.Mobile.Views.CategoriesPage"
+             Title="{Binding Title}">
+
+    <Grid RowDefinitions="Auto, *">
+        <Label Text="Browse by Category" Style="{StaticResource Headline}" Margin="15,10"/>
+
+        <ActivityIndicator Grid.Row="0" Grid.RowSpan="2" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center"/>
+
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding Categories}"
+                        SelectionMode="Single"
+                        SelectionChangedCommand="{Binding GoToBooksForCategoryCommand}"
+                        SelectionChangedCommandParameter="{Binding Source={RelativeSource Self}, Path=SelectedItem}"
+                        Margin="10"
+                        IsVisible="{Binding IsNotBusy}">
+            <CollectionView.ItemsLayout>
+                <!-- Có thể dùng GridLayout hoặc VerticalListLayout -->
+                <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="10" VerticalItemSpacing="10"/>
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="dto:CategoryDto">
+                    <Border Style="{StaticResource CardBorder}">
+                        <!-- Ví dụ -->
+                        <Label Text="{Binding Name}"
+                               FontSize="Medium"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               Padding="20"/>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            <CollectionView.EmptyView>
+                <Label Text="No categories found." HorizontalOptions="Center" VerticalOptions="Center"/>
+            </CollectionView.EmptyView>
+        </CollectionView>
+
+        <Label Grid.Row="1" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}" VerticalOptions="Center" HorizontalOptions="Center"/>
+
+    </Grid>
+</ContentPage>

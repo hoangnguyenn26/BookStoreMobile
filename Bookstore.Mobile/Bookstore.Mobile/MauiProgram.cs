@@ -65,11 +65,15 @@ namespace Bookstore.Mobile
             builder.Services.AddTransient<LoginViewModel>();
             builder.Services.AddTransient<RegisterViewModel>();
             builder.Services.AddTransient<HomeViewModel>();
+            builder.Services.AddTransient<CategoriesViewModel>();
+            builder.Services.AddTransient<BooksViewModel>();
             // ... (Các ViewModel khác)
 
             builder.Services.AddTransient<LoginPage>();
             builder.Services.AddTransient<RegisterPage>();
             builder.Services.AddTransient<HomePage>();
+            builder.Services.AddTransient<CategoriesPage>();
+            builder.Services.AddTransient<BooksPage>();
             // ... (Các View khác)
 
             return builder.Build();
@@ -88,6 +92,8 @@ namespace Bookstore.Mobile
             services.AddRefitClient<IBooksApi>(refitSettings)
                     .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
             services.AddRefitClient<IDashboardApi>(refitSettings)
+                    .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
+            services.AddRefitClient<ICategoriesApi>(refitSettings)
                     .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
         }
     }

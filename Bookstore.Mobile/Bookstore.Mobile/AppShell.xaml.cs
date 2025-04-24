@@ -11,7 +11,8 @@ namespace Bookstore.Mobile
             Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
             Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
             Routing.RegisterRoute(nameof(HomePage), typeof(HomePage));
-            //Routing.RegisterRoute(nameof(BooksPage), typeof(BooksPage));
+            Routing.RegisterRoute(nameof(BooksPage), typeof(BooksPage));
+            Routing.RegisterRoute(nameof(CategoriesPage), typeof(CategoriesPage));
             //Routing.RegisterRoute(nameof(BookDetailsPage), typeof(BookDetailsPage));
             //Routing.RegisterRoute(nameof(AddressListPage), typeof(AddressListPage)); 
         }
