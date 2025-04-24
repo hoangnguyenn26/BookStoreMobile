@@ -63,7 +63,7 @@ namespace Bookstore.Mobile.ViewModels
                 if (loginSuccess)
                 {
                     _logger.LogInformation("Login successful for {LoginId}. Navigating to main page.", LoginIdentifier);
-                    //await Shell.Current.GoToAsync($"//{nameof(HomePage)}");
+                    await Shell.Current.GoToAsync($"//{nameof(HomePage)}");
                 }
                 else
                 {

@@ -9,20 +9,19 @@
     </Shell.Resources>
 
     <Shell.FlyoutHeader>
-        <VerticalStackLayout Padding="10" BackgroundColor="{StaticResource Primary}">
+        <VerticalStackLayout Padding="10" BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}">
             <Label Text="Bookstore App" TextColor="White" FontSize="Large" HorizontalOptions="Center" />
         </VerticalStackLayout>
     </Shell.FlyoutHeader>
 
     <!-- Các mục trong Flyout -->
-    <!--<FlyoutItem Title="Home" Icon="home.png">
-        --><!-- Thay icon --><!--
+    <FlyoutItem Title="Home" Icon="home.png">
         <ShellContent Title="Home"
                       ContentTemplate="{DataTemplate views:HomePage}"
                       Route="HomePage" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Categories" Icon="categories.png">
+    <!--<FlyoutItem Title="Categories" Icon="categories.png">
         <ShellContent Title="Categories"
                        ContentTemplate="{DataTemplate views:CategoriesPage}"
                        Route="CategoriesPage" />
@@ -38,9 +37,9 @@
         <ShellContent Title="Cart"
                        ContentTemplate="{DataTemplate views:CartPage}"
                        Route="CartPage" />
-    </FlyoutItem>
+    </FlyoutItem>-->
 
-    --><!-- Mục chỉ hiển thị khi đăng nhập (sẽ xử lý logic sau) --><!--
+    <!-- Mục chỉ hiển thị khi đăng nhập (sẽ xử lý logic sau) --><!--
     <FlyoutItem Title="My Profile" Icon="profile.png">
         <ShellContent Title="Profile"
                        ContentTemplate="{DataTemplate views:ProfilePage}"

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
+             xmlns:dto="clr-namespace:Bookstore.Mobile.Models"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:DataType="vm:HomeViewModel"
+             x:Class="Bookstore.Mobile.Views.HomePage"
+             Title="{Binding Title}">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="15">
+
+            <!-- Chào mừng người dùng (Nếu đã đăng nhập) -->
+            <Label Text="{Binding WelcomeMessage}" FontSize="Medium" FontAttributes="Bold" IsVisible="{Binding IsLoggedIn}" />
+
+            <!-- Loading Indicator -->
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" Margin="0,20" />
+
+            <!-- Error Message -->
+            <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}" Margin="0,10"/>
+
+            <!-- Chỉ hiển thị nội dung khi không bận và không có lỗi -->
+            <VerticalStackLayout IsVisible="{Binding IsNotBusy}" Spacing="20">
+
+                <!-- Phần Sách Mới Nhất -->
+                <Label Text="Newest Arrivals" Style="{StaticResource Headline}" FontSize="Large"/>
+                <CollectionView ItemsSource="{Binding DashboardData.NewestBooks}" HeightRequest="250">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="dto:BookSummaryDto">
+                            <Frame Style="{StaticResource CardFrame}" WidthRequest="150" Padding="0">
+                                <!-- Ví dụ Card -->
+                                <StackLayout>
+                                    <Image Source="{Binding CoverImageUrl, TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
+                                            Aspect="AspectFill" HeightRequest="150"/>
+                                    <VerticalStackLayout Padding="10" Spacing="4">
+                                        <Label Text="{Binding Title}" FontSize="Small" FontAttributes="Bold" LineBreakMode="TailTruncation"/>
+                                        <Label Text="{Binding AuthorName}" FontSize="Micro" TextColor="{StaticResource Gray600Light}"/>
+                                        <Label Text="{Binding Price, StringFormat='{0:C}'}" FontSize="Small" FontAttributes="Bold" TextColor="{StaticResource PrimaryLight}"/>
+                                    </VerticalStackLayout>
+                                </StackLayout>
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=GoToBookDetailsCommand}"
+                                                           CommandParameter="{Binding Id}"/>
+                                </Frame.GestureRecognizers>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                    <CollectionView.EmptyView>
+                        <Label Text="No new books found." HorizontalOptions="Center" VerticalOptions="Center" Margin="20"/>
+                    </CollectionView.EmptyView>
+                </CollectionView>
+
+                <!-- Phần Khuyến Mãi Đang Hoạt Động -->
+                <Label Text="Active Promotions" Style="{StaticResource Headline}" FontSize="Large" Margin="0,15,0,0"/>
+                <CollectionView ItemsSource="{Binding DashboardData.ActivePromotions}">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="dto:PromotionSummaryDto">
+                            <Border Style="{StaticResource InfoBorder}">
+                                <!-- Ví dụ Border -->
+                                <VerticalStackLayout Spacing="5">
+                                    <Label FontAttributes="Bold" FontSize="Medium">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Code: "/>
+                                                <Span Text="{Binding Code}" TextColor="{StaticResource PrimaryLight}"/>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                    <Label Text="{Binding Description}" FontSize="Small"/>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                    <CollectionView.EmptyView>
+                        <Label Text="No active promotions available." HorizontalOptions="Center" VerticalOptions="Center" Margin="20"/>
+                    </CollectionView.EmptyView>
+                </CollectionView>
+
+                <!-- Phần Danh Mục Nổi Bật (Tùy chọn) -->
+                <Label Text="Featured Categories" Style="{StaticResource Headline}" FontSize="Large" Margin="0,15,0,0"/>
+                <CollectionView ItemsSource="{Binding DashboardData.FeaturedCategories}" HeightRequest="100">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="dto:CategorySummaryDto">
+                            <Button Text="{Binding Name}"
+                                      Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=GoToCategoryCommand}"
+                                      CommandParameter="{Binding Id}"
+                                      Style="{StaticResource OutlineButton}"
+                                      WidthRequest="140"/>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                    <CollectionView.EmptyView>
+                        <Label Text="No featured categories." HorizontalOptions="Center" VerticalOptions="Center" Margin="20"/>
+                    </CollectionView.EmptyView>
+                </CollectionView>
+
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

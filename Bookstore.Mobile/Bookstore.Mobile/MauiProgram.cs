@@ -1,11 +1,15 @@
 ﻿
 using Bookstore.Mobile.Interfaces.Apis;
 using Bookstore.Mobile.Interfaces.Services;
+using Bookstore.Mobile.Mappings;
 using Bookstore.Mobile.Services;
 using Bookstore.Mobile.ViewModels;
+using Bookstore.Mobile.Views;
 using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using Refit;
+using System.Text.Json;
+
 namespace Bookstore.Mobile
 {
     public static class MauiProgram
@@ -15,45 +19,77 @@ namespace Bookstore.Mobile
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
-                // (Optional) Khởi tạo Maui Community Toolkit nếu dùng các tính năng của nó
                 .UseMauiCommunityToolkit()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-                    // Thêm các font custom khác nếu có
                 });
 
             // ----- Đăng ký Dependency Injection -----
 
-            string apiBaseAddress = builder.Configuration["ApiSettings:BaseAddress"] ?? "https://localhost:7264/api";
-#if DEBUG && ANDROID
-            if (apiBaseAddress.StartsWith("https://localhost"))
-            {
-                apiBaseAddress = apiBaseAddress.Replace("https://localhost", "http://10.0.2.2");
-            }
-#endif
-            // --- Thêm cấu hình Refit ---
-            var refitSettings = new RefitSettings(new NewtonsoftJsonContentSerializer());
-
-            builder.Services.AddRefitClient<IAuthApi>(refitSettings)
-                            .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
-
-            builder.Services.AddRefitClient<IBooksApi>(refitSettings)
-                            .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
+            // Logging
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
+            var logger = builder.Services.BuildServiceProvider().GetService<ILogger<MauiApp>>();
 
-            // ViewModels (Transient - Mỗi lần mở trang tạo mới ViewModel)
-            builder.Services.AddTransient<LoginViewModel>();
-            builder.Services.AddTransient<RegisterViewModel>();
+            // Lấy địa chỉ API gốc (ưu tiên HTTPS)
+            string apiBaseAddress = builder.Configuration["ApiSettings:BaseAddress"] ?? "https://localhost:7264/api";
+            string httpApiBaseAddress = builder.Configuration["ApiSettings:HttpBaseAddress"] ?? "http://localhost:5244/api";
+
+            // --- XỬ LÝ KẾT NỐI CHO ANDROID DEBUG ---
+#if DEBUG && ANDROID 
+            // Emulator dùng 10.0.2.2 để trỏ về localhost của máy host
+            // và phải dùng HTTP nếu không cấu hình HTTPS phức tạp
+            logger?.LogWarning("Android DEBUG detected. Using HTTP address for API connection.");
+            apiBaseAddress = httpApiBaseAddress.Replace("http://localhost", "http://10.0.2.2");
+            logger?.LogInformation("API Base Address set to: {ApiBaseAddress}", apiBaseAddress);
+
+            // Đăng ký Refit clients với địa chỉ HTTP đã sửa đổi
+            ConfigureDefaultRefitClients(builder.Services, apiBaseAddress);
+
+#else
+            // Cấu hình cho các platform khác hoặc Release build (dùng HTTPS mặc định)
+            logger?.LogInformation("Using default HTTPS address for API connection: {ApiBaseAddress}", apiBaseAddress);
+            ConfigureDefaultRefitClients(builder.Services, apiBaseAddress);
+#endif
+
+            // ----- Register AutoMapper -----
+            builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
+
+            // ----- Register Services -----
             builder.Services.AddSingleton<IAuthService, AuthService>();
 
-            // ----- Kết thúc Đăng ký DI -----
+            // ----- Register ViewModels & Views (Transient) -----
+            builder.Services.AddTransient<LoginViewModel>();
+            builder.Services.AddTransient<RegisterViewModel>();
+            builder.Services.AddTransient<HomeViewModel>();
+            // ... (Các ViewModel khác)
 
+            builder.Services.AddTransient<LoginPage>();
+            builder.Services.AddTransient<RegisterPage>();
+            builder.Services.AddTransient<HomePage>();
+            // ... (Các View khác)
 
             return builder.Build();
         }
+
+        // Helper đăng ký Refit client
+        private static void ConfigureDefaultRefitClients(IServiceCollection services, string apiBaseAddress)
+        {
+            var refitSettings = new RefitSettings(new SystemTextJsonContentSerializer(new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            }));
+
+            services.AddRefitClient<IAuthApi>(refitSettings)
+                    .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
+            services.AddRefitClient<IBooksApi>(refitSettings)
+                    .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
+            services.AddRefitClient<IDashboardApi>(refitSettings)
+                    .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
+        }
     }
+
 }
