@@ -1,9 +1,10 @@
-﻿using Bookstore.Mobile.Interfaces.Services;
-using Bookstore.Mobile.Views;
+﻿
+using Bookstore.Mobile.Interfaces.Services;
 
 namespace Bookstore.Mobile
 {
-    public partial class App : Application
+    // Chỉ định rõ ràng lớp Application của MAUI Controls
+    public partial class App : Microsoft.Maui.Controls.Application
     {
         private readonly IAuthService _authService;
         public App(IAuthService authService)
@@ -18,16 +19,7 @@ namespace Bookstore.Mobile
         {
             base.OnStart();
             await _authService.InitializeAsync();
-
-            if (_authService.IsLoggedIn)
-            {
-                // await Shell.Current.GoToAsync($"//{nameof(HomePage)}"); // Cần đảm bảo Shell đã sẵn sàng
-            }
-            else
-            {
-                await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
-            }
-
         }
+
     }
 }
