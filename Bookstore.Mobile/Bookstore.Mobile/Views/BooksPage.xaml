@@ -6,48 +6,93 @@
              x:DataType="vm:BooksViewModel"
              x:Class="Bookstore.Mobile.Views.BooksPage"
              Title="{Binding Title}">
-    <!-- Title có thể hiển thị tên Category -->
 
     <Grid RowDefinitions="Auto, *">
-        <!-- Có thể thêm SearchBar ở đây nếu muốn -->
-        <!-- <SearchBar Grid.Row="0" Placeholder="Search books..." Text="{Binding SearchTerm}" SearchCommand="{Binding SearchBooksCommand}"/> -->
+        <ActivityIndicator Grid.Row="0" Grid.RowSpan="2" 
+                          IsRunning="{Binding IsBusy}" 
+                          IsVisible="{Binding IsBusy}"
+                          VerticalOptions="Center" 
+                          HorizontalOptions="Center"/>
 
-        <ActivityIndicator Grid.Row="0" Grid.RowSpan="2" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center"/>
-
-        <RefreshView Grid.Row="1" Command="{Binding LoadBooksCommand}" IsRefreshing="{Binding IsBusy}">
+        <RefreshView Grid.Row="1" 
+                    Command="{Binding LoadBooksCommand}" 
+                    IsRefreshing="{Binding IsBusy}">
             <CollectionView ItemsSource="{Binding Books}"
-                             SelectionMode="Single"
-                             SelectionChangedCommand="{Binding GoToBookDetailsCommand}"
-                             SelectionChangedCommandParameter="{Binding Source={RelativeSource Self}, Path=SelectedItem}"
-                             RemainingItemsThreshold="5" 
-                RemainingItemsThresholdReachedCommand="{Binding LoadMoreBooksCommand}"
+                           SelectionMode="None"
+                           RemainingItemsThreshold="5" 
+                           RemainingItemsThresholdReachedCommand="{Binding LoadMoreBooksCommand}"
+                           IsVisible="{Binding IsNotBusy}">
 
-                IsVisible="{Binding IsNotBusy}">
                 <CollectionView.ItemsLayout>
-                    <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="10" VerticalItemSpacing="10"/>
+                    <GridItemsLayout Orientation="Vertical" 
+                                    Span="{OnPlatform Default=2, iOS=2, Android=2, MacCatalyst=3, WinUI=3}"
+                                    HorizontalItemSpacing="10" 
+                                    VerticalItemSpacing="10"/>
                 </CollectionView.ItemsLayout>
+
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="dto:BookDto">
-                        <!-- Item Template giống HomePage hoặc tùy chỉnh -->
-                        <Frame Style="{StaticResource CardFrame}" Padding="0">
+                        <Frame Style="{StaticResource CardFrame}" 
+                               WidthRequest="160" 
+                               Padding="0">
                             <StackLayout>
-                                <Image Source="{Binding CoverImageUrl, TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}" Aspect="AspectFill" HeightRequest="150"/>
+                                <Image Source="{Binding CoverImageUrl}"
+                                       Aspect="AspectFill" 
+                                       HeightRequest="150">
+                                    <Image.Triggers>
+                                        <DataTrigger TargetType="Image" 
+                                                    Binding="{Binding CoverImageUrl}" 
+                                                    Value="{x:Null}">
+                                            <Setter Property="Source" Value="placeholder_book.png"/>
+                                        </DataTrigger>
+                                    </Image.Triggers>
+                                </Image>
+
                                 <VerticalStackLayout Padding="10" Spacing="4">
-                                    <Label Text="{Binding Title}" FontSize="Small" FontAttributes="Bold" LineBreakMode="TailTruncation"/>
-                                    <!-- <Label Text="{Binding Author?.Name}" FontSize="Micro"/> Nếu BookDto có Author -->
-                                    <Label Text="{Binding Price, StringFormat='{0:C}'}" FontSize="Small" FontAttributes="Bold" TextColor="{StaticResource PrimaryLight}"/>
+                                    <Label Text="{Binding Title}" 
+                                           FontSize="Small" 
+                                           FontAttributes="Bold" 
+                                           LineBreakMode="TailTruncation"/>
+                                    <Label Text="{Binding AuthorName}" 
+                                           FontSize="Micro" 
+                                           TextColor="{StaticResource Gray600Light}"/>
+                                    <Label Text="{Binding Price, StringFormat='{0:C}'}" 
+                                           FontSize="Small" 
+                                           FontAttributes="Bold" 
+                                           TextColor="{StaticResource PrimaryLight}"/>
                                 </VerticalStackLayout>
                             </StackLayout>
+
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer 
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:BooksViewModel}}, Path=GoToBookDetailsCommand}"
+                                    CommandParameter="{Binding Id}"/>
+                            </Frame.GestureRecognizers>
                         </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
+
                 <CollectionView.EmptyView>
-                    <Label Text="No books found in this category." HorizontalOptions="Center" VerticalOptions="Center"/>
+                    <StackLayout Padding="20" HorizontalOptions="Center" VerticalOptions="Center">
+                        <Image Source="no_books.png" HeightRequest="100" Aspect="AspectFit"/>
+                        <!--<Label Text="{Binding HasError, Converter={StaticResource BoolToMessageConverter}, 
+                                      ConverterParameter='Error loading books|No books found'}" 
+                               FontSize="Medium" 
+                               HorizontalOptions="Center"/>-->
+                        <Button Text="Try Again" 
+                                Command="{Binding LoadBooksCommand}" 
+                                IsVisible="{Binding HasError}"
+                                Style="{StaticResource OutlineButton}"/>
+                    </StackLayout>
                 </CollectionView.EmptyView>
             </CollectionView>
         </RefreshView>
 
-        <Label Grid.Row="1" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}" VerticalOptions="Center" HorizontalOptions="Center"/>
-
+        <Label Grid.Row="1" 
+               Text="{Binding ErrorMessage}" 
+               Style="{StaticResource ErrorLabel}" 
+               IsVisible="{Binding HasError}" 
+               VerticalOptions="Center" 
+               HorizontalOptions="Center"/>
     </Grid>
 </ContentPage>

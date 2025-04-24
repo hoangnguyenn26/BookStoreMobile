@@ -15,7 +15,7 @@ namespace Bookstore.Mobile.Interfaces.Apis
             [Header("Authorization")] string? authorization = null);
 
         [Get("/v1/books/{id}")]
-        Task<ApiResponse<BookDto>> GetBookById(Guid id, [Header("Authorization")] string? authorization = null);
+        Task<ApiResponse<BookDto>> GetBookById(Guid id);
 
     }
 }

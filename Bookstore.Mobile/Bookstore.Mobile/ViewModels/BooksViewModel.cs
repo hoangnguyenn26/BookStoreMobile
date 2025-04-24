@@ -1,6 +1,7 @@
 ﻿// Bookstore.Mobile/ViewModels/BooksViewModel.cs
 using Bookstore.Mobile.Interfaces.Apis;
 using Bookstore.Mobile.Models;
+using Bookstore.Mobile.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
@@ -149,12 +150,13 @@ namespace Bookstore.Mobile.ViewModels
 
         // Command điều hướng đến chi tiết sách
         [RelayCommand]
-        private async Task GoToBookDetailsAsync(BookDto? selectedBook)
+        private async Task GoToBookDetailsAsync(Guid? bookId)
         {
-            if (selectedBook == null) return;
-            _logger.LogInformation("Navigating to Book Details for Id: {BookId}", selectedBook.Id);
-            //await Shell.Current.GoToAsync($"{nameof(BookDetailsPage)}?BookId={selectedBook.Id}");
-            // await _navigationService.NavigateToAsync(nameof(BookDetailsPage), new Dictionary<string, object> { { "BookId", selectedBook.Id } });
+            if (!bookId.HasValue || bookId.Value == Guid.Empty) return;
+            _logger.LogInformation("Navigating to Book Details for Id: {BookId}", bookId.Value);
+            // Dùng Shell Navigation để truyền tham số
+            await Shell.Current.GoToAsync($"{nameof(BookDetailsPage)}?BookId={bookId.Value}");
+            // await _navigationService.NavigateToAsync(nameof(BookDetailsPage), new Dictionary<string, object> { { "BookId", bookId.Value } });
         }
 
         public void OnAppearing()

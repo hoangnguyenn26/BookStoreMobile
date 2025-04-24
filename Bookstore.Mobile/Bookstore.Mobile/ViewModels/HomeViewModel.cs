@@ -2,6 +2,7 @@
 using Bookstore.Mobile.Interfaces.Apis;
 using Bookstore.Mobile.Interfaces.Services; // AuthService
 using Bookstore.Mobile.Models;
+using Bookstore.Mobile.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
@@ -43,7 +44,7 @@ namespace Bookstore.Mobile.ViewModels
 
         private void UpdateWelcomeMessage()
         {
-            IsLoggedIn = _authService.IsLoggedIn; // Cập nhật trạng thái đăng nhập
+            IsLoggedIn = _authService.IsLoggedIn;
             if (IsLoggedIn && _authService.CurrentUser != null)
             {
                 WelcomeMessage = $"Hi, {_authService.CurrentUser.FirstName ?? _authService.CurrentUser.UserName}!";
@@ -66,11 +67,11 @@ namespace Bookstore.Mobile.ViewModels
             try
             {
                 _logger.LogInformation("Loading dashboard data...");
-                var response = await _dashboardApi.GetHomeDashboard(); // Gọi API qua Refit
+                var response = await _dashboardApi.GetHomeDashboard();
 
                 if (response.IsSuccessStatusCode && response.Content != null)
                 {
-                    DashboardData = response.Content; // Gán dữ liệu vào property
+                    DashboardData = response.Content;
                     _logger.LogInformation("Dashboard data loaded successfully.");
                 }
                 else
@@ -100,7 +101,7 @@ namespace Bookstore.Mobile.ViewModels
             if (!bookId.HasValue || bookId.Value == Guid.Empty) return;
             _logger.LogInformation("Navigating to Book Details for Id: {BookId}", bookId.Value);
             // Dùng Shell Navigation để truyền tham số
-            //await Shell.Current.GoToAsync($"{nameof(BookDetailsPage)}?BookId={bookId.Value}");
+            await Shell.Current.GoToAsync($"{nameof(BookDetailsPage)}?BookId={bookId.Value}");
             // await _navigationService.NavigateToAsync(nameof(BookDetailsPage), new Dictionary<string, object> { { "BookId", bookId.Value } });
         }
 
@@ -110,22 +111,16 @@ namespace Bookstore.Mobile.ViewModels
         {
             if (!categoryId.HasValue || categoryId.Value == Guid.Empty) return;
             _logger.LogInformation("Navigating to Books Page for Category Id: {CategoryId}", categoryId.Value);
-            //await Shell.Current.GoToAsync($"{nameof(BooksPage)}?CategoryId={categoryId.Value}");
+            await Shell.Current.GoToAsync($"{nameof(BooksPage)}?CategoryId={categoryId.Value}");
             // await _navigationService.NavigateToAsync(nameof(BooksPage), new Dictionary<string, object> { { "CategoryId", categoryId.Value } });
         }
 
-        // Gọi LoadDashboardDataAsync khi ViewModel được tạo hoặc trang xuất hiện
-        // Có thể gọi trong constructor hoặc trong OnAppearing của Page
-        public void OnAppearing() // Tạo phương thức này để Page gọi
+        public void OnAppearing()
         {
-            // Cập nhật thông điệp chào mừng khi trang xuất hiện lại
             UpdateWelcomeMessage();
             // Chỉ tải dữ liệu nếu chưa có hoặc cần làm mới
-            if (DashboardData.NewestBooks.Count == 0) // Ví dụ kiểm tra đơn giản
+            if (DashboardData.NewestBooks.Count == 0)
             {
-                // Không await trực tiếp trong OnAppearing của ViewModel
-                // Task.Run(async () => await LoadDashboardDataAsync()); // Chạy bất đồng bộ
-                // Hoặc dùng Command để gọi từ OnAppearing của Page
                 LoadDashboardDataCommand.Execute(null);
             }
         }

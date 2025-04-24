@@ -1,7 +1,9 @@
 ﻿
+using Bookstore.Mobile.Handlers;
 using Bookstore.Mobile.Interfaces.Apis;
 using Bookstore.Mobile.Interfaces.Services;
 using Bookstore.Mobile.Mappings;
+using Bookstore.Mobile.Models;
 using Bookstore.Mobile.Services;
 using Bookstore.Mobile.ViewModels;
 using Bookstore.Mobile.Views;
@@ -61,12 +63,17 @@ namespace Bookstore.Mobile
             // ----- Register Services -----
             builder.Services.AddSingleton<IAuthService, AuthService>();
 
+            // Đăng ký Handler là Transient
+            builder.Services.AddTransient<AuthHeaderHandler>();
+
             // ----- Register ViewModels & Views (Transient) -----
             builder.Services.AddTransient<LoginViewModel>();
             builder.Services.AddTransient<RegisterViewModel>();
             builder.Services.AddTransient<HomeViewModel>();
             builder.Services.AddTransient<CategoriesViewModel>();
             builder.Services.AddTransient<BooksViewModel>();
+            builder.Services.AddTransient<BookDetailsViewModel>();
+
             // ... (Các ViewModel khác)
 
             builder.Services.AddTransient<LoginPage>();
@@ -74,6 +81,8 @@ namespace Bookstore.Mobile
             builder.Services.AddTransient<HomePage>();
             builder.Services.AddTransient<CategoriesPage>();
             builder.Services.AddTransient<BooksPage>();
+            builder.Services.AddTransient<BookDetailsPage>();
+
             // ... (Các View khác)
 
             return builder.Build();
@@ -89,12 +98,18 @@ namespace Bookstore.Mobile
 
             services.AddRefitClient<IAuthApi>(refitSettings)
                     .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
-            services.AddRefitClient<IBooksApi>(refitSettings)
-                    .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
             services.AddRefitClient<IDashboardApi>(refitSettings)
                     .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
             services.AddRefitClient<ICategoriesApi>(refitSettings)
                     .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
+
+            // --- Client CẦN Auth Header ---
+            var httpClientBuilderBooks = services.AddRefitClient<IBooksApi>(refitSettings)
+                   .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
+            httpClientBuilderBooks.AddHttpMessageHandler<AuthHeaderHandler>();
+            var httpClientBuilderWishlist = services.AddRefitClient<IWishlistApi>(refitSettings)
+                    .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
+            httpClientBuilderWishlist.AddHttpMessageHandler<AuthHeaderHandler>();
         }
     }
 

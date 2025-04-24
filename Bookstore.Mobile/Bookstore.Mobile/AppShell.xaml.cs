@@ -13,7 +13,7 @@ namespace Bookstore.Mobile
             Routing.RegisterRoute(nameof(HomePage), typeof(HomePage));
             Routing.RegisterRoute(nameof(BooksPage), typeof(BooksPage));
             Routing.RegisterRoute(nameof(CategoriesPage), typeof(CategoriesPage));
-            //Routing.RegisterRoute(nameof(BookDetailsPage), typeof(BookDetailsPage));
+            Routing.RegisterRoute(nameof(BookDetailsPage), typeof(BookDetailsPage));
             //Routing.RegisterRoute(nameof(AddressListPage), typeof(AddressListPage)); 
         }
         protected override async void OnHandlerChanged()
