@@ -54,6 +54,37 @@
                     </CollectionView.EmptyView>
                 </CollectionView>
 
+                <!-- THÊM PHẦN SÁCH BÁN CHẠY NHẤT -->
+                <Label Text="Bestsellers" Style="{StaticResource Headline}" FontSize="Large" Margin="0,15,0,0"/>
+                <CollectionView ItemsSource="{Binding DashboardData.BestSellingBooks}" HeightRequest="250">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <!-- Sử dụng cùng DataTemplate với Sách Mới Nhất hoặc tạo riêng nếu muốn khác -->
+                        <DataTemplate x:DataType="dto:BookSummaryDto">
+                            <Frame Style="{StaticResource CardFrame}" WidthRequest="150" Padding="0">
+                                <StackLayout>
+                                    <Image Source="{Binding CoverImageUrl, TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
+                                 Aspect="AspectFill" HeightRequest="150"/>
+                                    <VerticalStackLayout Padding="10" Spacing="4">
+                                        <Label Text="{Binding Title}" FontSize="Small" FontAttributes="Bold" LineBreakMode="TailTruncation"/>
+                                        <Label Text="{Binding AuthorName}" FontSize="Micro" TextColor="{StaticResource Gray600Light}"/>
+                                        <Label Text="{Binding Price, StringFormat='{0:C}'}" FontSize="Small" FontAttributes="Bold" TextColor="{StaticResource PrimaryLight}"/>
+                                    </VerticalStackLayout>
+                                </StackLayout>
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=GoToBookDetailsCommand}"
+                                                CommandParameter="{Binding Id}"/>
+                                </Frame.GestureRecognizers>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                    <CollectionView.EmptyView>
+                        <Label Text="Bestseller information is not available." HorizontalOptions="Center" VerticalOptions="Center" Margin="20"/>
+                    </CollectionView.EmptyView>
+                </CollectionView>
+
                 <!-- Phần Khuyến Mãi Đang Hoạt Động -->
                 <Label Text="Active Promotions" Style="{StaticResource Headline}" FontSize="Large" Margin="0,15,0,0"/>
                 <CollectionView ItemsSource="{Binding DashboardData.ActivePromotions}">
@@ -84,7 +115,7 @@
                 </CollectionView>
 
                 <!-- Phần Danh Mục Nổi Bật (Tùy chọn) -->
-                <Label Text="Featured Categories" Style="{StaticResource Headline}" FontSize="Large" Margin="0,15,0,0"/>
+                <Label Text="Featured Categories" Style="{StaticResource Headline}" FontSize="Large"/>
                 <CollectionView ItemsSource="{Binding DashboardData.FeaturedCategories}" HeightRequest="100">
                     <CollectionView.ItemsLayout>
                         <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
