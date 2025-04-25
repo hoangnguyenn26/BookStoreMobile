@@ -28,7 +28,7 @@
                     <Label.FormattedText>
                         <FormattedString>
                             <Span Text="by "/>
-                            <!--<Span Text="{Binding BookDetails.AuthorName, TargetNullValue='Unknown Author'}"/>-->
+                            <Span Text="{Binding BookDetails.Author.Name, TargetNullValue='Unknown Author'}"/>
                         </FormattedString>
                     </Label.FormattedText>
                 </Label>
@@ -50,7 +50,7 @@
                             IsEnabled="{Binding IsNotBusy}"
                             BackgroundColor="{StaticResource Transparent}"
                             BorderColor="{StaticResource PrimaryLight}"
-                            BorderWidth="1"
+                            BorderWidth="2"
                             Padding="10">
                         <Button.ImageSource>
                             <FontImageSource Glyph="{Binding IsInWishlist, Converter={StaticResource BoolToWishlistIconConverter}}"

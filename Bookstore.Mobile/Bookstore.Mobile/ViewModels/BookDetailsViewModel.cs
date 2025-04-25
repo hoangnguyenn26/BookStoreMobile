@@ -10,7 +10,7 @@ using System.Collections.ObjectModel;
 
 namespace Bookstore.Mobile.ViewModels
 {
-    [QueryProperty(nameof(BookId), "BookId")]
+    [QueryProperty(nameof(BookIdQueryParam), "BookId")]
     public partial class BookDetailsViewModel : BaseViewModel
     {
         private readonly IBooksApi _booksApi;
@@ -30,7 +30,14 @@ namespace Bookstore.Mobile.ViewModels
         }
 
         [ObservableProperty]
-        private Guid _bookId;
+        private string? _bookIdQueryParam;
+
+        private Guid _actualBookId;
+        public Guid ActualBookId
+        {
+            get => _actualBookId;
+            private set => SetProperty(ref _actualBookId, value);
+        }
 
         [ObservableProperty]
         private BookDto? _bookDetails;
@@ -51,11 +58,23 @@ namespace Bookstore.Mobile.ViewModels
         private ObservableCollection<KeyValuePair<string, string>> _bookDetailItems;
 
 
-        async partial void OnBookIdChanged(Guid value)
+        async partial void OnBookIdQueryParamChanged(string? value)
         {
-            if (value != Guid.Empty)
+            _logger.LogInformation("BookId query parameter received: {QueryParamValue}", value ?? "NULL");
+            if (!string.IsNullOrEmpty(value) && Guid.TryParse(value, out Guid parsedGuid))
             {
+                ActualBookId = parsedGuid;
+                Title = "Loading...";
+                _logger.LogInformation("Parsed BookId: {ParsedBookId}. Loading details...", ActualBookId);
                 await LoadBookDetailsAsync();
+            }
+            else
+            {
+                _logger.LogWarning("Failed to parse BookId from query parameter: {QueryParamValue}", value ?? "NULL");
+                ErrorMessage = "Invalid Book Identifier received.";
+                ActualBookId = Guid.Empty;
+                BookDetails = null;
+                OnPropertyChanged(nameof(ShowContent));
             }
         }
 
@@ -63,7 +82,7 @@ namespace Bookstore.Mobile.ViewModels
         [RelayCommand]
         private async Task LoadBookDetailsAsync()
         {
-            if (IsBusy || BookId == Guid.Empty) return;
+            if (IsBusy || ActualBookId == Guid.Empty) return;
             IsBusy = true;
             ErrorMessage = null;
             BookDetails = null;
@@ -72,41 +91,34 @@ namespace Bookstore.Mobile.ViewModels
 
             try
             {
-                _logger.LogInformation("Loading book details for Id: {BookId}", BookId);
-
-                // Gọi API lấy chi tiết sách
-                var bookResponse = await _booksApi.GetBookById(BookId);
+                _logger.LogInformation("Loading book details for ActualBookId: {BookId}", ActualBookId);
+                var bookResponse = await _booksApi.GetBookById(ActualBookId);
 
                 if (bookResponse.IsSuccessStatusCode && bookResponse.Content != null)
                 {
                     BookDetails = bookResponse.Content;
                     Title = BookDetails.Title;
-
                     PrepareDetailItems();
-
-                    if (_authService.IsLoggedIn)
-                    {
-                        await CheckWishlistStatusAsync();
-                    }
-                    _logger.LogInformation("Book details loaded successfully.");
+                    if (_authService.IsLoggedIn) { await CheckWishlistStatusAsync(); }
+                    _logger.LogInformation("Book details loaded successfully for ActualBookId: {BookId}.", ActualBookId);
                 }
                 else
                 {
                     string errorContent = bookResponse.Error?.Content ?? bookResponse.ReasonPhrase ?? "Failed to load book details.";
 
                     ErrorMessage = $"Error: {errorContent}";
-                    _logger.LogWarning("Failed to load book details for Id {BookId}. Status: {StatusCode}, Reason: {Reason}", BookId, bookResponse.StatusCode, ErrorMessage);
+                    _logger.LogWarning("Failed to load book details for ActualBookId {BookId}. Status: {StatusCode}, Reason: {Reason}", ActualBookId, bookResponse.StatusCode, ErrorMessage);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception while loading book details for Id: {BookId}", BookId);
+                _logger.LogError(ex, "Exception while loading book details for ActualBookId: {BookId}", ActualBookId);
                 ErrorMessage = $"An unexpected error occurred: {ex.Message}";
             }
             finally
             {
                 IsBusy = false;
-                // Thông báo thay đổi cho các thuộc tính tính toán
+
                 OnPropertyChanged(nameof(ShowContent));
             }
         }
@@ -116,13 +128,13 @@ namespace Bookstore.Mobile.ViewModels
         {
             try
             {
-                _logger.LogInformation("Checking wishlist status for Book {BookId}", BookId);
+                _logger.LogInformation("Checking wishlist status for Book {ActualBookId}", ActualBookId);
                 // Gọi API lấy toàn bộ wishlist và kiểm tra (nếu không có API check riêng)
                 var wishlistResponse = await _wishlistApi.GetWishlist();
                 if (wishlistResponse.IsSuccessStatusCode && wishlistResponse.Content != null)
                 {
-                    IsInWishlist = wishlistResponse.Content.Any(item => item.BookId == BookId);
-                    _logger.LogInformation("Wishlist status for Book {BookId}: {IsInWishlist}", BookId, IsInWishlist);
+                    IsInWishlist = wishlistResponse.Content.Any(item => item.BookId == ActualBookId);
+                    _logger.LogInformation("Wishlist status for Book {ActualBookId}: {IsInWishlist}", ActualBookId, IsInWishlist);
                 }
                 else
                 {
@@ -131,7 +143,7 @@ namespace Bookstore.Mobile.ViewModels
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception while checking wishlist status for Book {BookId}", BookId);
+                _logger.LogError(ex, "Exception while checking wishlist status for Book {ActualBookId}", ActualBookId);
                 // Mặc định là false nếu có lỗi
                 IsInWishlist = false;
             }
@@ -158,19 +170,19 @@ namespace Bookstore.Mobile.ViewModels
                 ApiResponse<object>? response;
                 if (IsInWishlist)
                 {
-                    _logger.LogInformation("Removing book {BookId} from wishlist for User {UserId}", BookId, _authService.CurrentUser?.Id);
-                    response = await _wishlistApi.RemoveFromWishlist(BookId);
+                    _logger.LogInformation("Removing book {BookId} from wishlist for User {UserId}", ActualBookId, _authService.CurrentUser?.Id);
+                    response = await _wishlistApi.RemoveFromWishlist(ActualBookId);
                 }
                 else
                 {
-                    _logger.LogInformation("Adding book {BookId} to wishlist for User {UserId}", BookId, _authService.CurrentUser?.Id);
-                    response = await _wishlistApi.AddToWishlist(BookId);
+                    _logger.LogInformation("Adding book {BookId} to wishlist for User {UserId}", ActualBookId, _authService.CurrentUser?.Id);
+                    response = await _wishlistApi.AddToWishlist(ActualBookId);
                 }
 
                 if (response.IsSuccessStatusCode)
                 {
                     IsInWishlist = !IsInWishlist;
-                    _logger.LogInformation("Wishlist status toggled successfully for Book {BookId}. New status: {IsInWishlist}", BookId, IsInWishlist);
+                    _logger.LogInformation("Wishlist status toggled successfully for Book {ActualBookId}. New status: {IsInWishlist}", ActualBookId, IsInWishlist);
                 }
                 else
                 {
@@ -178,13 +190,13 @@ namespace Bookstore.Mobile.ViewModels
                          ?? response.ReasonPhrase
                          ?? "Failed to update wishlist.";
                     ErrorMessage = $"Error: {errorContent}";
-                    _logger.LogWarning("Failed to toggle wishlist for Book {BookId}. Status: {StatusCode}, Reason: {Reason}", BookId, response.StatusCode, ErrorMessage);
+                    _logger.LogWarning("Failed to toggle wishlist for Book {ActualBookId}. Status: {StatusCode}, Reason: {Reason}", ActualBookId, response.StatusCode, ErrorMessage);
                     await DisplayAlertAsync("Error", ErrorMessage);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception while toggling wishlist for Book {BookId}", BookId);
+                _logger.LogError(ex, "Exception while toggling wishlist for Book {ActualBookId}", ActualBookId);
                 ErrorMessage = $"An unexpected error occurred: {ex.Message}";
                 await DisplayAlertAsync("Error", ErrorMessage);
             }
@@ -199,7 +211,7 @@ namespace Bookstore.Mobile.ViewModels
         private async Task AddToCartAsync()
         {
             if (BookDetails == null) return;
-            _logger.LogInformation("Add to cart clicked for Book {BookId}", BookId);
+            _logger.LogInformation("Add to cart clicked for Book {ActualBookId}", ActualBookId);
             //Implement Cart Logic
             int quantityToAdd = 1;
             // bool success = await _cartService.AddItemAsync(BookId, quantityToAdd);
