@@ -15,15 +15,17 @@ namespace Bookstore.Mobile.ViewModels
     {
         private readonly IBooksApi _booksApi;
         private readonly IWishlistApi _wishlistApi;
+        private readonly ICartApi _cartApi;
         private readonly IAuthService _authService;
         private readonly ILogger<BookDetailsViewModel> _logger;
-        // private readonly ICartService _cartService; // Sẽ inject sau
+        //private readonly ICartService _cartService; // Sẽ inject sau
 
-        public BookDetailsViewModel(IBooksApi booksApi, IWishlistApi wishlistApi, IAuthService authService, ILogger<BookDetailsViewModel> logger)
+        public BookDetailsViewModel(IBooksApi booksApi, IWishlistApi wishlistApi, ICartApi cartApi, IAuthService authService, ILogger<BookDetailsViewModel> logger)
         {
             _booksApi = booksApi;
             _wishlistApi = wishlistApi;
             _authService = authService;
+            _cartApi = cartApi;
             _logger = logger;
             Title = "Book Details";
             BookDetailItems = new ObservableCollection<KeyValuePair<string, string>>();
@@ -83,7 +85,6 @@ namespace Bookstore.Mobile.ViewModels
         private async Task LoadBookDetailsAsync()
         {
             if (IsBusy || ActualBookId == Guid.Empty) return;
-            IsBusy = true;
             ErrorMessage = null;
             BookDetails = null;
             BookDetailItems.Clear();
@@ -210,12 +211,41 @@ namespace Bookstore.Mobile.ViewModels
         [RelayCommand(CanExecute = nameof(CanAddToCart))]
         private async Task AddToCartAsync()
         {
-            if (BookDetails == null) return;
-            _logger.LogInformation("Add to cart clicked for Book {ActualBookId}", ActualBookId);
-            //Implement Cart Logic
-            int quantityToAdd = 1;
-            // bool success = await _cartService.AddItemAsync(BookId, quantityToAdd);
-            await DisplayAlertAsync("Add to Cart", $"Logic for adding {quantityToAdd} of '{BookDetails.Title}' to cart - To be implemented.", "OK");
+            if (BookDetails == null || IsBusy) return;
+
+            IsBusy = true;
+            ErrorMessage = null;
+            try
+            {
+                _logger.LogInformation("Adding Book {BookId} to cart from details page.", BookIdQueryParam);
+                // Tạo DTO để gửi đi (mặc định số lượng là 1)
+                var addItemDto = new AddCartItemDto { BookId = ActualBookId, Quantity = 1 };
+
+                var response = await _cartApi.AddOrUpdateItem(addItemDto);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    _logger.LogInformation("Book {BookId} added/updated in cart successfully.", BookIdQueryParam);
+                    await DisplayAlertAsync("Success", $"'{BookDetails.Title}' added to cart.", "OK");
+                }
+                else
+                {
+                    string errorContent = response.Error?.Content ?? response.ReasonPhrase ?? "Failed to add to cart.";
+                    ErrorMessage = $"Error: {errorContent}";
+                    _logger.LogWarning("Failed to add Book {BookId} to cart. Status: {StatusCode}, Reason: {Reason}", BookIdQueryParam, response.StatusCode, ErrorMessage);
+                    await DisplayAlertAsync("Error", ErrorMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception while adding Book {BookId} to cart.", BookIdQueryParam);
+                ErrorMessage = $"An unexpected error occurred: {ex.Message}";
+                await DisplayAlertAsync("Error", ErrorMessage);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
 

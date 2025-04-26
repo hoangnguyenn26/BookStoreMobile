@@ -139,8 +139,7 @@ namespace Bookstore.Mobile.ViewModels
         [RelayCommand]
         private async Task LoadMoreBooksAsync()
         {
-            if (_isLoadingMore || !_canLoadMore) return; // Ngăn gọi liên tục
-
+            if (_isLoadingMore || !_canLoadMore) return;
             _isLoadingMore = true;
             _logger.LogInformation("LoadMoreBooksCommand triggered.");
             await LoadBooksAsync(isRefreshing: false);
@@ -154,7 +153,6 @@ namespace Bookstore.Mobile.ViewModels
         {
             if (!bookId.HasValue || bookId.Value == Guid.Empty) return;
             _logger.LogInformation("Navigating to Book Details for Id: {BookId}", bookId.Value);
-            // Dùng Shell Navigation để truyền tham số
             await Shell.Current.GoToAsync($"{nameof(BookDetailsPage)}?BookId={bookId.Value}");
             // await _navigationService.NavigateToAsync(nameof(BookDetailsPage), new Dictionary<string, object> { { "BookId", bookId.Value } });
         }

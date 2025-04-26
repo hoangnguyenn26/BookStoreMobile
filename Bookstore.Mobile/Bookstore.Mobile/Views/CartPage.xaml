@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
+             xmlns:dto_cart="clr-namespace:Bookstore.Mobile.Models"
+             x:DataType="vm:CartViewModel"
+             x:Class="Bookstore.Mobile.Views.CartPage"
+             Title="{Binding Title}">
+
+    <Grid RowDefinitions="*, Auto">
+
+        <!-- Loading/Error Indicator -->
+        <ActivityIndicator Grid.Row="0" Grid.RowSpan="2" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center"/>
+        <Label Grid.Row="0" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}" VerticalOptions="Center" HorizontalOptions="Center"/>
+
+        <!-- Danh sách Items trong Giỏ hàng -->
+        <CollectionView Grid.Row="0"
+                         ItemsSource="{Binding CartItems}"
+                         IsVisible="{Binding ShowContent}"
+                         Margin="10">
+            <CollectionView.EmptyView>
+                <StackLayout Padding="50" HorizontalOptions="Center" VerticalOptions="Center">
+                    <Label Text="Your cart is empty." FontSize="Large" HorizontalOptions="Center"/>
+                    <Button Text="Go Shopping" Command="{Binding GoShoppingCommand}" HorizontalOptions="Center" Margin="0,20,0,0"/>
+                </StackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="dto_cart:CartItemDto">
+                    <Border Style="{StaticResource CardBorder}" Padding="10" Margin="0,0,0,10">
+                        <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
+                            <!-- Ảnh sách -->
+                            <Image Grid.Column="0" Source="{Binding Book.CoverImageUrl, TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
+                                     Aspect="AspectFill" WidthRequest="80" HeightRequest="100"/>
+
+                            <!-- Thông tin sách và Số lượng -->
+                            <VerticalStackLayout Grid.Column="1" Spacing="5">
+                                <Label Text="{Binding Book.Title}" FontAttributes="Bold" LineBreakMode="TailTruncation"/>
+                                <Label Text="{Binding Book.Author.Name}" FontSize="Small"/>
+                                <!-- Giả sử BookDto có AuthorName -->
+                                <Label Text="{Binding Book.Price, StringFormat='{0:C}'}" FontAttributes="Bold"/>
+
+                                <!-- Khu vực chỉnh số lượng -->
+                                <HorizontalStackLayout Spacing="10" VerticalOptions="End">
+                                    <Button Text="-" Padding="10,5" MinimumWidthRequest="40" HeightRequest="40" CornerRadius="20"
+                                               Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CartViewModel}}, Path=DecreaseQuantityCommand}"
+                                               CommandParameter="{Binding .}"/>
+                                    <Label Text="{Binding Quantity}" VerticalOptions="Center" FontSize="Medium" WidthRequest="30" HorizontalTextAlignment="Center"/>
+                                    <Button Text="+" Padding="10,5" MinimumWidthRequest="40" HeightRequest="40" CornerRadius="20"
+                                               Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CartViewModel}}, Path=IncreaseQuantityCommand}"
+                                               CommandParameter="{Binding .}"/>
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+
+                            <!-- Giá tiền Item và Nút Xóa -->
+                            <VerticalStackLayout Grid.Column="2" Spacing="5" HorizontalOptions="End">
+                                <Label Text="{Binding TotalItemPrice, StringFormat='{0:C}'}" FontAttributes="Bold" HorizontalTextAlignment="End"/>
+                                <Button BackgroundColor="Transparent" Padding="0"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CartViewModel}}, Path=RemoveItemCommand}"
+                                            CommandParameter="{Binding .}">
+                                    <Button.ImageSource>
+                                        <FontImageSource Glyph="" FontFamily="MaterialSymbolsRounded" Color="{StaticResource ErrorLight}"/>
+                                    </Button.ImageSource>
+                                </Button>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+
+        <!-- Phần Tổng tiền và Checkout -->
+        <Border Grid.Row="1" StrokeThickness="1" Stroke="LightGray" Padding="15" Margin="10,0,10,10"
+                 IsVisible="{Binding HasItems}">
+            <!-- Chỉ hiển thị khi có hàng -->
+            <VerticalStackLayout Spacing="10">
+                <Grid ColumnDefinitions="*, Auto">
+                    <Label Text="Subtotal:" FontSize="Medium" VerticalOptions="Center"/>
+                    <Label Grid.Column="1" Text="{Binding Subtotal, StringFormat='{0:C}'}" FontSize="Medium" FontAttributes="Bold" VerticalOptions="Center"/>
+                </Grid>
+                <!-- Có thể thêm thông tin về Khuyến mãi đã áp dụng ở đây -->
+                <Button Text="Clear Cart" Command="{Binding ClearCartCommand}" Style="{StaticResource OutlineButton}" HorizontalOptions="FillAndExpand"/>
+                <Button Text="Proceed to Checkout" Command="{Binding GoToCheckoutCommand}" IsEnabled="{Binding IsNotBusy}" HorizontalOptions="FillAndExpand"/>
+            </VerticalStackLayout>
+        </Border>
+
+    </Grid>
+</ContentPage>

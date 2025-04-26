@@ -36,37 +36,17 @@
                                WidthRequest="160" 
                                Padding="0">
                             <StackLayout>
-                                <Image Source="{Binding CoverImageUrl}"
-                                       Aspect="AspectFill" 
-                                       HeightRequest="150">
-                                    <Image.Triggers>
-                                        <DataTrigger TargetType="Image" 
-                                                    Binding="{Binding CoverImageUrl}" 
-                                                    Value="{x:Null}">
-                                            <Setter Property="Source" Value="placeholder_book.png"/>
-                                        </DataTrigger>
-                                    </Image.Triggers>
-                                </Image>
-
+                                <Image Source="{Binding CoverImageUrl, TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
+            Aspect="AspectFill" HeightRequest="150"/>
                                 <VerticalStackLayout Padding="10" Spacing="4">
-                                    <Label Text="{Binding Title}" 
-                                           FontSize="Small" 
-                                           FontAttributes="Bold" 
-                                           LineBreakMode="TailTruncation"/>
-                                    <Label Text="{Binding AuthorName}" 
-                                           FontSize="Micro" 
-                                           TextColor="{StaticResource Gray600Light}"/>
-                                    <Label Text="{Binding Price, StringFormat='{0:C}'}" 
-                                           FontSize="Small" 
-                                           FontAttributes="Bold" 
-                                           TextColor="{StaticResource PrimaryLight}"/>
+                                    <Label Text="{Binding Title}" FontSize="Small" FontAttributes="Bold" LineBreakMode="TailTruncation"/>
+                                    <Label Text="{Binding Author.Name}" FontSize="Micro" TextColor="{StaticResource Gray600Light}"/>
+                                    <Label Text="{Binding Price, StringFormat='{0:C}'}" FontSize="Small" FontAttributes="Bold" TextColor="{StaticResource PrimaryLight}"/>
                                 </VerticalStackLayout>
                             </StackLayout>
-
                             <Frame.GestureRecognizers>
-                                <TapGestureRecognizer 
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:BooksViewModel}}, Path=GoToBookDetailsCommand}"
-                                    CommandParameter="{Binding Id}"/>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=GoToBookDetailsCommand}"
+                                CommandParameter="{Binding Id}"/>
                             </Frame.GestureRecognizers>
                         </Frame>
                     </DataTemplate>
@@ -75,10 +55,10 @@
                 <CollectionView.EmptyView>
                     <StackLayout Padding="20" HorizontalOptions="Center" VerticalOptions="Center">
                         <Image Source="no_books.png" HeightRequest="100" Aspect="AspectFit"/>
-                        <!--<Label Text="{Binding HasError, Converter={StaticResource BoolToMessageConverter}, 
+                        <Label Text="{Binding HasError, Converter={StaticResource BoolToMessageConverter}, 
                                       ConverterParameter='Error loading books|No books found'}" 
                                FontSize="Medium" 
-                               HorizontalOptions="Center"/>-->
+                               HorizontalOptions="Center"/>
                         <Button Text="Try Again" 
                                 Command="{Binding LoadBooksCommand}" 
                                 IsVisible="{Binding HasError}"
