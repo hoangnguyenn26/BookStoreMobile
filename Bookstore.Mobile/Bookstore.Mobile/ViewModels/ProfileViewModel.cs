@@ -78,7 +78,7 @@ namespace Bookstore.Mobile.ViewModels
         private async Task GoToAddressesAsync()
         {
             _logger.LogInformation("Navigating to Address List Page.");
-            //await Shell.Current.GoToAsync(nameof(AddressListPage));
+            await Shell.Current.GoToAsync(nameof(AddressListPage));
             // await _navigationService.NavigateToAsync(nameof(AddressListPage));
         }
 

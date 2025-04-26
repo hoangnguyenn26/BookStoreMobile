@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
+             xmlns:dto="clr-namespace:Bookstore.Mobile.Models"
+             x:DataType="vm:AddressListViewModel"
+             x:Class="Bookstore.Mobile.Views.AddressListPage"
+             Title="{Binding Title}">
+
+    <Grid RowDefinitions="Auto, *">
+        <!-- Thanh tiêu đề với nút Thêm mới -->
+        <Grid Grid.Row="0" Padding="15,10" ColumnDefinitions="*,Auto">
+            <Label Text="My Addresses" Style="{StaticResource Headline}" VerticalOptions="Center"/>
+            <Button Grid.Column="1" Text="+" FontFamily="MaterialSymbolsRounded" FontSize="Large"
+                    Command="{Binding GoToAddAddressCommand}" Style="{StaticResource TextButton}"/>
+        </Grid>
+
+        <ActivityIndicator Grid.Row="0" Grid.RowSpan="2" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center"/>
+        <Label Grid.Row="1" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}" VerticalOptions="Center" HorizontalOptions="Center"/>
+
+        <RefreshView Grid.Row="1" Command="{Binding LoadAddressesCommand}" IsRefreshing="{Binding IsBusy}" IsVisible="{Binding ShowContent}">
+            <CollectionView ItemsSource="{Binding Addresses}"
+                            SelectionMode="None"
+                Margin="10">
+                <CollectionView.EmptyView>
+                    <StackLayout Padding="50" HorizontalOptions="Center" VerticalOptions="Center">
+                        <Label Text="You haven't added any addresses yet." FontSize="Medium" HorizontalOptions="Center"/>
+                        <Button Text="Add New Address" Command="{Binding GoToAddAddressCommand}" HorizontalOptions="Center" Margin="0,20,0,0"/>
+                    </StackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="dto:AddressDto">
+                        <Border Style="{StaticResource CardBorder}" Padding="15" Margin="0,0,0,10">
+                            <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="*, Auto" RowSpacing="8" ColumnSpacing="10">
+                                <!-- Cột 0: Thông tin địa chỉ -->
+                                <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="4">
+                                    <Label Text="{Binding Street}" FontAttributes="Bold"/>
+                                    <Label Text="{Binding Village}"/>
+                                    <Label Text="{Binding District}"/>
+                                    <Label Text="{Binding City}"/>
+                                </VerticalStackLayout>
+
+                                <!-- Cột 0: Nút Đặt làm mặc định (nếu chưa phải mặc định) -->
+                                <Button Grid.Row="1" Grid.Column="0" Text="Set as Default" FontSize="Small" HorizontalOptions="Start" Padding="8,4" HeightRequest="35"
+                                         IsVisible="{Binding IsDefault, Converter={StaticResource InverseBoolConverter}}"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AddressListViewModel}}, Path=SetDefaultCommand}"
+                                         CommandParameter="{Binding Id}"/>
+
+                                    <!-- Cột 1: Trạng thái Mặc định và Nút Sửa/Xóa -->
+                                    <Label Grid.Row="0" Grid.Column="1" Text="Default" TextColor="{StaticResource SuccessLight}" FontAttributes="Bold"
+                                        IsVisible="{Binding IsDefault}" VerticalOptions="Start"/>
+
+                                    <HorizontalStackLayout Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Spacing="5" VerticalOptions="End" HorizontalOptions="End">
+                                        <Button BackgroundColor="Transparent" Padding="0"
+                                               Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AddressListViewModel}}, Path=GoToEditAddressCommand}"
+                                               CommandParameter="{Binding Id}">
+                                            <Button.ImageSource>
+                                                <FontImageSource Glyph="" FontFamily="MaterialSymbolsRounded" Color="{AppThemeBinding Light={StaticResource Gray600Light}, Dark={StaticResource Gray300Dark}}"/>
+                                                <!-- Icon Edit -->
+                                            </Button.ImageSource>
+                                        </Button>
+                                        <Button BackgroundColor="Transparent" Padding="0"
+                                              Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AddressListViewModel}}, Path=DeleteAddressCommand}"
+                                              CommandParameter="{Binding Id}">
+                                            <Button.ImageSource>
+                                                <FontImageSource Glyph="" FontFamily="MaterialSymbolsRounded" Color="{StaticResource ErrorLight}"/>
+                                                <!-- Icon Delete -->
+                                            </Button.ImageSource>
+                                        </Button>
+                                    </HorizontalStackLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+</ContentPage>

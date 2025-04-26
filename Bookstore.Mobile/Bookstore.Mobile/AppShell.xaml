@@ -41,9 +41,7 @@
 
     <!-- Mục chỉ hiển thị khi đăng nhập (sẽ xử lý logic sau) -->
     <FlyoutItem Title="My Profile" Icon="profile.png">
-        <ShellContent Title="Profile"
-                       ContentTemplate="{DataTemplate views:ProfilePage}"
-                       Route="ProfilePage" />
+        <ShellContent Title="Profile" ContentTemplate="{DataTemplate views:ProfilePage}" Route="ProfilePage" />
     </FlyoutItem>
 
     <!-- Các trang không hiện trong Flyout nhưng có thể điều hướng tới -->
@@ -63,14 +61,17 @@
                    ContentTemplate="{DataTemplate views:BooksPage}"
                    Route="BooksPage"
                    Shell.FlyoutItemIsVisible="False"/>
-    <!-- Trang sách sẽ được điều hướng tới --><!--
+    <!-- Trang sách sẽ được điều hướng tới -->
 
     <ShellContent Title="Book Details"
                    ContentTemplate="{DataTemplate views:BookDetailsPage}"
                    Route="BookDetailsPage"
-                   Shell.FlyoutItemIsVisible="False"/>-->
+                   Shell.FlyoutItemIsVisible="False"/>
 
-    <!-- Thêm các trang khác: AddressList, OrderHistory, OrderDetails, Checkout... -->
+    <ShellContent Title="My Addresses"
+               ContentTemplate="{DataTemplate views:AddressListPage}"
+               Route="AddressListPage"
+               Shell.FlyoutItemIsVisible="False"/>
 
 
 </Shell>
