@@ -39,12 +39,12 @@
                        Route="CartPage" />
     </FlyoutItem>
 
-    <!-- Mục chỉ hiển thị khi đăng nhập (sẽ xử lý logic sau) --><!--
+    <!-- Mục chỉ hiển thị khi đăng nhập (sẽ xử lý logic sau) -->
     <FlyoutItem Title="My Profile" Icon="profile.png">
         <ShellContent Title="Profile"
                        ContentTemplate="{DataTemplate views:ProfilePage}"
                        Route="ProfilePage" />
-    </FlyoutItem>-->
+    </FlyoutItem>
 
     <!-- Các trang không hiện trong Flyout nhưng có thể điều hướng tới -->
     <ShellContent Title="Login"

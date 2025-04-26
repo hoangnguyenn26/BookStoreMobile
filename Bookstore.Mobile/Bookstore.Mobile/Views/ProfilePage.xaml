@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
+             x:DataType="vm:ProfileViewModel"
+             x:Class="Bookstore.Mobile.Views.ProfilePage"
+             Title="{Binding Title}">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="15" Padding="20">
+
+            <Label Text="My Profile" Style="{StaticResource Headline}" HorizontalOptions="Center" Margin="0,10,0,20"/>
+
+            <!-- Phần Thông tin User -->
+            <Frame Style="{StaticResource CardFrame}">
+                <VerticalStackLayout Spacing="10">
+                    <Label>
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Username: " FontAttributes="Bold"/>
+                                <Span Text="{Binding UserName}"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Label>
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Email: " FontAttributes="Bold"/>
+                                <Span Text="{Binding Email}"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Label>
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Full Name: " FontAttributes="Bold"/>
+                                <Span Text="{Binding FullName}"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Label>
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Phone: " FontAttributes="Bold"/>
+                                <Span Text="{Binding PhoneNumber, TargetNullValue='Not Provided'}"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <!-- Nút chỉnh sửa (Tạm thời disable hoặc ẩn) -->
+                     <Button Text="Edit Profile" IsEnabled="False" HorizontalOptions="End" Margin="0,10,0,0"/> 
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Các liên kết điều hướng -->
+            <Frame Style="{StaticResource CardFrame}">
+                <VerticalStackLayout Spacing="0">
+                    <Grid Padding="15,10" ColumnDefinitions="*,Auto">
+                        <Label Text="Manage Addresses" VerticalOptions="Center"/>
+                        <Label Grid.Column="1" Text=">" Style="{StaticResource SubHeadline}" VerticalOptions="Center"/>
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding GoToAddressesCommand}"/>
+                        </Grid.GestureRecognizers>
+                    </Grid>
+                    <BoxView HeightRequest="1" Color="{StaticResource SurfaceVariantLight}"/>
+                    <!-- Đường kẻ -->
+                    <Grid Padding="15,10" ColumnDefinitions="*,Auto">
+                        <Label Text="Order History" VerticalOptions="Center"/>
+                        <Label Grid.Column="1" Text=">" Style="{StaticResource SubHeadline}" VerticalOptions="Center"/>
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding GoToOrderHistoryCommand}"/>
+                        </Grid.GestureRecognizers>
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+
+
+            <!-- Nút Đăng xuất -->
+            <Button Text="Logout"
+                    Command="{Binding LogoutCommand}"
+                    BackgroundColor="{StaticResource ErrorLight}" 
+                IsEnabled="{Binding IsNotBusy}"
+                    Margin="0,30,0,0"/>
+
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

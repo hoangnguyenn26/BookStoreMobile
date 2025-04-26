@@ -74,6 +74,7 @@ namespace Bookstore.Mobile
             builder.Services.AddTransient<BooksViewModel>();
             builder.Services.AddTransient<BookDetailsViewModel>();
             builder.Services.AddTransient<CartViewModel>();
+            builder.Services.AddTransient<ProfileViewModel>();
 
             // ... (Các ViewModel khác)
 
@@ -84,6 +85,7 @@ namespace Bookstore.Mobile
             builder.Services.AddTransient<BooksPage>();
             builder.Services.AddTransient<BookDetailsPage>();
             builder.Services.AddTransient<CartPage>();
+            builder.Services.AddTransient<ProfilePage>();
 
             // ... (Các View khác)
 
