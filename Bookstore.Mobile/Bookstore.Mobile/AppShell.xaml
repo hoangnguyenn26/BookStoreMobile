@@ -30,14 +30,14 @@
     <!--<FlyoutItem Title="My Wishlist" Icon="wishlist.png">
         <ShellContent Title="Wishlist"
                        ContentTemplate="{DataTemplate views:WishlistPage}"
-                       Route="WishlistPage" />
-    </FlyoutItem>
+                       Route="WishlistPage" 
+    </FlyoutItem> />-->
 
     <FlyoutItem Title="My Cart" Icon="cart.png">
         <ShellContent Title="Cart"
                        ContentTemplate="{DataTemplate views:CartPage}"
                        Route="CartPage" />
-    </FlyoutItem>-->
+    </FlyoutItem>
 
     <!-- Mục chỉ hiển thị khi đăng nhập (sẽ xử lý logic sau) --><!--
     <FlyoutItem Title="My Profile" Icon="profile.png">

@@ -92,54 +92,168 @@ namespace Bookstore.Mobile.ViewModels
         private async Task IncreaseQuantityAsync(CartItemDto? item)
         {
             if (item == null || IsBusy) return;
-            _logger.LogInformation("IncreaseQuantityCommand for BookId {BookId}", item.BookId);
-            //Gọi API PUT /api/v1/cart/items/{bookId} để cập nhật số lượng (+1)
-            // Tạm thời tăng số lượng trên UI và tính lại tổng tiền
-            item.Quantity++;
-            OnPropertyChanged(nameof(item.Quantity));
-            OnPropertyChanged(nameof(item.TotalItemPrice));
-            CalculateSubtotal();
-            await Task.CompletedTask;
+
+            IsBusy = true; // Bắt đầu xử lý
+            ErrorMessage = null;
+            try
+            {
+                _logger.LogInformation("Increasing quantity for BookId {BookId}", item.BookId);
+                var updateDto = new UpdateCartItemDto { Quantity = item.Quantity + 1 };
+
+                var response = await _cartApi.UpdateItemQuantity(item.BookId, updateDto);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    _logger.LogInformation("Quantity increased successfully for BookId {BookId}", item.BookId);
+                    item.Quantity++;
+                    CalculateSubtotal();
+                }
+                else
+                {
+                    string errorContent = response.Error?.Content ?? response.ReasonPhrase ?? "Failed to update quantity.";
+                    ErrorMessage = $"Error: {errorContent}";
+                    _logger.LogWarning("Failed to increase quantity for BookId {BookId}. Status: {StatusCode}, Reason: {Reason}", item.BookId, response.StatusCode, ErrorMessage);
+                    await DisplayAlertAsync("Error", $"Could not update quantity for {item.Book.Title}: {ErrorMessage}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception while increasing quantity for BookId {BookId}", item.BookId);
+                ErrorMessage = $"An unexpected error occurred: {ex.Message}";
+                await DisplayAlertAsync("Error", ErrorMessage);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         [RelayCommand]
         private async Task DecreaseQuantityAsync(CartItemDto? item)
         {
             if (item == null || IsBusy || item.Quantity <= 1) return;
-            _logger.LogInformation("DecreaseQuantityCommand for BookId {BookId}", item.BookId);
-            // Gọi API PUT /api/v1/cart/items/{bookId} để cập nhật số lượng (-1)
-            // Tạm thời giảm số lượng trên UI
-            item.Quantity--;
-            OnPropertyChanged(nameof(item.Quantity));
-            OnPropertyChanged(nameof(item.TotalItemPrice));
-            CalculateSubtotal();
-            await Task.CompletedTask;
+
+            IsBusy = true;
+            ErrorMessage = null;
+            try
+            {
+                _logger.LogInformation("Decreasing quantity for BookId {BookId}", item.BookId);
+                var updateDto = new UpdateCartItemDto { Quantity = item.Quantity - 1 };
+
+                var response = await _cartApi.UpdateItemQuantity(item.BookId, updateDto);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    _logger.LogInformation("Quantity decreased successfully for BookId {BookId}", item.BookId);
+                    // Cập nhật UI
+                    item.Quantity--;
+                    OnPropertyChanged(nameof(item.Quantity));
+                    OnPropertyChanged(nameof(item.TotalItemPrice));
+                    CalculateSubtotal();
+                }
+                else
+                {
+                    string errorContent = response.Error?.Content ?? response.ReasonPhrase ?? "Failed to update quantity.";
+                    ErrorMessage = $"Error: {errorContent}";
+                    _logger.LogWarning("Failed to decrease quantity for BookId {BookId}. Status: {StatusCode}, Reason: {Reason}", item.BookId, response.StatusCode, ErrorMessage);
+                    await DisplayAlertAsync("Error", $"Could not update quantity for {item.Book.Title}: {ErrorMessage}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception while decreasing quantity for BookId {BookId}", item.BookId);
+                ErrorMessage = $"An unexpected error occurred: {ex.Message}";
+                await DisplayAlertAsync("Error", ErrorMessage);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         [RelayCommand]
         private async Task RemoveItemAsync(CartItemDto? item)
         {
             if (item == null || IsBusy) return;
-            _logger.LogInformation("RemoveItemCommand for BookId {BookId}", item.BookId);
-            //  Gọi API DELETE /api/v1/cart/items/{bookId}
-            // Tạm thời xóa khỏi ObservableCollection
-            CartItems.Remove(item);
-            CalculateSubtotal();
-            OnPropertyChanged(nameof(HasItems));
-            await Task.CompletedTask;
+
+            bool confirm = await Application.Current.MainPage.DisplayAlert("Confirm Delete", $"Remove '{item.Book.Title}' from cart?", "Yes", "No");
+            if (!confirm) return;
+            IsBusy = true;
+            ErrorMessage = null;
+            try
+            {
+                _logger.LogInformation("Removing item with BookId {BookId} from cart", item.BookId);
+                var response = await _cartApi.RemoveItem(item.BookId);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    _logger.LogInformation("Item with BookId {BookId} removed successfully.", item.BookId);
+                    CartItems.Remove(item);
+                    CalculateSubtotal();
+                    OnPropertyChanged(nameof(HasItems));
+                }
+                else
+                {
+                    string errorContent = response.Error?.Content ?? response.ReasonPhrase ?? "Failed to remove item.";
+                    ErrorMessage = $"Error: {errorContent}";
+                    _logger.LogWarning("Failed to remove item with BookId {BookId}. Status: {StatusCode}, Reason: {Reason}", item.BookId, response.StatusCode, ErrorMessage);
+                    await DisplayAlertAsync("Error", $"Could not remove '{item.Book.Title}' from cart: {ErrorMessage}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception while removing item with BookId {BookId}", item.BookId);
+                ErrorMessage = $"An unexpected error occurred: {ex.Message}";
+                await DisplayAlertAsync("Error", ErrorMessage);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         [RelayCommand]
         private async Task ClearCartAsync()
         {
             if (IsBusy || !CartItems.Any()) return;
-            _logger.LogInformation("ClearCartCommand executed.");
-            // Gọi API DELETE /api/v1/cart
-            // Tạm thời xóa hết trên UI
-            CartItems.Clear();
-            CalculateSubtotal();
-            OnPropertyChanged(nameof(HasItems));
-            await Task.CompletedTask;
+
+            // Hỏi xác nhận
+            bool confirm = await Application.Current.MainPage.DisplayAlert("Confirm Clear Cart", "Are you sure you want to remove all items from your cart?", "Yes", "No");
+            if (!confirm) return;
+
+            IsBusy = true;
+            ErrorMessage = null;
+            try
+            {
+                _logger.LogInformation("Clearing user cart.");
+                var response = await _cartApi.ClearCart();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    _logger.LogInformation("Cart cleared successfully.");
+                    // Xóa hết trên UI
+                    CartItems.Clear();
+                    CalculateSubtotal();
+                    OnPropertyChanged(nameof(HasItems));
+                }
+                else
+                {
+                    string errorContent = response.Error?.Content ?? response.ReasonPhrase ?? "Failed to clear cart.";
+                    ErrorMessage = $"Error: {errorContent}";
+                    _logger.LogWarning("Failed to clear cart. Status: {StatusCode}, Reason: {Reason}", response.StatusCode, ErrorMessage);
+                    await DisplayAlertAsync("Error", $"Could not clear cart: {ErrorMessage}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception while clearing cart.");
+                ErrorMessage = $"An unexpected error occurred: {ex.Message}";
+                await DisplayAlertAsync("Error", ErrorMessage);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         // Command đi đến trang Checkout
