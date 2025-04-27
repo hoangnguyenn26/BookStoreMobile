@@ -110,11 +110,12 @@ namespace Bookstore.Mobile
                     .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
             services.AddRefitClient<ICategoriesApi>(refitSettings)
                     .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
-
-            // --- Client CẦN Auth Header ---
-            var httpClientBuilderBooks = services.AddRefitClient<IBooksApi>(refitSettings)
+            services.AddRefitClient<IBooksApi>(refitSettings)
                    .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
-            httpClientBuilderBooks.AddHttpMessageHandler<AuthHeaderHandler>();
+            // --- Client CẦN Auth Header ---
+            //var httpClientBuilderBooks = services.AddRefitClient<IBooksApi>(refitSettings)
+            //       .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
+            //httpClientBuilderBooks.AddHttpMessageHandler<AuthHeaderHandler>();
 
             var httpClientBuilderWishlist = services.AddRefitClient<IWishlistApi>(refitSettings)
                     .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));

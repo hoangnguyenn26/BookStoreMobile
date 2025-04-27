@@ -60,15 +60,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <AndroidResource Remove="Helpers\**" />
-	  <Compile Remove="Helpers\**" />
-	  <EmbeddedResource Remove="Helpers\**" />
-	  <MauiCss Remove="Helpers\**" />
-	  <MauiXaml Remove="Helpers\**" />
-	  <None Remove="Helpers\**" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="14.0.0" />
 		<PackageReference Include="CommunityToolkit.Maui" Version="9.1.1" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />

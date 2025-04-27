@@ -82,7 +82,6 @@ namespace Bookstore.Mobile.ViewModels
 
             if (IsBusy || (!isRefreshing && !_canLoadMore)) return;
 
-            IsBusy = true;
             if (isRefreshing)
             {
                 _currentPage = 1;

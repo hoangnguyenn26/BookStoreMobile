@@ -17,7 +17,7 @@
 
             <VerticalStackLayout IsVisible="{Binding ShowContent}">
 
-                <Image Source="{Binding BookDetails.CoverImageUrl, TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
+                <Image Source="{Binding BookDetails.CoverImageUrl, Converter={StaticResource ImageUrlConverter}, ConverterParameter='Medium', TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
                        Aspect="AspectFit"
                        HeightRequest="300"
                        Margin="0,0,0,15"/>

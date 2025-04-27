@@ -1,14 +1,22 @@
 ﻿<?xml version = "1.0" encoding = "UTF-8" ?>
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:Bookstore.Mobile"
+             xmlns:converters="clr-namespace:Bookstore.Mobile.Converters"
              x:Class="Bookstore.Mobile.App">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+                <!-- Các ResourceDictionary khác -->
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- Đăng ký Converters ở đây nếu dùng trong App scope -->
+            <converters:ImageUrlConverter x:Key="ImageUrlConverter"/>
+            <!--<converters:StockToColorConverter x:Key="StockToColorConverter"/>
+            <converters:BoolToWishlistIconConverter x:Key="BoolToWishlistIconConverter"/>-->
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

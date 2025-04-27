@@ -34,8 +34,8 @@
                             <Frame Style="{StaticResource CardFrame}" WidthRequest="150" Padding="0">
                                 <!-- Ví dụ Card -->
                                 <StackLayout>
-                                    <Image Source="{Binding CoverImageUrl, TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
-                                            Aspect="AspectFill" HeightRequest="150"/>
+                                    <Image Source="{Binding CoverImageUrl, Converter={StaticResource ImageUrlConverter}, ConverterParameter='Thumb', TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
+                                           Aspect="AspectFill" HeightRequest="150"/>
                                     <VerticalStackLayout Padding="10" Spacing="4">
                                         <Label Text="{Binding Title}" FontSize="Small" FontAttributes="Bold" LineBreakMode="TailTruncation"/>
                                         <Label Text="{Binding AuthorName}" FontSize="Micro" TextColor="{StaticResource Gray600Light}"/>
@@ -65,8 +65,8 @@
                         <DataTemplate x:DataType="dto:BookSummaryDto">
                             <Frame Style="{StaticResource CardFrame}" WidthRequest="150" Padding="0">
                                 <StackLayout>
-                                    <Image Source="{Binding CoverImageUrl, TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
-                                 Aspect="AspectFill" HeightRequest="150"/>
+                                    <Image Source="{Binding CoverImageUrl, Converter={StaticResource ImageUrlConverter}, ConverterParameter='Thumb', TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
+                                        Aspect="AspectFill" HeightRequest="150"/>
                                     <VerticalStackLayout Padding="10" Spacing="4">
                                         <Label Text="{Binding Title}" FontSize="Small" FontAttributes="Bold" LineBreakMode="TailTruncation"/>
                                         <Label Text="{Binding AuthorName}" FontSize="Micro" TextColor="{StaticResource Gray600Light}"/>

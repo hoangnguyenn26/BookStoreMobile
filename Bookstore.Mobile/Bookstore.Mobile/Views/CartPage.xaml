@@ -30,8 +30,8 @@
                     <Border Style="{StaticResource CardBorder}" Padding="10" Margin="0,0,0,10">
                         <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
                             <!-- Ảnh sách -->
-                            <Image Grid.Column="0" Source="{Binding Book.CoverImageUrl, TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
-                                     Aspect="AspectFill" WidthRequest="80" HeightRequest="100"/>
+                            <Image Grid.Column="0" Source="{Binding Book.CoverImageUrl, Converter={StaticResource ImageUrlConverter}, ConverterParameter='Thumb', TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
+                                    Aspect="AspectFill" WidthRequest="80" HeightRequest="100"/>
 
                             <!-- Thông tin sách và Số lượng -->
                             <VerticalStackLayout Grid.Column="1" Spacing="5">
