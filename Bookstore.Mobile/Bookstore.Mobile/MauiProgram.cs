@@ -78,6 +78,7 @@ namespace Bookstore.Mobile
             builder.Services.AddTransient<AddressListViewModel>();
             builder.Services.AddTransient<AddEditAddressViewModel>();
             builder.Services.AddTransient<CheckoutViewModel>();
+            builder.Services.AddTransient<OrderHistoryViewModel>();
 
             // ... (Các ViewModel khác)
 
@@ -92,6 +93,7 @@ namespace Bookstore.Mobile
             builder.Services.AddTransient<AddressListPage>();
             builder.Services.AddTransient<AddEditAddressPage>();
             builder.Services.AddTransient<CheckoutPage>();
+            builder.Services.AddTransient<OrderHistoryPage>();
 
             // ... (Các View khác)
 

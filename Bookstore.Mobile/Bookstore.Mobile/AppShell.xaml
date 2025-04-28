@@ -37,6 +37,11 @@
                    ContentTemplate="{DataTemplate views:CheckoutPage}"
                    Route="WishlistPage"  />
     </FlyoutItem>
+    <FlyoutItem Title="OrderHistory" Icon="orderhistory.png">
+        <ShellContent Title="Checkout"
+               ContentTemplate="{DataTemplate views:OrderHistoryPage}"
+               Route="OrderHistoryPage"  />
+    </FlyoutItem>
 
     <FlyoutItem Title="My Cart" Icon="cart.png">
         <ShellContent Title="Cart"
@@ -77,6 +82,10 @@
                ContentTemplate="{DataTemplate views:AddressListPage}"
                Route="AddressListPage"
                Shell.FlyoutItemIsVisible="False"/>
+    <ShellContent Title="Order Historye"
+           ContentTemplate="{DataTemplate views:OrderHistoryPage}"
+           Route="OrderHistoryPage"
+           Shell.FlyoutItemIsVisible="False"/>
 
 
 </Shell>

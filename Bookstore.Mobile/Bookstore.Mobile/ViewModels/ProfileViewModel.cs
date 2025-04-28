@@ -86,7 +86,7 @@ namespace Bookstore.Mobile.ViewModels
         private async Task GoToOrderHistoryAsync()
         {
             _logger.LogInformation("Navigating to Order History Page.");
-            //await Shell.Current.GoToAsync(nameof(OrderHistoryPage));
+            await Shell.Current.GoToAsync(nameof(OrderHistoryPage));
             // await _navigationService.NavigateToAsync(nameof(OrderHistoryPage));
         }
 

@@ -28,7 +28,7 @@ namespace Bookstore.Mobile
 
             // Routes cho luồng đặt hàng
             Routing.RegisterRoute(nameof(CheckoutPage), typeof(CheckoutPage));
-            //Routing.RegisterRoute(nameof(OrderHistoryPage), typeof(OrderHistoryPage));
+            Routing.RegisterRoute(nameof(OrderHistoryPage), typeof(OrderHistoryPage));
             //Routing.RegisterRoute(nameof(OrderDetailsPage), typeof(OrderDetailsPage));
         }
         protected override async void OnHandlerChanged()

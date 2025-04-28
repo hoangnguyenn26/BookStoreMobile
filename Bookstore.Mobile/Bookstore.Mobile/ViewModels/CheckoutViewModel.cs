@@ -206,7 +206,7 @@ namespace Bookstore.Mobile.ViewModels
                 var requestDto = new CreateOrderRequestDto
                 {
                     ShippingAddressId = SelectedAddress.Address.Id,
-                    // PromotionCode = SelectedPromotionCode // Lấy mã KM nếu có ô nhập hoặc logic chọn KM
+                    // PromotionCode = SelectedPromotionCode
                 };
 
                 // 2. Gọi API Tạo Order
@@ -218,7 +218,7 @@ namespace Bookstore.Mobile.ViewModels
                     var createdOrder = response.Content;
                     _logger.LogInformation("Order {OrderId} placed successfully via API. Navigating to Order History.", createdOrder.Id);
                     await Toast.Make("Order placed successfully!").Show();
-                    //await Shell.Current.GoToAsync($"//{nameof(OrderHistoryPage)}");
+                    await Shell.Current.GoToAsync($"//{nameof(OrderHistoryPage)}");
                 }
                 else
                 {

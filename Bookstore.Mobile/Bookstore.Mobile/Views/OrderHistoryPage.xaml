@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
+             xmlns:dto="clr-namespace:Bookstore.Mobile.Models"
+             x:DataType="vm:OrderHistoryViewModel"
+             x:Class="Bookstore.Mobile.Views.OrderHistoryPage"
+             Title="{Binding Title}">
+
+    <Grid RowDefinitions="Auto, *">
+        <Label Grid.Row="0" Text="My Orders" Style="{StaticResource Headline}" Margin="15,10"/>
+
+        <ActivityIndicator Grid.Row="0" Grid.RowSpan="2" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center"/>
+        <Label Grid.Row="1" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}" VerticalOptions="Center" HorizontalOptions="Center"/>
+
+        <RefreshView Grid.Row="1" Command="{Binding RefreshOrdersCommand}" IsRefreshing="{Binding IsBusy}" IsVisible="{Binding ShowContent}">
+            <!-- CommandParameter=True để biết là refresh -->
+            <CollectionView ItemsSource="{Binding Orders}"
+                             SelectionMode="Single"
+                             SelectionChangedCommand="{Binding GoToOrderDetailsCommand}"
+                             SelectionChangedCommandParameter="{Binding Source={RelativeSource Self}, Path=SelectedItem}"
+                             RemainingItemsThreshold="3"
+                             RemainingItemsThresholdReachedCommand="{Binding LoadMoreOrdersCommand}"
+                             Margin="10">
+                <CollectionView.EmptyView>
+                    <StackLayout Padding="50" HorizontalOptions="Center" VerticalOptions="Center">
+                        <Label Text="You haven't placed any orders yet." FontSize="Medium" HorizontalOptions="Center"/>
+                        <Button Text="Start Shopping" Command="{Binding GoShoppingCommand}" HorizontalOptions="Center" Margin="0,20,0,0"/>
+                    </StackLayout>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="dto:OrderSummaryDto">
+                        <Border Style="{StaticResource CardBorder}" Padding="15" Margin="0,0,0,10">
+                            <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="8">
+                                <Label Grid.Row="0" Grid.Column="0" FontAttributes="Bold">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Order #"/>
+                                            <!-- Hiển thị vài ký tự đầu của Id -->
+                                            <Span Text="{Binding Id, StringFormat='{0:N}', Converter={StaticResource GuidShortenerConverter}}"/>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label Grid.Row="0" Grid.Column="1" Text="{Binding OrderDate, StringFormat='{0:MMM dd, yyyy}'}" FontSize="Small" HorizontalTextAlignment="End"/>
+
+                                <Label Grid.Row="1" Grid.Column="0">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="{Binding ItemCount}"/>
+                                            <Span Text=" item(s) - Total: "/>
+                                            <Span Text="{Binding TotalAmount, StringFormat='{0:C}'}" FontAttributes="Bold"/>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label Grid.Row="1" Grid.Column="1" Text="{Binding Status}" HorizontalTextAlignment="End"
+                                          TextColor="{Binding Status, Converter={StaticResource OrderStatusToColorConverter}}"/>
+                                <!-- Cần tạo GuidShortenerConverter và OrderStatusToColorConverter -->
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+</ContentPage>

@@ -14,6 +14,8 @@
 
             <!-- Đăng ký Converters ở đây nếu dùng trong App scope -->
             <converters:ImageUrlConverter x:Key="ImageUrlConverter"/>
+            <converters:GuidShortenerConverter x:Key="GuidShortenerConverter"/>
+            <converters:OrderStatusToColorConverter x:Key="OrderStatusToColorConverter"/>
             <!--<converters:StockToColorConverter x:Key="StockToColorConverter"/>
             <converters:BoolToWishlistIconConverter x:Key="BoolToWishlistIconConverter"/>-->
 
