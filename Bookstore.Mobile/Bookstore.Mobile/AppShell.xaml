@@ -32,6 +32,11 @@
                        ContentTemplate="{DataTemplate views:WishlistPage}"
                        Route="WishlistPage" 
     </FlyoutItem> />-->
+    <FlyoutItem Title="Checkout" Icon="checkout.png">
+        <ShellContent Title="Checkout"
+                   ContentTemplate="{DataTemplate views:CheckoutPage}"
+                   Route="WishlistPage"  />
+    </FlyoutItem>
 
     <FlyoutItem Title="My Cart" Icon="cart.png">
         <ShellContent Title="Cart"

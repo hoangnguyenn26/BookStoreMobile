@@ -1,6 +1,5 @@
-﻿// Bookstore.Mobile/Handlers/AuthHeaderHandler.cs
-using Bookstore.Mobile.Interfaces.Services; // Namespace chứa IAuthService của bạn
-using System.Net.Http.Headers; // Cần cho AuthenticationHeaderValue
+﻿using Bookstore.Mobile.Interfaces.Services;
+using System.Net.Http.Headers;
 
 namespace Bookstore.Mobile.Handlers
 {

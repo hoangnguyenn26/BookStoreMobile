@@ -17,7 +17,7 @@ namespace Bookstore.Mobile
         protected override async void OnStart()
         {
             base.OnStart();
-            await Shell.Current.GoToAsync($"//{nameof(HomePage)}", false);
+            await Shell.Current.GoToAsync($"//{nameof(LoginPage)}", false);
         }
 
     }

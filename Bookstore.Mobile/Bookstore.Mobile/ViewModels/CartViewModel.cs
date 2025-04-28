@@ -262,8 +262,8 @@ namespace Bookstore.Mobile.ViewModels
         {
             if (IsBusy || !CartItems.Any()) return;
             _logger.LogInformation("Navigating to Checkout Page.");
-            //await Shell.Current.GoToAsync(nameof(CheckoutPage));
-            // await _navigationService.NavigateToAsync(nameof(CheckoutPage));
+            await Shell.Current.GoToAsync(nameof(CheckoutPage));
+            //await _navigationService.NavigateToAsync(nameof(CheckoutPage));
         }
 
         // Command quay lại mua sắm (khi giỏ hàng trống)
