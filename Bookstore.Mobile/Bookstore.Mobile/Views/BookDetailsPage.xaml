@@ -2,25 +2,31 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
-             xmlns:dto_book="clr-namespace:Bookstore.Mobile.Models"
+             xmlns:dto="clr-namespace:Bookstore.Mobile.Models"
+             xmlns:converters="clr-namespace:Bookstore.Mobile.Converters"
              x:DataType="vm:BookDetailsViewModel"
              x:Class="Bookstore.Mobile.Views.BookDetailsPage"
              Title="{Binding Title}">
     <!-- Title có thể là tên sách -->
 
+    <ContentPage.Resources>
+        <converters:StockToColorConverter x:Key="StockToColorConverter"/>
+        <converters:BoolToWishlistIconConverter x:Key="BoolToWishlistIconConverter"/>
+        <converters:StringNotNullOrEmptyBoolConverter x:Key="StringNotNullOrEmptyBoolConverter"/>
+        <converters:InverseBoolConverter x:Key="InverseBoolConverter"/>
+        <!-- Thêm nếu cần -->
+    </ContentPage.Resources>
+
     <ScrollView>
         <VerticalStackLayout Spacing="15" Padding="15">
 
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="CenterAndExpand" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="CenterAndExpand" Margin="0,20"/>
+            <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}" Margin="0,10"/>
 
-            <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}"/>
+            <VerticalStackLayout IsVisible="{Binding ShowContent}" Spacing="15">
 
-            <VerticalStackLayout IsVisible="{Binding ShowContent}">
-
-                <Image Source="{Binding BookDetails.CoverImageUrl, Converter={StaticResource ImageUrlConverter}, ConverterParameter='Medium', TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
-                       Aspect="AspectFit"
-                       HeightRequest="300"
-                       Margin="0,0,0,15"/>
+                <Image Source="{Binding BookDetails.CoverImageUrl, TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
+                       Aspect="AspectFit" HeightRequest="300" Margin="0,0,0,15"/>
 
                 <Label Text="{Binding BookDetails.Title}" Style="{StaticResource Headline}" FontSize="Title" LineBreakMode="WordWrap"/>
 
@@ -36,26 +42,31 @@
                 <HorizontalStackLayout Spacing="10" Margin="0,10">
                     <Label Text="{Binding BookDetails.Price, StringFormat='{0:C}'}" FontSize="Large" FontAttributes="Bold" TextColor="{StaticResource PrimaryLight}" VerticalOptions="Center"/>
                     <Label Text="{Binding BookDetails.StockQuantity, StringFormat='({0} in stock)'}" FontSize="Small" TextColor="{Binding BookDetails.StockQuantity, Converter={StaticResource StockToColorConverter}}" VerticalOptions="Center"/>
-
                 </HorizontalStackLayout>
 
-                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10" Margin="0,10">
-                    <Button Text="Add to Cart"
-                            Grid.Column="0"
+                <!-- Số lượng và Nút Hành động -->
+                <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto" ColumnSpacing="10" RowSpacing="10" Margin="0,10">
+                    <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Spacing="10" VerticalOptions="Center">
+                        <Label Text="Quantity:" VerticalOptions="Center"/>
+                        <Stepper Value="{Binding QuantityToAdd}" Minimum="1" Maximum="{Binding BookDetails.StockQuantity}" Increment="1" IsEnabled="{Binding CanAddToCart}" VerticalOptions="Center"/>
+                        <Label Text="{Binding QuantityToAdd}" VerticalOptions="Center" FontSize="Medium" FontAttributes="Bold" Margin="5,0"/>
+                    </HorizontalStackLayout>
+
+                    <Button Grid.Row="1" Grid.Column="0" Text="Add to Cart"
                             Command="{Binding AddToCartCommand}"
                             IsEnabled="{Binding CanAddToCart}"/>
 
-                    <Button Grid.Column="1"
+                    <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
                             Command="{Binding ToggleWishlistCommand}"
                             IsEnabled="{Binding IsNotBusy}"
                             BackgroundColor="{StaticResource Transparent}"
                             BorderColor="{StaticResource PrimaryLight}"
-                            BorderWidth="2"
-                            Padding="10">
+                            BorderWidth="1"
+                            Padding="10" VerticalOptions="Center">
                         <Button.ImageSource>
                             <FontImageSource Glyph="{Binding IsInWishlist, Converter={StaticResource BoolToWishlistIconConverter}}"
                                               FontFamily="MaterialSymbolsRounded"
-                                Color="{StaticResource PrimaryLight}"/>
+                                              Color="{StaticResource PrimaryLight}"/>
                         </Button.ImageSource>
                     </Button>
                 </Grid>
@@ -74,6 +85,38 @@
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
                 </VerticalStackLayout>
+
+                <!-- Phần Reviews -->
+                <Label Text="Customer Reviews" FontAttributes="Bold" FontSize="Medium" Margin="0,20,0,5"/>
+                <ActivityIndicator IsRunning="{Binding IsLoadingReviews}" IsVisible="{Binding IsLoadingReviews}" HorizontalOptions="Center"/>
+                <Label Text="{Binding ReviewsErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasReviewsError}"/>
+
+                <CollectionView ItemsSource="{Binding Reviews}" IsVisible="{Binding ShowReviewsContent}">
+                    <CollectionView.EmptyView>
+                        <Label Text="No reviews yet for this book." Margin="0,10"/>
+                    </CollectionView.EmptyView>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="dto:ReviewDto">
+                            <Border Style="{StaticResource CardBorder}" Padding="10" Margin="0,0,0,10">
+                                <VerticalStackLayout Spacing="5">
+                                    <HorizontalStackLayout Spacing="2">
+                                        <Label Text="Rating:" FontAttributes="Bold"/>
+                                        <Label Text="{Binding Rating}" FontAttributes="Bold" TextColor="{StaticResource AccentLight}"/>
+                                        <Label Text="/ 5"/>
+                                    </HorizontalStackLayout>
+                                    <Label Text="{Binding Comment}" IsVisible="{Binding Comment, Converter={StaticResource StringNotNullOrEmptyBoolConverter}}"/>
+                                    <HorizontalStackLayout Spacing="5" Margin="0,5,0,0">
+                                        <Label Text="{Binding UserName}" FontSize="Small" FontAttributes="Bold"/>
+                                        <Label Text="-" FontSize="Small"/>
+                                        <Label Text="{Binding CreatedAtUtc, StringFormat='{0:dd MMM yyyy}'}" FontSize="Small" TextColor="{StaticResource Gray600Light}"/>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+                <Button Text="Write a Review" Command="{Binding GoToWriteReviewCommand}" Margin="0,10,0,0" HorizontalOptions="Start" Style="{StaticResource TextButton}"/>
+
 
             </VerticalStackLayout>
         </VerticalStackLayout>

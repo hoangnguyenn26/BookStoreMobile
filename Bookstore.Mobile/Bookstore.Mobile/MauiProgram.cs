@@ -26,6 +26,7 @@ namespace Bookstore.Mobile
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                    fonts.AddFont("MaterialSymbolsRounded.ttf", "MaterialSymbolsRounded");
                 });
 
             // ----- Đăng ký Dependency Injection -----
@@ -138,6 +139,10 @@ namespace Bookstore.Mobile
             var httpClientBuilderOrders = services.AddRefitClient<IOrderApi>(refitSettings)
                     .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
             httpClientBuilderOrders.AddHttpMessageHandler<AuthHeaderHandler>();
+
+            var httpClientBuilderReviews = services.AddRefitClient<IReviewApi>(refitSettings)
+                    .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
+            httpClientBuilderReviews.AddHttpMessageHandler<AuthHeaderHandler>();
         }
     }
 
