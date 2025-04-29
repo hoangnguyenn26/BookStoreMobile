@@ -16,6 +16,8 @@
             <converters:ImageUrlConverter x:Key="ImageUrlConverter"/>
             <converters:GuidShortenerConverter x:Key="GuidShortenerConverter"/>
             <converters:OrderStatusToColorConverter x:Key="OrderStatusToColorConverter"/>
+            <converters:OrderStatusToStringConverter x:Key="OrderStatusToStringConverter"/>
+            <converters:StringNotNullOrEmptyBoolConverter x:Key="StringNotNullOrEmptyBoolConverter"/>
             <!--<converters:StockToColorConverter x:Key="StockToColorConverter"/>
             <converters:BoolToWishlistIconConverter x:Key="BoolToWishlistIconConverter"/>-->
 

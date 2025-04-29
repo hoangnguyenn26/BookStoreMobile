@@ -1,6 +1,5 @@
 ﻿using Bookstore.Mobile.Interfaces.Apis;
 using Bookstore.Mobile.Models;
-using Bookstore.Mobile.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
@@ -170,8 +169,9 @@ namespace Bookstore.Mobile.ViewModels
 
                 if (success)
                 {
+
                     _logger.LogInformation("Address saved successfully (Id: {AddressId})", _actualAddressId == Guid.Empty ? "(New)" : _actualAddressId.ToString());
-                    await Shell.Current.GoToAsync($"//{nameof(AddressListPage)}");
+                    await Shell.Current.GoToAsync("..");
                 }
                 else
                 {

@@ -1,4 +1,5 @@
-﻿using Bookstore.Mobile.Views;
+﻿using Bookstore.Mobile.Interfaces.Services;
+using Bookstore.Mobile.Views;
 
 namespace Bookstore.Mobile
 {
@@ -28,15 +29,15 @@ namespace Bookstore.Mobile
 
             // Routes cho luồng đặt hàng
             Routing.RegisterRoute(nameof(CheckoutPage), typeof(CheckoutPage));
-            Routing.RegisterRoute(nameof(OrderHistoryPage), typeof(OrderHistoryPage));
-            //Routing.RegisterRoute(nameof(OrderDetailsPage), typeof(OrderDetailsPage));
+            Routing.RegisterRoute(nameof(OrderDetailsPage), typeof(OrderDetailsPage));
         }
-        protected override async void OnHandlerChanged()
+        protected override async void OnAppearing()
         {
-            base.OnHandlerChanged();
-            if (Handler != null)
+            base.OnAppearing();
+            var authService = IPlatformApplication.Current.Services.GetService<IAuthService>();
+            if (authService != null && !authService.IsLoggedIn)
             {
-                await Shell.Current.GoToAsync($"//{nameof(LoginPage)}", false);
+                await Shell.Current.GoToAsync(nameof(LoginPage));
             }
         }
     }

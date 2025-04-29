@@ -130,7 +130,7 @@ namespace Bookstore.Mobile.ViewModels
         {
             if (selectedOrder == null || IsBusy) return;
             _logger.LogInformation("Navigating to Order Details for Id: {OrderId}", selectedOrder.Id);
-            //await Shell.Current.GoToAsync($"{nameof(OrderDetailsPage)}?OrderId={selectedOrder.Id}");
+            await Shell.Current.GoToAsync($"{nameof(OrderDetailsPage)}?OrderId={selectedOrder.Id}");
             // await _navigationService.NavigateToAsync(nameof(OrderDetailsPage), new Dictionary<string, object> { { "OrderId", selectedOrder.Id } });
         }
 
