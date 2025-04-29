@@ -119,9 +119,10 @@ namespace Bookstore.Mobile.ViewModels
         [RelayCommand(CanExecute = nameof(CanCancelOrder))]
         private async Task CancelOrderAsync()
         {
-            if (_actualOrderId == Guid.Empty) return;
+            if (OrderDetails == null) return;
 
-            bool confirm = await Application.Current.MainPage.DisplayAlert("Confirm Cancel", "Are you sure you want to cancel this order?", "Yes", "No");
+            // Hỏi xác nhận người dùng
+            bool confirm = await Application.Current.MainPage.DisplayAlert("Confirm Cancellation", "Are you sure you want to cancel this order?", "Yes", "No");
             if (!confirm) return;
 
             IsBusy = true;
@@ -129,19 +130,21 @@ namespace Bookstore.Mobile.ViewModels
             _logger.LogInformation("Attempting to cancel order {OrderId}", _actualOrderId);
             try
             {
+                // Gọi API PUT /api/v1/orders/{id}/cancel
                 var response = await _orderApi.CancelMyOrder(_actualOrderId);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    _logger.LogInformation("Order {OrderId} cancelled successfully.", _actualOrderId);
-                    await LoadOrderDetailsAsync(); // Tải lại để cập nhật trạng thái
+                    _logger.LogInformation("Order {OrderId} cancelled successfully via API.", _actualOrderId);
+                    await LoadOrderDetailsAsync();
+                    await DisplayAlertAsync("Order Cancelled", "Your order has been successfully cancelled.", "OK");
                 }
                 else
                 {
                     string errorContent = response.Error?.Content ?? response.ReasonPhrase ?? "Failed to cancel order.";
                     ErrorMessage = $"Error: {errorContent}";
                     _logger.LogWarning("Failed to cancel order {OrderId}. Status: {StatusCode}, Reason: {Reason}", _actualOrderId, response.StatusCode, ErrorMessage);
-                    await DisplayAlertAsync("Error", ErrorMessage);
+                    await DisplayAlertAsync("Cancellation Failed", ErrorMessage);
                 }
             }
             catch (Exception ex)

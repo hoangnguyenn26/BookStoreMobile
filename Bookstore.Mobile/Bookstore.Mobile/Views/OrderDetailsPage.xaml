@@ -101,7 +101,14 @@
                     </Grid>
                 </Frame>
 
-                <Button Text="Cancel Order" IsVisible="{Binding CanCancelOrder}" Command="{Binding CancelOrderCommand}" Style="{StaticResource OutlineButton}" BackgroundColor="{StaticResource ErrorLight}" TextColor="White" Margin="0,20,0,0"/>
+                <Button Text="Cancel Order"
+                    IsVisible="{Binding CanCancelOrder}" 
+                    Command="{Binding CancelOrderCommand}"
+                    IsEnabled="{Binding IsNotBusy}"
+                    Style="{StaticResource OutlineButton}"
+                    BorderColor="{StaticResource ErrorLight}"
+                    TextColor="{StaticResource ErrorLight}"
+                    Margin="0,20,0,0"/>     
 
             </VerticalStackLayout>
 
