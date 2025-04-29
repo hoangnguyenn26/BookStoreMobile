@@ -81,6 +81,7 @@ namespace Bookstore.Mobile
             builder.Services.AddTransient<CheckoutViewModel>();
             builder.Services.AddTransient<OrderHistoryViewModel>();
             builder.Services.AddTransient<OrderDetailsViewModel>();
+            builder.Services.AddTransient<SubmitReviewViewModel>();
 
             // ... (Các ViewModel khác)
 
@@ -97,6 +98,7 @@ namespace Bookstore.Mobile
             builder.Services.AddTransient<CheckoutPage>();
             builder.Services.AddTransient<OrderHistoryPage>();
             builder.Services.AddTransient<OrderDetailsPage>();
+            builder.Services.AddTransient<SubmitReviewPage>();
 
             // ... (Các View khác)
 

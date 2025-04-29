@@ -20,6 +20,7 @@
             <converters:StringNotNullOrEmptyBoolConverter x:Key="StringNotNullOrEmptyBoolConverter"/>
             <converters:BoolToWishlistIconConverter x:Key="BoolToWishlistIconConverter"/>
             <converters:StockToColorConverter x:Key="StockToColorConverter"/>
+            <converters:RatingToStarIconConverter x:Key="RatingToStarIconConverter"/>
 
         </ResourceDictionary>
     </Application.Resources>

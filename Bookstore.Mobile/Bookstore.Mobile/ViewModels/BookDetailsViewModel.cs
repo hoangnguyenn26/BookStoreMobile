@@ -288,7 +288,7 @@ namespace Bookstore.Mobile.ViewModels
             }
             _logger.LogInformation("Navigating to Submit Review Page for Book {BookId}", _actualBookId);
             // Điều hướng đến trang Submit Review
-            //await Shell.Current.GoToAsync($"{nameof(SubmitReviewPage)}?BookId={BookId}");
+            await Shell.Current.GoToAsync($"{nameof(SubmitReviewPage)}?BookId={_actualBookId}&BookTitle={Uri.EscapeDataString(BookDetails.Title)}");
         }
 
 
