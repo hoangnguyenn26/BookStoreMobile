@@ -199,6 +199,28 @@
         <Setter Property="CornerRadius" Value="8"/>
     </Style>
 
+    <!-- Style cho các Card trên Dashboard -->
+    <Style x:Key="DashboardCard" TargetType="Frame">
+        <Setter Property="Padding" Value="15"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="HasShadow" Value="True"/>
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}" />
+        <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource SurfaceVariantLight}, Dark={StaticResource SurfaceVariantDark}}"/>
+    </Style>
+
+    <!-- Style cho tiêu đề Card -->
+    <Style x:Key="CardTitle" TargetType="Label" BasedOn="{StaticResource BaseLabelStyle}">
+        <Setter Property="FontSize" Value="Small"/>
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray600Light}, Dark={StaticResource Gray300Dark}}"/>
+        <Setter Property="Margin" Value="0,0,0,5"/>
+    </Style>
+
+    <!-- Style cho giá trị trong Card -->
+    <Style x:Key="CardValue" TargetType="Label" BasedOn="{StaticResource BaseLabelStyle}">
+        <Setter Property="FontSize" Value="24"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"/>
+    </Style>
     <!-- Thêm các style có key khác nếu bạn cần -->
 
 </ResourceDictionary>

@@ -194,9 +194,9 @@ namespace Bookstore.Mobile
                     .AddHttpMessageHandler<AuthHeaderHandler>();
 
             // --- Clients cho Admin/Staff (Luôn cần Auth Header) ---
-            //services.AddRefitClient<IAdminDashboardApi>(refitSettings)
-            //        .ConfigureHttpClient(c => c.BaseAddress = baseUri)
-            //        .AddHttpMessageHandler<AuthHeaderHandler>();
+            services.AddRefitClient<IAdminDashboardApi>(refitSettings)
+                    .ConfigureHttpClient(c => c.BaseAddress = baseUri)
+                    .AddHttpMessageHandler<AuthHeaderHandler>();
 
             //services.AddRefitClient<IAdminOrderApi>(refitSettings)
             //        .ConfigureHttpClient(c => c.BaseAddress = baseUri)

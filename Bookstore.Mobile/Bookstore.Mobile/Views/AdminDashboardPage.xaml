@@ -1,12 +1,62 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
+             x:DataType="vm:AdminDashboardViewModel"
              x:Class="Bookstore.Mobile.Views.AdminDashboardPage"
-             Title="AdminDashboardPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="{Binding Title}">
+
+    <RefreshView Command="{Binding LoadSummaryCommand}" IsRefreshing="{Binding IsBusy}">
+        <ScrollView>
+            <VerticalStackLayout Padding="15" Spacing="15">
+
+                <Label Text="Admin Dashboard" Style="{StaticResource Headline}" HorizontalOptions="Center" Margin="0,0,0,10"/>
+
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="CenterAndExpand"/>
+                <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}"/>
+
+                <!-- Hiển thị các ô số liệu khi không bận và không lỗi -->
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto, Auto" RowSpacing="15" ColumnSpacing="15" IsVisible="{Binding ShowContent}">
+
+                    <!-- Đơn hàng mới -->
+                    <Frame Grid.Row="0" Grid.Column="0" Style="{StaticResource DashboardCard}">
+                        <VerticalStackLayout>
+                            <Label Text="New Orders Today" Style="{StaticResource CardTitle}"/>
+                            <Label Text="{Binding Summary.NewOrdersToday}" Style="{StaticResource CardValue}"/>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Doanh thu hôm nay -->
+                    <Frame Grid.Row="0" Grid.Column="1" Style="{StaticResource DashboardCard}">
+                        <VerticalStackLayout>
+                            <Label Text="Revenue Today" Style="{StaticResource CardTitle}"/>
+                            <Label Text="{Binding Summary.TotalRevenueToday, StringFormat='{0:C}'}" Style="{StaticResource CardValue}"/>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- User mới -->
+                    <Frame Grid.Row="1" Grid.Column="0" Style="{StaticResource DashboardCard}">
+                        <VerticalStackLayout>
+                            <Label Text="New Users Today" Style="{StaticResource CardTitle}"/>
+                            <Label Text="{Binding Summary.NewUsersToday}" Style="{StaticResource CardValue}"/>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <!-- Sách sắp hết hàng -->
+                    <Frame Grid.Row="1" Grid.Column="1" Style="{StaticResource DashboardCard}" BackgroundColor="{AppThemeBinding Light={StaticResource WarningLight}, Dark={StaticResource WarningDark}}">
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding GoToLowStockReportCommand}"/>
+                        </Frame.GestureRecognizers>
+                        <VerticalStackLayout>
+                            <Label Text="Low Stock Items" Style="{StaticResource CardTitle}" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource Black}}"/>
+                            <Label Text="{Binding Summary.LowStockItemsCount}" Style="{StaticResource CardValue}" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource Black}}"/>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                </Grid>
+
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
 </ContentPage>
