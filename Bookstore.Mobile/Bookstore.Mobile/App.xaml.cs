@@ -1,24 +1,37 @@
 ﻿using Bookstore.Mobile.Interfaces.Services;
 using Bookstore.Mobile.Views;
 
-namespace Bookstore.Mobile
+namespace Bookstore.Mobile;
+
+public partial class App : Application
 {
-    public partial class App : Microsoft.Maui.Controls.Application
+    private readonly IAuthService _authService;
+
+    // KHÔNG inject AppShell ở đây
+    public App(IAuthService authService)
     {
-        private readonly IAuthService _authService;
-        public App(IAuthService authService)
+        InitializeComponent();
+        _authService = authService;
+
+        MainPage = IPlatformApplication.Current.Services.GetRequiredService<AppShell>();
+    }
+
+    protected override async void OnStart()
+    {
+        base.OnStart();
+        await _authService.InitializeAsync();
+        await WaitForShellReady();
+        if (!_authService.IsLoggedIn)
         {
-            InitializeComponent();
-            _authService = authService;
-
-            MainPage = new AppShell();
+            await Shell.Current.GoToAsync(nameof(LoginPage));
         }
+    }
 
-        protected override async void OnStart()
+    private async Task WaitForShellReady()
+    {
+        while (MainPage == null || Shell.Current == null)
         {
-            base.OnStart();
-            await Shell.Current.GoToAsync($"{nameof(LoginPage)}", false);
+            await Task.Delay(50);
         }
-
     }
 }

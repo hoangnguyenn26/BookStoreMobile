@@ -3,16 +3,16 @@
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
        xmlns:local="clr-namespace:Bookstore.Mobile"
        xmlns:views="clr-namespace:Bookstore.Mobile.Views"
-       x:Class="Bookstore.Mobile.AppShell"
-       Shell.FlyoutBehavior="Flyout"
        xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
-       x:DataType="vm:AppShellViewModel">
+       x:DataType="vm:AppShellViewModel"
+       x:Class="Bookstore.Mobile.AppShell"
+       Shell.FlyoutBehavior="Flyout">
 
     <Shell.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
-                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+                <ResourceDictionary Source="/Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="/Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Shell.Resources>
@@ -47,16 +47,33 @@
                       Route="CartPage"/>
     </FlyoutItem>
 
-    <!--<MenuFlyoutItem IsVisible="{Binding IsAdminOrStaff}" />-->
+    <!-- Khu vực Quản lý Cửa hàng (Staff & Admin) -->
+    <FlyoutItem Title="Store Management" Icon="store.png" 
+            IsVisible="{Binding IsStaffOrAdmin}"
+            FlyoutDisplayOptions="AsMultipleItems">
 
-    <FlyoutItem Title="Store Management" Icon="store.png" IsVisible="{Binding IsAdminOrStaff}">
-        <ShellContent Title="Dashboard" ContentTemplate="{DataTemplate views:AdminDashboardPage}" Route="AdminDashboardPage" />
-        <ShellContent Title="Orders" ContentTemplate="{DataTemplate views:AdminOrderListPage}" Route="AdminOrderListPage" />
-        <ShellContent Title="Inventory" ContentTemplate="{DataTemplate views:StockReceiptListPage}" Route="StockReceiptListPage" />
-        <ShellContent Title="Products" ContentTemplate="{DataTemplate views:AdminProductHomePage}" Route="AdminProductHomePage"/>
+        <!-- Dashboard -->
+        <ShellContent Title="Dashboard" 
+                  ContentTemplate="{DataTemplate views:AdminDashboardPage}" 
+                  Route="AdminDashboardPage" />
+
+        <!-- Orders Group -->
+        <Tab Title="Orders">
+            <ShellContent Route="AdminOrderListPage" 
+                      ContentTemplate="{DataTemplate views:AdminOrderListPage}" />
+            <ShellContent Route="AdminOrderDetailsPage" 
+                      ContentTemplate="{DataTemplate views:AdminOrderDetailsPage}" />
+        </Tab>
+
+        <!-- Products -->
+        <ShellContent Title="Products" 
+                  ContentTemplate="{DataTemplate views:AdminProductHomePage}" 
+                  Route="AdminProductHomePage"/>
     </FlyoutItem>
 
-    <FlyoutItem Title="System Admin" Icon="admin_panel.png" IsVisible="{Binding IsAdmin}">
+    <!-- Khu vực Quản trị Hệ thống (Chỉ Admin) -->
+    <FlyoutItem Title="System Admin" Icon="admin_panel.png"
+                   IsVisible="{Binding IsAdmin}" FlyoutDisplayOptions="AsMultipleItems">
         <ShellContent Title="Users" ContentTemplate="{DataTemplate views:AdminUserListPage}" Route="AdminUserListPage" />
         <ShellContent Title="Promotions" ContentTemplate="{DataTemplate views:AdminPromotionListPage}" Route="AdminPromotionListPage" />
         <ShellContent Title="Reports" ContentTemplate="{DataTemplate views:AdminReportsPage}" Route="AdminReportsPage" />
@@ -67,5 +84,4 @@
         <ShellContent Title="Addresses" ContentTemplate="{DataTemplate views:AddressListPage}" Route="AddressListPage" />
         <ShellContent Title="Order History" ContentTemplate="{DataTemplate views:OrderHistoryPage}" Route="OrderHistoryPage" />
     </FlyoutItem>
-
 </Shell>

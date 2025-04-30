@@ -10,26 +10,29 @@ namespace Bookstore.Mobile.ViewModels
         public AppShellViewModel(IAuthService authService)
         {
             _authService = authService;
-            // Đăng ký lắng nghe sự kiện thay đổi trạng thái Auth
             _authService.AuthStateChanged += OnAuthStateChanged;
-            // Cập nhật trạng thái ban đầu
-            UpdateAdminStaffVisibility();
+            UpdateMenuVisibility();
         }
 
         // Property để binding IsVisible cho các mục menu Admin/Staff
         [ObservableProperty]
         private bool _isAdminOrStaff;
 
+        [ObservableProperty]
+        private bool _isAdmin;
         private void OnAuthStateChanged(object? sender, EventArgs e)
         {
-            // Cập nhật trạng thái hiển thị khi trạng thái đăng nhập thay đổi
-            UpdateAdminStaffVisibility();
+            UpdateMenuVisibility();
         }
 
-        private void UpdateAdminStaffVisibility()
+        private void UpdateMenuVisibility()
         {
-            // Kiểm tra xem user có phải Admin hoặc Staff không
-            IsAdminOrStaff = _authService.HasRole("Admin") || _authService.HasRole("Staff");
+            // Kiểm tra vai trò bằng AuthService
+            bool staffCheck = _authService.HasRole("Staff");
+            bool adminCheck = _authService.HasRole("Admin");
+
+            IsAdmin = adminCheck;
+            IsAdminOrStaff = staffCheck || adminCheck;
         }
     }
 }

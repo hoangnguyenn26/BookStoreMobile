@@ -44,7 +44,8 @@ namespace Bookstore.Mobile.Services
                 if (!string.IsNullOrEmpty(_authToken) && !string.IsNullOrEmpty(userInfoJson))
                 {
                     _currentUser = JsonSerializer.Deserialize<UserDto>(userInfoJson);
-                    _logger.LogInformation("User {Username} session loaded.", _currentUser?.UserName);
+                    _logger.LogInformation("User {Username} session loaded from storage with roles: {Roles}",
+                         _currentUser?.UserName ?? "Unknown", string.Join(", ", _currentUser?.Roles ?? new List<string>()));
                 }
                 else
                 {
@@ -196,7 +197,7 @@ namespace Bookstore.Mobile.Services
 
             OnAuthStateChanged();
             await Task.CompletedTask;
-            await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
+            await Shell.Current.GoToAsync(nameof(LoginPage));
         }
         // --- Thêm cơ chế thông báo thay đổi trạng thái ---
         public event EventHandler? AuthStateChanged;

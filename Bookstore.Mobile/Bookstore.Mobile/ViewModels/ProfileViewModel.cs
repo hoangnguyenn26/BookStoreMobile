@@ -55,18 +55,21 @@ namespace Bookstore.Mobile.ViewModels
         private async Task LogoutAsync()
         {
             if (IsBusy) return;
+
             IsBusy = true;
-            _logger.LogInformation("Logout button clicked.");
+            _logger.LogInformation("Initiating logout process...");
+
             try
             {
                 await _authService.LogoutAsync();
                 _logger.LogInformation("User logged out successfully.");
-                await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
+
+                await Shell.Current.GoToAsync(nameof(LoginPage));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error during logout.");
-                await DisplayAlertAsync("Logout Failed", "An error occurred during logout. Please try again.", "OK");
+                _logger.LogError(ex, "Logout failed");
+                await DisplayAlertAsync("Error", "Logout failed. Please try again.", "OK");
             }
             finally
             {

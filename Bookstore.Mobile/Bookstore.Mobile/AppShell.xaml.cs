@@ -1,23 +1,15 @@
-﻿using Bookstore.Mobile.Interfaces.Services;
+﻿using Bookstore.Mobile.ViewModels;
 using Bookstore.Mobile.Views;
 
 namespace Bookstore.Mobile
 {
     public partial class AppShell : Shell
     {
-        public AppShell()
+        public AppShell(AppShellViewModel viewModel)
         {
             InitializeComponent();
+            BindingContext = viewModel;
             RegisterRoutes();
-        }
-        protected override async void OnAppearing()
-        {
-            base.OnAppearing();
-            var authService = IPlatformApplication.Current.Services.GetService<IAuthService>();
-            if (authService != null && !authService.IsLoggedIn)
-            {
-                await Shell.Current.GoToAsync(nameof(LoginPage));
-            }
         }
         private void RegisterRoutes()
         {
