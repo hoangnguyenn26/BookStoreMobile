@@ -1,5 +1,5 @@
 ﻿using Bookstore.Mobile.Interfaces.Services;
-using Bookstore.Mobile.Views; // Cần using namespace của Pages
+using Bookstore.Mobile.Views;
 
 namespace Bookstore.Mobile
 {

@@ -58,14 +58,15 @@ namespace Bookstore.Mobile
             ConfigureDefaultRefitClients(builder.Services, apiBaseAddress);
 #endif
 
-            // ----- Register AutoMapper -----
-            builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
-
-            // ----- Register Services -----
+            // Singleton Services
             builder.Services.AddSingleton<IAuthService, AuthService>();
+            builder.Services.AddSingleton<AppShellViewModel>();
+            builder.Services.AddSingleton<AppShell>();
 
             // Đăng ký Handler là Transient
             builder.Services.AddTransient<AuthHeaderHandler>();
+            // ----- Register AutoMapper -----
+            builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
             // ----- Register ViewModels & Views (Transient) -----
             builder.Services.AddTransient<LoginViewModel>();
@@ -74,33 +75,73 @@ namespace Bookstore.Mobile
             builder.Services.AddTransient<CategoriesViewModel>();
             builder.Services.AddTransient<BooksViewModel>();
             builder.Services.AddTransient<BookDetailsViewModel>();
+            //builder.Services.AddTransient<WishlistViewModel>();
             builder.Services.AddTransient<CartViewModel>();
             builder.Services.AddTransient<ProfileViewModel>();
             builder.Services.AddTransient<AddressListViewModel>();
             builder.Services.AddTransient<AddEditAddressViewModel>();
-            builder.Services.AddTransient<CheckoutViewModel>();
             builder.Services.AddTransient<OrderHistoryViewModel>();
             builder.Services.AddTransient<OrderDetailsViewModel>();
+            builder.Services.AddTransient<CheckoutViewModel>();
             builder.Services.AddTransient<SubmitReviewViewModel>();
+            // Admin/Staff ViewModels
+            builder.Services.AddTransient<AdminDashboardViewModel>();
+            builder.Services.AddTransient<AdminOrderListViewModel>();
+            builder.Services.AddTransient<AdminOrderDetailsViewModel>();
+            builder.Services.AddTransient<AdminProductHomeViewModel>();
+            //builder.Services.AddTransient<AdminCategoryListViewModel>();
+            //builder.Services.AddTransient<AdminAuthorListViewModel>();
+            //builder.Services.AddTransient<AdminBookListViewModel>();
+            //builder.Services.AddTransient<AddEditBookViewModel>();
+            //builder.Services.AddTransient<AddEditCategoryViewModel>();
+            //builder.Services.AddTransient<AddEditAuthorViewModel>();
+            builder.Services.AddTransient<AdminUserListViewModel>();
+            //builder.Services.AddTransient<AdminUserDetailsViewModel>();
+            builder.Services.AddTransient<AdminPromotionListViewModel>();
+            //builder.Services.AddTransient<AddEditPromotionViewModel>();
+            builder.Services.AddTransient<AdminReportsViewModel>();
+            builder.Services.AddTransient<StockReceiptListViewModel>();
+            builder.Services.AddTransient<CreateStockReceiptViewModel>();
+            //builder.Services.AddTransient<StockReceiptDetailsViewModel>();
+            //builder.Services.AddTransient<InventoryAdjustmentViewModel>();
 
-            // ... (Các ViewModel khác)
 
+            // Transient Views
             builder.Services.AddTransient<LoginPage>();
             builder.Services.AddTransient<RegisterPage>();
             builder.Services.AddTransient<HomePage>();
             builder.Services.AddTransient<CategoriesPage>();
             builder.Services.AddTransient<BooksPage>();
             builder.Services.AddTransient<BookDetailsPage>();
+            //builder.Services.AddTransient<WishlistPage>();
             builder.Services.AddTransient<CartPage>();
             builder.Services.AddTransient<ProfilePage>();
             builder.Services.AddTransient<AddressListPage>();
             builder.Services.AddTransient<AddEditAddressPage>();
-            builder.Services.AddTransient<CheckoutPage>();
             builder.Services.AddTransient<OrderHistoryPage>();
             builder.Services.AddTransient<OrderDetailsPage>();
+            builder.Services.AddTransient<CheckoutPage>();
             builder.Services.AddTransient<SubmitReviewPage>();
-
-            // ... (Các View khác)
+            // Admin/Staff Views
+            builder.Services.AddTransient<AdminDashboardPage>();
+            builder.Services.AddTransient<AdminOrderListPage>();
+            builder.Services.AddTransient<AdminOrderDetailsPage>();
+            builder.Services.AddTransient<AdminProductHomePage>();
+            //builder.Services.AddTransient<AdminCategoryListPage>();
+            //builder.Services.AddTransient<AdminAuthorListPage>();
+            //builder.Services.AddTransient<AdminBookListPage>();
+            builder.Services.AddTransient<AddEditBookPage>();
+            builder.Services.AddTransient<AddEditCategoryPage>();
+            builder.Services.AddTransient<AddEditAuthorPage>();
+            builder.Services.AddTransient<AdminUserListPage>();
+            //builder.Services.AddTransient<AdminUserDetailsPage>();
+            builder.Services.AddTransient<AdminPromotionListPage>();
+            //builder.Services.AddTransient<AddEditPromotionPage>();
+            builder.Services.AddTransient<AdminReportsPage>();
+            builder.Services.AddTransient<StockReceiptListPage>();
+            builder.Services.AddTransient<CreateStockReceiptPage>();
+            //builder.Services.AddTransient<StockReceiptDetailsPage>();
+            //builder.Services.AddTransient<InventoryAdjustmentPage>();
 
             return builder.Build();
         }
@@ -112,39 +153,78 @@ namespace Bookstore.Mobile
             {
                 PropertyNameCaseInsensitive = true
             }));
+            var baseUri = new Uri(apiBaseAddress);
 
+            // --- Client KHÔNG cần Auth Header ---
             services.AddRefitClient<IAuthApi>(refitSettings)
-                    .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
-            services.AddRefitClient<IDashboardApi>(refitSettings)
-                    .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
-            services.AddRefitClient<ICategoriesApi>(refitSettings)
-                    .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
+                    .ConfigureHttpClient(c => c.BaseAddress = baseUri);
+
+            // --- Clients CÓ THỂ cần hoặc KHÔNG cần Auth Header (gắn sẵn handler cho an toàn) ---
+            // Public endpoints (GetBooks, GetCategories) sẽ không bị ảnh hưởng nếu không có token
             services.AddRefitClient<IBooksApi>(refitSettings)
-                   .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
-            // --- Client CẦN Auth Header ---
-            //var httpClientBuilderBooks = services.AddRefitClient<IBooksApi>(refitSettings)
-            //       .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
-            //httpClientBuilderBooks.AddHttpMessageHandler<AuthHeaderHandler>();
+                   .ConfigureHttpClient(c => c.BaseAddress = baseUri)
+                   .AddHttpMessageHandler<AuthHeaderHandler>();
 
-            var httpClientBuilderWishlist = services.AddRefitClient<IWishlistApi>(refitSettings)
-                    .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
-            httpClientBuilderWishlist.AddHttpMessageHandler<AuthHeaderHandler>();
+            services.AddRefitClient<ICategoriesApi>(refitSettings)
+                    .ConfigureHttpClient(c => c.BaseAddress = baseUri)
+                    .AddHttpMessageHandler<AuthHeaderHandler>();
 
-            var httpClientBuilderCarts = services.AddRefitClient<ICartApi>(refitSettings)
-                    .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
-            httpClientBuilderCarts.AddHttpMessageHandler<AuthHeaderHandler>();
+            services.AddRefitClient<IDashboardApi>(refitSettings)
+                    .ConfigureHttpClient(c => c.BaseAddress = baseUri);
 
-            var httpClientBuilderAddresses = services.AddRefitClient<IAddressApi>(refitSettings)
-                    .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
-            httpClientBuilderAddresses.AddHttpMessageHandler<AuthHeaderHandler>();
+            services.AddRefitClient<IReviewApi>(refitSettings)
+                   .ConfigureHttpClient(c => c.BaseAddress = baseUri)
+                   .AddHttpMessageHandler<AuthHeaderHandler>();
 
-            var httpClientBuilderOrders = services.AddRefitClient<IOrderApi>(refitSettings)
-                    .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
-            httpClientBuilderOrders.AddHttpMessageHandler<AuthHeaderHandler>();
+            // --- Clients CHẮC CHẮN cần Auth Header ---
+            services.AddRefitClient<IWishlistApi>(refitSettings)
+                    .ConfigureHttpClient(c => c.BaseAddress = baseUri)
+                    .AddHttpMessageHandler<AuthHeaderHandler>();
 
-            var httpClientBuilderReviews = services.AddRefitClient<IReviewApi>(refitSettings)
-                    .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress));
-            httpClientBuilderReviews.AddHttpMessageHandler<AuthHeaderHandler>();
+            services.AddRefitClient<ICartApi>(refitSettings)
+                    .ConfigureHttpClient(c => c.BaseAddress = baseUri)
+                    .AddHttpMessageHandler<AuthHeaderHandler>();
+
+            services.AddRefitClient<IAddressApi>(refitSettings)
+                    .ConfigureHttpClient(c => c.BaseAddress = baseUri)
+                    .AddHttpMessageHandler<AuthHeaderHandler>();
+
+            services.AddRefitClient<IOrderApi>(refitSettings)
+                    .ConfigureHttpClient(c => c.BaseAddress = baseUri)
+                    .AddHttpMessageHandler<AuthHeaderHandler>();
+
+            // --- Clients cho Admin/Staff (Luôn cần Auth Header) ---
+            //services.AddRefitClient<IAdminDashboardApi>(refitSettings)
+            //        .ConfigureHttpClient(c => c.BaseAddress = baseUri)
+            //        .AddHttpMessageHandler<AuthHeaderHandler>();
+
+            //services.AddRefitClient<IAdminOrderApi>(refitSettings)
+            //        .ConfigureHttpClient(c => c.BaseAddress = baseUri)
+            //        .AddHttpMessageHandler<AuthHeaderHandler>();
+
+            //services.AddRefitClient<IAdminReportApi>(refitSettings)
+            //        .ConfigureHttpClient(c => c.BaseAddress = baseUri)
+            //        .AddHttpMessageHandler<AuthHeaderHandler>();
+
+            //services.AddRefitClient<ISupplierApi>(refitSettings)
+            //        .ConfigureHttpClient(c => c.BaseAddress = baseUri)
+            //        .AddHttpMessageHandler<AuthHeaderHandler>();
+
+            //services.AddRefitClient<IStockReceiptApi>(refitSettings)
+            //        .ConfigureHttpClient(c => c.BaseAddress = baseUri)
+            //        .AddHttpMessageHandler<AuthHeaderHandler>();
+
+            //services.AddRefitClient<IAdminInventoryApi>(refitSettings)
+            //        .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress)) // Ví dụ dùng lại biến
+            //        .AddHttpMessageHandler<AuthHeaderHandler>();
+
+            //services.AddRefitClient<IAdminPromotionApi>(refitSettings)
+            //        .ConfigureHttpClient(c => c.BaseAddress = baseUri)
+            //        .AddHttpMessageHandler<AuthHeaderHandler>();
+
+            //services.AddRefitClient<IAdminUserApi>(refitSettings)
+            //       .ConfigureHttpClient(c => c.BaseAddress = baseUri)
+            //       .AddHttpMessageHandler<AuthHeaderHandler>();
         }
     }
 

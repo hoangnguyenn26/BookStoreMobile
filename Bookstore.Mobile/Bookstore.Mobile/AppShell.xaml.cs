@@ -8,29 +8,7 @@ namespace Bookstore.Mobile
         public AppShell()
         {
             InitializeComponent();
-            // Routes chính (Thường đã có trong XAML nhưng đăng ký lại không sao)
-            Routing.RegisterRoute(nameof(HomePage), typeof(HomePage));
-            Routing.RegisterRoute(nameof(CategoriesPage), typeof(CategoriesPage));
-            //Routing.RegisterRoute(nameof(WishlistPage), typeof(WishlistPage));
-            Routing.RegisterRoute(nameof(CartPage), typeof(CartPage));
-            Routing.RegisterRoute(nameof(ProfilePage), typeof(ProfilePage));
-
-            // Routes cho Authentication (Thường không nằm trong Flyout/Tabs)
-            Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
-            Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
-
-            // Routes cho luồng duyệt sản phẩm
-            Routing.RegisterRoute(nameof(BooksPage), typeof(BooksPage));
-            Routing.RegisterRoute(nameof(BookDetailsPage), typeof(BookDetailsPage));
-
-            // Routes cho quản lý tài khoản người dùng
-            Routing.RegisterRoute(nameof(AddressListPage), typeof(AddressListPage));
-            Routing.RegisterRoute(nameof(AddEditAddressPage), typeof(AddEditAddressPage));
-
-            // Routes cho luồng đặt hàng
-            Routing.RegisterRoute(nameof(CheckoutPage), typeof(CheckoutPage));
-            Routing.RegisterRoute(nameof(OrderDetailsPage), typeof(OrderDetailsPage));
-            Routing.RegisterRoute(nameof(SubmitReviewPage), typeof(SubmitReviewPage));
+            RegisterRoutes();
         }
         protected override async void OnAppearing()
         {
@@ -40,6 +18,33 @@ namespace Bookstore.Mobile
             {
                 await Shell.Current.GoToAsync(nameof(LoginPage));
             }
+        }
+        private void RegisterRoutes()
+        {
+            Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
+            Routing.RegisterRoute(nameof(RegisterPage), typeof(RegisterPage));
+            Routing.RegisterRoute(nameof(BooksPage), typeof(BooksPage));
+            Routing.RegisterRoute(nameof(BookDetailsPage), typeof(BookDetailsPage));
+            Routing.RegisterRoute(nameof(AddressListPage), typeof(AddressListPage));
+            Routing.RegisterRoute(nameof(AddEditAddressPage), typeof(AddEditAddressPage));
+            Routing.RegisterRoute(nameof(OrderHistoryPage), typeof(OrderHistoryPage));
+            Routing.RegisterRoute(nameof(OrderDetailsPage), typeof(OrderDetailsPage));
+            Routing.RegisterRoute(nameof(CheckoutPage), typeof(CheckoutPage));
+            Routing.RegisterRoute(nameof(SubmitReviewPage), typeof(SubmitReviewPage));
+
+            //trang Admin/Staff
+            Routing.RegisterRoute(nameof(AdminDashboardPage), typeof(AdminDashboardPage));
+            Routing.RegisterRoute(nameof(AdminOrderListPage), typeof(AdminOrderListPage));
+            Routing.RegisterRoute(nameof(AdminOrderDetailsPage), typeof(AdminOrderDetailsPage));
+            Routing.RegisterRoute(nameof(AddressListPage), typeof(AddressListPage));
+            Routing.RegisterRoute(nameof(AdminProductHomePage), typeof(AdminProductHomePage));
+            Routing.RegisterRoute(nameof(AdminPromotionListPage), typeof(AdminPromotionListPage));
+            Routing.RegisterRoute(nameof(AdminReportsPage), typeof(AdminReportsPage));
+            Routing.RegisterRoute(nameof(AdminUserListPage), typeof(AdminUserListPage));
+            Routing.RegisterRoute(nameof(CreateStockReceiptPage), typeof(CreateStockReceiptPage));
+            Routing.RegisterRoute(nameof(StockReceiptListPage), typeof(StockReceiptListPage));
+
+            // ... các trang quản lý khác
         }
     }
 }

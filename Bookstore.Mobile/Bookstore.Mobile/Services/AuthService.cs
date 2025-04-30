@@ -44,17 +44,26 @@ namespace Bookstore.Mobile.Services
                 if (!string.IsNullOrEmpty(_authToken) && !string.IsNullOrEmpty(userInfoJson))
                 {
                     _currentUser = JsonSerializer.Deserialize<UserDto>(userInfoJson);
-                    _logger.LogInformation("User {Username} session loaded from storage.", _currentUser?.UserName ?? "Unknown");
+                    _logger.LogInformation("User {Username} session loaded.", _currentUser?.UserName);
                 }
                 else
                 {
-                    _logger.LogInformation("No previous session found.");
+                    _logger.LogInformation("No valid session found in storage.");
+                    _currentUser = null;
+                    _authToken = null;
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to initialize AuthService or load session.");
-                await LogoutAsync();
+                _logger.LogError(ex, "Failed to initialize AuthService. Clearing session.");
+                _currentUser = null;
+                _authToken = null;
+                SecureStorage.Default.Remove(AuthTokenKey);
+                SecureStorage.Default.Remove(UserInfoKey);
+            }
+            finally
+            {
+                OnAuthStateChanged();
             }
         }
 
@@ -76,7 +85,9 @@ namespace Bookstore.Mobile.Services
                     await SecureStorage.Default.SetAsync(AuthTokenKey, _authToken);
                     await SecureStorage.Default.SetAsync(UserInfoKey, JsonSerializer.Serialize(_currentUser));
 
-                    _logger.LogInformation("User {Username} logged in successfully.", _currentUser.UserName);
+                    _logger.LogInformation("User {Username} logged in successfully with roles: {Roles}",
+                            _currentUser.UserName, string.Join(", ", _currentUser.Roles ?? new List<string>()));
+                    OnAuthStateChanged();
                     return true;
                 }
                 else
@@ -183,8 +194,24 @@ namespace Bookstore.Mobile.Services
             SecureStorage.Default.Remove(AuthTokenKey);
             SecureStorage.Default.Remove(UserInfoKey);
 
+            OnAuthStateChanged();
             await Task.CompletedTask;
             await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
+        }
+        // --- Thêm cơ chế thông báo thay đổi trạng thái ---
+        public event EventHandler? AuthStateChanged;
+
+        protected virtual void OnAuthStateChanged()
+        {
+            AuthStateChanged?.Invoke(this, EventArgs.Empty);
+        }
+        public bool HasRole(string roleName)
+        {
+            if (!IsLoggedIn || CurrentUser?.Roles == null)
+            {
+                return false;
+            }
+            return CurrentUser.Roles.Contains(roleName, StringComparer.OrdinalIgnoreCase);
         }
     }
 

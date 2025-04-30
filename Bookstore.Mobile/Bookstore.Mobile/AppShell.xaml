@@ -4,23 +4,16 @@
        xmlns:local="clr-namespace:Bookstore.Mobile"
        xmlns:views="clr-namespace:Bookstore.Mobile.Views"
        x:Class="Bookstore.Mobile.AppShell"
-       Shell.FlyoutBehavior="Flyout">
+       Shell.FlyoutBehavior="Flyout"
+       xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
+       x:DataType="vm:AppShellViewModel">
 
     <Shell.Resources>
         <ResourceDictionary>
-            <Style x:Key="BaseStyle" TargetType="Element">
-                <Setter Property="Shell.BackgroundColor" Value="{StaticResource PrimaryDark}" />
-                <Setter Property="Shell.ForegroundColor" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource White}}" />
-                <Setter Property="Shell.TitleColor" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource White}}" />
-                <Setter Property="Shell.DisabledColor" Value="#B4FFFFFF" />
-                <Setter Property="Shell.UnselectedColor" Value="#95FFFFFF" />
-                <Setter Property="Shell.TabBarBackgroundColor" Value="{StaticResource PrimaryDark}" />
-                <Setter Property="Shell.TabBarForegroundColor" Value="{StaticResource White}"/>
-                <Setter Property="Shell.TabBarUnselectedColor" Value="#95FFFFFF"/>
-                <Setter Property="Shell.TabBarTitleColor" Value="{StaticResource White}"/>
-            </Style>
-            <Style TargetType="TabBar" BasedOn="{StaticResource BaseStyle}" />
-            <Style TargetType="FlyoutItem" BasedOn="{StaticResource BaseStyle}" />
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Shell.Resources>
 
@@ -32,68 +25,47 @@
 
     <FlyoutItem Title="Home" Icon="home_FILL0_wght400_GRAD0_opsz24.png">
         <ShellContent Title="Home"
-                      ContentTemplate="{DataTemplate views:HomePage}" 
-                       Route="HomePage"/>
+                      ContentTemplate="{DataTemplate views:HomePage}"
+                      Route="HomePage"/>
     </FlyoutItem>
 
     <FlyoutItem Title="Categories" Icon="category_FILL0_wght400_GRAD0_opsz24.png">
         <ShellContent Title="Categories"
-                       ContentTemplate="{DataTemplate views:CategoriesPage}" />
+                      ContentTemplate="{DataTemplate views:CategoriesPage}"
+                      Route="CategoriesPage"/>
     </FlyoutItem>
 
     <!--<FlyoutItem Title="My Wishlist" Icon="favorite_FILL0_wght400_GRAD0_opsz24.png">
         <ShellContent Title="Wishlist"
                        ContentTemplate="{DataTemplate views:WishlistPage}"
-                       Route="WishlistPage" />
+                       Route="WishlistPage" />--><!--
     </FlyoutItem>-->
 
     <FlyoutItem Title="My Cart" Icon="shopping_cart_FILL0_wght400_GRAD0_opsz24.png">
         <ShellContent Title="Cart"
-                       ContentTemplate="{DataTemplate views:CartPage}" />
+                      ContentTemplate="{DataTemplate views:CartPage}"
+                      Route="CartPage"/>
     </FlyoutItem>
 
-    <FlyoutItem Title="My Profile" Icon="person_FILL0_wght400_GRAD0_opsz24.png">
-        <ShellContent Title="Profile"
-                       ContentTemplate="{DataTemplate views:ProfilePage}" />
+    <!--<MenuFlyoutItem IsVisible="{Binding IsAdminOrStaff}" />-->
+
+    <FlyoutItem Title="Store Management" Icon="store.png" IsVisible="{Binding IsAdminOrStaff}">
+        <ShellContent Title="Dashboard" ContentTemplate="{DataTemplate views:AdminDashboardPage}" Route="AdminDashboardPage" />
+        <ShellContent Title="Orders" ContentTemplate="{DataTemplate views:AdminOrderListPage}" Route="AdminOrderListPage" />
+        <ShellContent Title="Inventory" ContentTemplate="{DataTemplate views:StockReceiptListPage}" Route="StockReceiptListPage" />
+        <ShellContent Title="Products" ContentTemplate="{DataTemplate views:AdminProductHomePage}" Route="AdminProductHomePage"/>
     </FlyoutItem>
 
-    <ShellContent Title="Login"
-                   ContentTemplate="{DataTemplate views:LoginPage}"
-                   Shell.FlyoutItemIsVisible="False"
-                   Shell.NavBarIsVisible="False"/>
+    <FlyoutItem Title="System Admin" Icon="admin_panel.png" IsVisible="{Binding IsAdmin}">
+        <ShellContent Title="Users" ContentTemplate="{DataTemplate views:AdminUserListPage}" Route="AdminUserListPage" />
+        <ShellContent Title="Promotions" ContentTemplate="{DataTemplate views:AdminPromotionListPage}" Route="AdminPromotionListPage" />
+        <ShellContent Title="Reports" ContentTemplate="{DataTemplate views:AdminReportsPage}" Route="AdminReportsPage" />
+    </FlyoutItem>
 
-    <ShellContent Title="Register"
-                   ContentTemplate="{DataTemplate views:RegisterPage}"
-                    Shell.FlyoutItemIsVisible="False"
-                   Shell.NavBarIsVisible="False"/>
-
-    <ShellContent Title="Books"
-                   ContentTemplate="{DataTemplate views:BooksPage}"
-                   Shell.FlyoutItemIsVisible="False"/>
-
-    <ShellContent Title="Book Details"
-                   ContentTemplate="{DataTemplate views:BookDetailsPage}"
-                   Shell.FlyoutItemIsVisible="False"/>
-
-    <ShellContent Title="My Addresses"
-                   ContentTemplate="{DataTemplate views:AddressListPage}"
-                   Shell.FlyoutItemIsVisible="False"/>
-
-    <ShellContent Title="Add/Edit Address"
-                   ContentTemplate="{DataTemplate views:AddEditAddressPage}"
-                   Shell.FlyoutItemIsVisible="False"/>
-
-    <ShellContent Title="Checkout"
-                  ContentTemplate="{DataTemplate views:CheckoutPage}"
-                  Shell.FlyoutItemIsVisible="False"/>
-
-    <ShellContent Title="Order History"
-                   ContentTemplate="{DataTemplate views:OrderHistoryPage}"
-                   Shell.FlyoutItemIsVisible="False"
-                   Route="OrderHistoryPage"/>
-
-    <ShellContent Title="Order Details"
-                   ContentTemplate="{DataTemplate views:OrderDetailsPage}"
-                   Shell.FlyoutItemIsVisible="False"/>
+    <FlyoutItem Title="My Account" Icon="account_circle.png">
+        <ShellContent Title="Profile" ContentTemplate="{DataTemplate views:ProfilePage}" Route="ProfilePage" />
+        <ShellContent Title="Addresses" ContentTemplate="{DataTemplate views:AddressListPage}" Route="AddressListPage" />
+        <ShellContent Title="Order History" ContentTemplate="{DataTemplate views:OrderHistoryPage}" Route="OrderHistoryPage" />
+    </FlyoutItem>
 
 </Shell>

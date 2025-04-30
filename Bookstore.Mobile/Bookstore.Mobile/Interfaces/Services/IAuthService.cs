@@ -9,10 +9,12 @@ namespace Bookstore.Mobile.Interfaces.Services
         UserDto? CurrentUser { get; }
         string? AuthToken { get; }
         string? LastErrorMessage { get; }
+        event EventHandler? AuthStateChanged;
 
         Task<bool> LoginAsync(LoginRequestDto loginRequest);
         Task<bool> RegisterAsync(RegisterRequestDto registerRequest);
         Task LogoutAsync();
         Task InitializeAsync();
+        bool HasRole(string roleName);
     }
 }
