@@ -1,12 +1,82 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
+             xmlns:dto="clr-namespace:Bookstore.Mobile.Models"
+             xmlns:enums="clr-namespace:Bookstore.Mobile.Enums"
+             xmlns:converters="clr-namespace:Bookstore.Mobile.Converters"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:DataType="vm:AdminOrderListViewModel"
              x:Class="Bookstore.Mobile.Views.AdminOrderListPage"
-             Title="AdminOrderListPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="{Binding Title}">
+
+    <ContentPage.Resources>
+        <converters:OrderStatusToStringConverter x:Key="OrderStatusToStringConverter"/>
+        <converters:OrderStatusToColorConverter x:Key="OrderStatusToColorConverter"/>
+        <converters:GuidShortenerConverter x:Key="GuidShortenerConverter"/>
+        <converters:EnumToItemsSourceConverter x:Key="StatusConverter" 
+                                             EnumType="{x:Type enums:OrderStatus}"/>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto, Auto, *">
+        <!-- Header -->
+        <Label Grid.Row="0" Text="Manage Orders" Style="{StaticResource Headline}" Margin="15,10"/>
+
+        <!-- Filter Section -->
+        <HorizontalStackLayout Grid.Row="1" Padding="15,0" Spacing="10">
+            <Label Text="Filter by Status:" VerticalOptions="Center"/>
+            <Picker Title="Select Status"
+                ItemsSource="{Binding AvailableStatusFilters}"
+                SelectedItem="{Binding SelectedStatusFilter, Mode=TwoWay}"
+                WidthRequest="200">
+            </Picker>
+        </HorizontalStackLayout>
+
+        <!-- Order List -->
+        <RefreshView Grid.Row="2" 
+                    Command="{Binding RefreshCommand}"
+                    IsRefreshing="{Binding IsBusy}">
+
+            <CollectionView ItemsSource="{Binding Orders}"
+                          SelectionMode="Single"
+                          SelectionChangedCommand="{Binding GoToOrderDetailsCommand}"
+                          SelectionChangedCommandParameter="{Binding Source={RelativeSource Self}, Path=SelectedItem}"
+                          RemainingItemsThreshold="5"
+                          RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}"
+                          Margin="10">
+
+                <CollectionView.EmptyView>
+                    <Label Text="No orders found" HorizontalOptions="Center" VerticalOptions="Center"/>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="dto:OrderSummaryDto">
+                        <Border Style="{StaticResource CardBorder}" Padding="15" Margin="0,0,0,10">
+                            <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*, Auto" RowSpacing="8">
+                                <Label Grid.Row="0" Grid.Column="0" FontSize="Small">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Order #"/>
+                                            <Span Text="{Binding Id, Converter={StaticResource GuidShortenerConverter}}"/>
+                                            <Span Text=" by "/>
+                                            <Span Text="{Binding UserName, TargetNullValue='Guest'}"/>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label Grid.Row="0" Grid.Column="1"
+                                       Text="{Binding Status, Converter={StaticResource OrderStatusToStringConverter}}"
+                                       TextColor="{Binding Status, Converter={StaticResource OrderStatusToColorConverter}}"
+                                       FontAttributes="Bold"/>
+                                <Label Grid.Row="1" Grid.Column="0" 
+                                       Text="{Binding OrderDate, StringFormat='{0:dd MMM yyyy HH:mm}'}"/>
+                                <Label Grid.Row="1" Grid.Column="1" 
+                                       Text="{Binding TotalAmount, StringFormat='{0:C}'}" 
+                                       FontAttributes="Bold"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
 </ContentPage>

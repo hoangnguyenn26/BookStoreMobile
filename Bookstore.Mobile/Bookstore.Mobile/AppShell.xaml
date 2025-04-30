@@ -58,12 +58,13 @@
                   Route="AdminDashboardPage" />
 
         <!-- Orders Group -->
-        <Tab Title="Orders">
-            <ShellContent Route="AdminOrderListPage" 
-                      ContentTemplate="{DataTemplate views:AdminOrderListPage}" />
-            <ShellContent Route="AdminOrderDetailsPage" 
-                      ContentTemplate="{DataTemplate views:AdminOrderDetailsPage}" />
-        </Tab>
+        <ShellContent Title="OrderList" 
+                      ContentTemplate="{DataTemplate views:AdminOrderListPage}"
+                      Route="AdminOrderListPage" />
+
+        <ShellContent Title="OrderDetails"
+                      ContentTemplate="{DataTemplate views:AdminOrderDetailsPage}" 
+                      Route="AdminOrderDetailsPage" />
 
         <!-- Products -->
         <ShellContent Title="Products" 

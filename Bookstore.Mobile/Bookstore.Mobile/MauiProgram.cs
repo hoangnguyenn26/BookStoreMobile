@@ -198,9 +198,9 @@ namespace Bookstore.Mobile
                     .ConfigureHttpClient(c => c.BaseAddress = baseUri)
                     .AddHttpMessageHandler<AuthHeaderHandler>();
 
-            //services.AddRefitClient<IAdminOrderApi>(refitSettings)
-            //        .ConfigureHttpClient(c => c.BaseAddress = baseUri)
-            //        .AddHttpMessageHandler<AuthHeaderHandler>();
+            services.AddRefitClient<IAdminOrderApi>(refitSettings)
+                    .ConfigureHttpClient(c => c.BaseAddress = baseUri)
+                    .AddHttpMessageHandler<AuthHeaderHandler>();
 
             //services.AddRefitClient<IAdminReportApi>(refitSettings)
             //        .ConfigureHttpClient(c => c.BaseAddress = baseUri)

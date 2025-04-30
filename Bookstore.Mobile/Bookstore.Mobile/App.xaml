@@ -21,6 +21,7 @@
             <converters:BoolToWishlistIconConverter x:Key="BoolToWishlistIconConverter"/>
             <converters:StockToColorConverter x:Key="StockToColorConverter"/>
             <converters:RatingToStarIconConverter x:Key="RatingToStarIconConverter"/>
+            <converters:EnumToItemsSourceConverter x:Key="EnumToItemsSourceConverter"/>
 
         </ResourceDictionary>
     </Application.Resources>
