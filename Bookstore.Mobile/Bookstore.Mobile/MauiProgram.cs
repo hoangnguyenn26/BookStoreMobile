@@ -86,24 +86,34 @@ namespace Bookstore.Mobile
             builder.Services.AddTransient<SubmitReviewViewModel>();
             // Admin/Staff ViewModels
             builder.Services.AddTransient<AdminDashboardViewModel>();
+            builder.Services.AddTransient<AdminProductHomeViewModel>();
+
             builder.Services.AddTransient<AdminOrderListViewModel>();
             builder.Services.AddTransient<AdminOrderDetailsViewModel>();
-            builder.Services.AddTransient<AdminProductHomeViewModel>();
-            //builder.Services.AddTransient<AdminCategoryListViewModel>();
-            //builder.Services.AddTransient<AdminAuthorListViewModel>();
-            //builder.Services.AddTransient<AdminBookListViewModel>();
-            //builder.Services.AddTransient<AddEditBookViewModel>();
-            //builder.Services.AddTransient<AddEditCategoryViewModel>();
-            //builder.Services.AddTransient<AddEditAuthorViewModel>();
+
+            builder.Services.AddTransient<AdminCategoryListViewModel>();
+            builder.Services.AddTransient<AddEditCategoryViewModel>();
+
+            builder.Services.AddTransient<AdminAuthorListViewModel>();
+            builder.Services.AddTransient<AddEditAuthorViewModel>();
+
+            builder.Services.AddTransient<AdminBookListViewModel>();
+            builder.Services.AddTransient<AddEditBookViewModel>();
+
             builder.Services.AddTransient<AdminUserListViewModel>();
             //builder.Services.AddTransient<AdminUserDetailsViewModel>();
+
             builder.Services.AddTransient<AdminPromotionListViewModel>();
             //builder.Services.AddTransient<AddEditPromotionViewModel>();
+
             builder.Services.AddTransient<AdminReportsViewModel>();
             builder.Services.AddTransient<StockReceiptListViewModel>();
+
             builder.Services.AddTransient<CreateStockReceiptViewModel>();
             //builder.Services.AddTransient<StockReceiptDetailsViewModel>();
+
             //builder.Services.AddTransient<InventoryAdjustmentViewModel>();
+
 
 
             // Transient Views
@@ -124,22 +134,31 @@ namespace Bookstore.Mobile
             builder.Services.AddTransient<SubmitReviewPage>();
             // Admin/Staff Views
             builder.Services.AddTransient<AdminDashboardPage>();
+            builder.Services.AddTransient<AdminProductHomePage>();
+
             builder.Services.AddTransient<AdminOrderListPage>();
             builder.Services.AddTransient<AdminOrderDetailsPage>();
-            builder.Services.AddTransient<AdminProductHomePage>();
-            //builder.Services.AddTransient<AdminCategoryListPage>();
-            //builder.Services.AddTransient<AdminAuthorListPage>();
-            //builder.Services.AddTransient<AdminBookListPage>();
-            builder.Services.AddTransient<AddEditBookPage>();
+
+            builder.Services.AddTransient<AdminCategoryListPage>();
             builder.Services.AddTransient<AddEditCategoryPage>();
+
+            builder.Services.AddTransient<AdminAuthorListPage>();
             builder.Services.AddTransient<AddEditAuthorPage>();
+
+            builder.Services.AddTransient<AdminBookListPage>();
+            builder.Services.AddTransient<AddEditBookPage>();
+
             builder.Services.AddTransient<AdminUserListPage>();
             //builder.Services.AddTransient<AdminUserDetailsPage>();
+
             builder.Services.AddTransient<AdminPromotionListPage>();
             //builder.Services.AddTransient<AddEditPromotionPage>();
+
             builder.Services.AddTransient<AdminReportsPage>();
+
             builder.Services.AddTransient<StockReceiptListPage>();
             builder.Services.AddTransient<CreateStockReceiptPage>();
+
             //builder.Services.AddTransient<StockReceiptDetailsPage>();
             //builder.Services.AddTransient<InventoryAdjustmentPage>();
 
@@ -198,6 +217,9 @@ namespace Bookstore.Mobile
                     .ConfigureHttpClient(c => c.BaseAddress = baseUri)
                     .AddHttpMessageHandler<AuthHeaderHandler>();
 
+            services.AddRefitClient<IAuthorApi>(refitSettings)
+                    .ConfigureHttpClient(c => c.BaseAddress = baseUri)
+                    .AddHttpMessageHandler<AuthHeaderHandler>();
 
             //services.AddRefitClient<IAdminReportApi>(refitSettings)
             //        .ConfigureHttpClient(c => c.BaseAddress = baseUri)

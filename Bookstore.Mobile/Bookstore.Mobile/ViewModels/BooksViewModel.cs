@@ -94,7 +94,7 @@ namespace Bookstore.Mobile.ViewModels
             {
                 _logger.LogInformation("Loading books for CategoryId: {CategoryId}, Page: {Page}", CategoryId ?? Guid.Empty, _currentPage);
                 // Gọi API với các tham số hiện tại
-                var response = await _booksApi.GetBooks(CategoryId, null /*search*/, _currentPage, PageSize);
+                var response = await _booksApi.GetBooks(CategoryId, null, null, _currentPage, PageSize);
 
                 if (response.IsSuccessStatusCode && response.Content != null)
                 {
@@ -110,7 +110,7 @@ namespace Bookstore.Mobile.ViewModels
                     }
                     else
                     {
-                        _canLoadMore = false; // Không còn sách để load
+                        _canLoadMore = false;
                         _logger.LogInformation("No more books found.");
                     }
                 }

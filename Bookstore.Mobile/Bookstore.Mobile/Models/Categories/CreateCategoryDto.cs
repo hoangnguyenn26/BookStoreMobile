@@ -1,9 +1,7 @@
-﻿
-namespace Bookstore.Mobile.Models
+﻿namespace Bookstore.Mobile.Models
 {
-    public class CategoryDto
+    public class CreateCategoryDto
     {
-        public Guid Id { get; set; }
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
         public Guid? ParentCategoryId { get; set; }

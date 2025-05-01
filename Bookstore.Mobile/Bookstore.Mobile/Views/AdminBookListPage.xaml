@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
+             xmlns:dto="clr-namespace:Bookstore.Mobile.Models"
+             x:DataType="vm:AdminBookListViewModel"
+             x:Class="Bookstore.Mobile.Views.AdminBookListPage"
+             Title="{Binding Title}">
+    <Grid RowDefinitions="Auto, Auto, Auto, *">
+        <Grid Grid.Row="0" Padding="15,10" ColumnDefinitions="*,Auto">
+            <Label Text="Manage Books" Style="{StaticResource Headline}" VerticalOptions="Center"/>
+            <Button Grid.Column="1" Text="+ Add New" Command="{Binding GoToAddBookCommand}" Style="{StaticResource TextButton}"/>
+        </Grid>
+        <SearchBar Grid.Row="1" Placeholder="Search title, author, ISBN..." Text="{Binding SearchTerm}" SearchCommand="{Binding SearchCommand}" Margin="15,0"/>
+        <HorizontalStackLayout Grid.Row="2" Margin="15,5" Spacing="10" BindableLayout.ItemsSource="{Binding FilterOptions}">
+            <Picker Title="Category" ItemsSource="{Binding Categories}" ItemDisplayBinding="{Binding Name}" SelectedItem="{Binding SelectedCategoryFilter}" HorizontalOptions="FillAndExpand"/>
+            <Picker Title="Author" ItemsSource="{Binding Authors}" ItemDisplayBinding="{Binding Name}" SelectedItem="{Binding SelectedAuthorFilter}" HorizontalOptions="FillAndExpand"/>
+            <Button Text="Clear" Command="{Binding ClearFiltersCommand}" FontSize="Micro" Style="{StaticResource TextButton}" Padding="5"/>
+        </HorizontalStackLayout>
+
+        <ActivityIndicator Grid.Row="2" Grid.RowSpan="2" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center"/>
+        <Label Grid.Row="3" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}" VerticalOptions="Center" HorizontalOptions="Center"/>
+
+        <RefreshView Grid.Row="3" Command="{Binding LoadBooksCommand}" CommandParameter="true" IsRefreshing="{Binding IsBusy}" IsVisible="{Binding ShowContent}">
+            <CollectionView ItemsSource="{Binding Books}" SelectionMode="None" Margin="10"
+                            RemainingItemsThreshold="5"
+                            RemainingItemsThresholdReachedCommand="{Binding LoadMoreBooksCommand}">
+                <CollectionView.EmptyView>
+                    <Label Text="No books found matching the criteria." HorizontalOptions="Center" VerticalOptions="Center" Margin="20"/>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="dto:BookDto">
+                        <Border Style="{StaticResource CardBorder}" Padding="10,5" Margin="0,0,0,8">
+                            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
+                                <Image Grid.Column="0" Source="{Binding CoverImageUrl, TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}" Aspect="AspectFit" WidthRequest="50" HeightRequest="70"/>
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                    <Label Text="{Binding Title}" FontAttributes="Bold" LineBreakMode="TailTruncation"/>
+                                    <Label Text="{Binding AuthorName, TargetNullValue='N/A'}" FontSize="Micro"/>
+                                    <Label Text="{Binding Price, StringFormat='{0:C}'}" FontSize="Small"/>
+                                    <Label Text="{Binding StockQuantity, StringFormat='Stock: {0}'}" FontSize="Micro"/>
+                                </VerticalStackLayout>
+                                <HorizontalStackLayout Grid.Column="2" VerticalOptions="Center">
+                                    <Button Text="Edit" FontSize="Micro" Padding="8,4" HeightRequest="35" Style="{StaticResource OutlineButton}" Margin="0,0,5,0"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminBookListViewModel}}, Path=GoToEditBookCommand}"
+                                            CommandParameter="{Binding Id}"/>
+                                    <Button BackgroundColor="Transparent" Padding="0"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminBookListViewModel}}, Path=DeleteBookCommand}"
+                                            CommandParameter="{Binding Id}">
+                                        <Button.ImageSource>
+                                            <FontImageSource Glyph="" FontFamily="MaterialSymbolsRounded" Color="{StaticResource ErrorLight}"/>
+                                        </Button.ImageSource>
+                                    </Button>
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+</ContentPage>

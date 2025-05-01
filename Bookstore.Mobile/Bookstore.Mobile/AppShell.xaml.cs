@@ -36,6 +36,13 @@ namespace Bookstore.Mobile
             Routing.RegisterRoute(nameof(CreateStockReceiptPage), typeof(CreateStockReceiptPage));
             Routing.RegisterRoute(nameof(StockReceiptListPage), typeof(StockReceiptListPage));
 
+            Routing.RegisterRoute(nameof(AdminCategoryListPage), typeof(AdminCategoryListPage));
+            Routing.RegisterRoute(nameof(AdminAuthorListPage), typeof(AdminAuthorListPage));
+            Routing.RegisterRoute(nameof(AdminBookListPage), typeof(AdminBookListPage));
+            Routing.RegisterRoute(nameof(AddEditCategoryPage), typeof(AddEditCategoryPage));
+            Routing.RegisterRoute(nameof(AddEditAuthorPage), typeof(AddEditAuthorPage));
+            Routing.RegisterRoute(nameof(AddEditBookPage), typeof(AddEditBookPage));
+
             // ... các trang quản lý khác
         }
     }

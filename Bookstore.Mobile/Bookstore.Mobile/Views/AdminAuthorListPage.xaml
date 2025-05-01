@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
+             xmlns:dto="clr-namespace:Bookstore.Mobile.Models"
+             x:DataType="vm:AdminAuthorListViewModel"
+             x:Class="Bookstore.Mobile.Views.AdminAuthorListPage"
+             Title="{Binding Title}">
+    <Grid RowDefinitions="Auto, Auto, *">
+        <Grid Grid.Row="0" Padding="15,10" ColumnDefinitions="*,Auto">
+            <Label Text="Authors" Style="{StaticResource Headline}" VerticalOptions="Center"/>
+            <Button Grid.Column="1" Text="+ Add New" Command="{Binding GoToAddAuthorCommand}" Style="{StaticResource TextButton}"/>
+        </Grid>
+        <SearchBar Grid.Row="1" Placeholder="Search authors..." Text="{Binding SearchTerm}" SearchCommand="{Binding SearchCommand}" Margin="15,0"/>
+
+        <ActivityIndicator Grid.Row="1" Grid.RowSpan="2" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center"/>
+        <Label Grid.Row="2" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}" VerticalOptions="Center" HorizontalOptions="Center"/>
+
+        <RefreshView Grid.Row="2" Command="{Binding LoadAuthorsCommand}" CommandParameter="true" IsRefreshing="{Binding IsBusy}" IsVisible="{Binding ShowContent}">
+            <CollectionView ItemsSource="{Binding Authors}" SelectionMode="None" Margin="10">
+                <CollectionView.EmptyView>
+                    <Label Text="No authors found." HorizontalOptions="Center" VerticalOptions="Center" Margin="20"/>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="dto:AuthorDto">
+                        <Border Style="{StaticResource CardBorder}" Padding="10,5" Margin="0,0,0,8">
+                            <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="5">
+                                <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
+                                    <Label Text="{Binding Name}" FontAttributes="Bold"/>
+                                    <Label Text="{Binding Biography}" FontSize="Micro" LineBreakMode="TailTruncation"/>
+                                </VerticalStackLayout>
+                                <Button Grid.Column="1" Text="Edit" FontSize="Micro" Padding="8,4" HeightRequest="35" Style="{StaticResource OutlineButton}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminAuthorListViewModel}}, Path=GoToEditAuthorCommand}"
+                                        CommandParameter="{Binding Id}"/>
+                                <Button Grid.Column="2" BackgroundColor="Transparent" Padding="0"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminAuthorListViewModel}}, Path=DeleteAuthorCommand}"
+                                        CommandParameter="{Binding Id}">
+                                    <Button.ImageSource>
+                                        <FontImageSource Glyph="" FontFamily="MaterialSymbolsRounded" Color="{StaticResource ErrorLight}"/>
+                                    </Button.ImageSource>
+                                </Button>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+</ContentPage>
