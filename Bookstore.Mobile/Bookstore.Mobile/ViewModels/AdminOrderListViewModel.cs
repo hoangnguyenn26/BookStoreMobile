@@ -10,16 +10,16 @@ namespace Bookstore.Mobile.ViewModels
 {
     public partial class AdminOrderListViewModel : BaseViewModel
     {
-        private readonly IAdminOrderApi _adminOrderApi;
+        private readonly IOrderApi _orderApi;
         private int _currentPage = 1;
         private const int PageSize = 15;
         private bool _canLoadMore = true;
 
         public ObservableCollection<string> AvailableStatusFilters { get; } = new ObservableCollection<string>();
 
-        public AdminOrderListViewModel(IAdminOrderApi adminOrderApi)
+        public AdminOrderListViewModel(IOrderApi adminOrderApi)
         {
-            _adminOrderApi = adminOrderApi;
+            _orderApi = adminOrderApi;
             Title = "All Orders";
             Orders = new ObservableCollection<OrderSummaryDto>();
 
@@ -70,7 +70,7 @@ namespace Bookstore.Mobile.ViewModels
                     status = parsedStatus;
                 }
 
-                var response = await _adminOrderApi.GetAllOrders(_currentPage, PageSize, status);
+                var response = await _orderApi.GetAllOrdersForAdmin(_currentPage, PageSize, status);
 
                 if (response.IsSuccessStatusCode && response.Content != null)
                 {

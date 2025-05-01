@@ -1,12 +1,141 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
+             xmlns:dto="clr-namespace:Bookstore.Mobile.Models"
+             xmlns:enums="clr-namespace:Bookstore.Mobile.Enums"
+             xmlns:converters="clr-namespace:Bookstore.Mobile.Converters"
+             x:DataType="vm:AdminOrderDetailsViewModel"
              x:Class="Bookstore.Mobile.Views.AdminOrderDetailsPage"
-             Title="AdminOrderDetailsPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="{Binding Title}">
+
+    <ContentPage.Resources>
+        <converters:OrderStatusToStringConverter x:Key="OrderStatusToStringConverter"/>
+        <converters:OrderStatusToColorConverter x:Key="OrderStatusToColorConverter"/>
+        <converters:GuidShortenerConverter x:Key="GuidShortenerConverter"/>
+        <converters:StringNotNullOrEmptyBoolConverter x:Key="StringNotNullOrEmptyBoolConverter"/>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="15" Padding="15">
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="CenterAndExpand" Margin="0,20"/>
+            <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}" Margin="0,10"/>
+
+            <VerticalStackLayout Spacing="15" IsVisible="{Binding ShowContent}">
+
+                <!-- Thông tin chung Đơn hàng (Giống User Detail) -->
+                <Frame Style="{StaticResource CardFrame}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Order Information" FontAttributes="Bold" FontSize="Medium" Margin="0,0,0,5"/>
+                        <Grid ColumnDefinitions="Auto, *">
+                            <Label Grid.Column="0" Text="Order ID:" FontAttributes="Bold" WidthRequest="120"/>
+                            <Label Grid.Column="1" Text="{Binding OrderDetails.Id, Converter={StaticResource GuidShortenerConverter}}"/>
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto, *" IsVisible="{Binding OrderDetails.User, Converter={StaticResource ObjectNotNullBoolConverter}}">
+                            <!-- Cần ObjectNotNullBoolConverter -->
+                            <Label Grid.Column="0" Text="Customer:" FontAttributes="Bold" WidthRequest="120"/>
+                            <Label Grid.Column="1" Text="{Binding OrderDetails.UserName, TargetNullValue='Guest'}"/>
+                            <!-- Lấy từ OrderDto -->
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto, *">
+                            <Label Grid.Column="0" Text="Order Date:" FontAttributes="Bold" WidthRequest="120"/>
+                            <Label Grid.Column="1" Text="{Binding OrderDetails.OrderDate, StringFormat='{0:dd MMM yyyy HH:mm}'}"/>
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto, *">
+                            <Label Grid.Column="0" Text="Order Type:" FontAttributes="Bold" WidthRequest="120"/>
+                            <Label Grid.Column="1" Text="{Binding OrderDetails.OrderType}"/>
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto, *">
+                            <Label Grid.Column="0" Text="Current Status:" FontAttributes="Bold" WidthRequest="120"/>
+                            <Label Grid.Column="1" Text="{Binding OrderDetails.Status, Converter={StaticResource OrderStatusToStringConverter}}"
+                                     TextColor="{Binding OrderDetails.Status, Converter={StaticResource OrderStatusToColorConverter}}"
+                                     FontAttributes="Bold"/>
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto, *" IsVisible="{Binding OrderDetails.InvoiceNumber, Converter={StaticResource StringNotNullOrEmptyBoolConverter}}">
+                            <Label Grid.Column="0" Text="Invoice #:" FontAttributes="Bold" WidthRequest="120"/>
+                            <Label Grid.Column="1" Text="{Binding OrderDetails.InvoiceNumber}"/>
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto, *">
+                            <Label Grid.Column="0" Text="Payment:" FontAttributes="Bold" WidthRequest="120"/>
+                            <Label Grid.Column="1">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="{Binding OrderDetails.PaymentStatus}"/>
+                                        <Span Text=" ("/>
+                                        <Span Text="{Binding OrderDetails.PaymentMethod, TargetNullValue='N/A'}"/>
+                                        <Span Text=")"/>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto, *" IsVisible="{Binding OrderDetails.TransactionId, Converter={StaticResource StringNotNullOrEmptyBoolConverter}}">
+                            <Label Grid.Column="0" Text="Trans. ID:" FontAttributes="Bold" WidthRequest="120"/>
+                            <Label Grid.Column="1" Text="{Binding OrderDetails.TransactionId}" LineBreakMode="TailTruncation"/>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Địa chỉ Giao hàng -->
+                <Frame Style="{StaticResource CardFrame}" IsVisible="{Binding HasShippingAddress}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Shipping Address" FontAttributes="Bold" FontSize="Medium" Margin="0,0,0,5"/>
+                        <Label Text="{Binding OrderDetails.ShippingAddress.RecipientName}" IsVisible="{Binding OrderDetails.ShippingAddress.RecipientName, Converter={StaticResource StringNotNullOrEmptyBoolConverter}}"/>
+                        <Label Text="{Binding OrderDetails.ShippingAddress.Street}"/>
+                        <Label Text="{Binding OrderDetails.ShippingAddress.Village}"/>
+                        <Label Text="{Binding OrderDetails.ShippingAddress.District}"/>
+                        <Label Text="{Binding OrderDetails.ShippingAddress.City}"/>
+                        <Label Text="{Binding OrderDetails.ShippingAddress.PhoneNumber}" IsVisible="{Binding OrderDetails.ShippingAddress.PhoneNumber, Converter={StaticResource StringNotNullOrEmptyBoolConverter}}"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Chi tiết Sản phẩm -->
+                <Label Text="Items in this Order" FontAttributes="Bold" FontSize="Medium" Margin="0,10,0,0"/>
+                <CollectionView ItemsSource="{Binding OrderDetails.OrderDetails}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="dto:OrderDetailDto">
+                            <Grid Padding="0,10" ColumnDefinitions="Auto, *, Auto" RowDefinitions="Auto, Auto" ColumnSpacing="10">
+                                <Image Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Source="{Binding Book.CoverImageUrl, TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
+                         Aspect="AspectFit" WidthRequest="60" HeightRequest="80"/>
+
+                                <Label Grid.Row="0" Grid.Column="1" Text="{Binding Book.Title}" FontAttributes="Bold" LineBreakMode="TailTruncation"/>
+                                <Label Grid.Row="1" Grid.Column="1" Text="{Binding Book.Author.Name}" FontSize="Small"/>
+
+                                <Label Grid.Row="0" Grid.Column="2" Text="{Binding UnitPrice, StringFormat='{0:C}'}" HorizontalTextAlignment="End"/>
+                                <Label Grid.Row="1" Grid.Column="2" Text="{Binding Quantity, StringFormat='Qty: {0}'}" FontSize="Small" HorizontalTextAlignment="End"/>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Tổng tiền -->
+                <Frame Style="{StaticResource CardFrame}" Margin="0,15,0,0">
+                    <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto">
+                        <Label Grid.Row="0" Grid.Column="0" Text="Subtotal:" />
+                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding OrderSubtotal, StringFormat='{0:C}'}" FontAttributes="Bold" HorizontalTextAlignment="End"/>
+                        <Label Grid.Row="1" Grid.Column="0" Text="Grand Total:" FontSize="Medium" FontAttributes="Bold"/>
+                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding OrderDetails.TotalAmount, StringFormat='{0:C}'}" FontSize="Medium" FontAttributes="Bold" HorizontalTextAlignment="End" TextColor="{StaticResource PrimaryLight}"/>
+                    </Grid>
+                </Frame>
+
+                <!-- **** CẬP NHẬT TRẠNG THÁI (Admin/Staff) -->
+                <Frame Style="{StaticResource CardFrame}" Margin="0,15,0,0">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Update Order Status" FontAttributes="Bold" FontSize="Medium"/>
+                        <Picker Title="Select New Status" HorizontalOptions="FillAndExpand"
+                                  ItemsSource="{Binding AvailableStatuses}"
+                                  SelectedItem="{Binding SelectedNewStatus}"
+                                  ItemDisplayBinding="{Binding Converter={StaticResource OrderStatusToStringConverter}}"/>
+                        <Button Text="Update Status"
+                                  Command="{Binding UpdateStatusCommand}"
+                                  IsEnabled="{Binding CanUpdateStatus}"/>
+                        <ActivityIndicator IsRunning="{Binding IsUpdatingStatus}" IsVisible="{Binding IsUpdatingStatus}"/>
+                        <Label Text="{Binding UpdateStatusMessage}" TextColor="{Binding UpdateStatusColor}" HorizontalOptions="Center" IsVisible="{Binding ShowUpdateStatusMessage}"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

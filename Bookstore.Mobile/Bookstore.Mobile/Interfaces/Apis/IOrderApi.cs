@@ -18,5 +18,18 @@ namespace Bookstore.Mobile.Interfaces.Apis
 
         [Put("/v1/orders/{orderId}/cancel")]
         Task<ApiResponse<object>> CancelMyOrder(Guid orderId);
+
+        // Admin endpoints
+        [Get("/admin/orders")]
+        Task<ApiResponse<IEnumerable<OrderSummaryDto>>> GetAllOrdersForAdmin(
+            [Query] int page = 1,
+            [Query] int pageSize = 10,
+            [Query] object? status = null);
+
+        [Get("/admin/orders/{orderId}")]
+        Task<ApiResponse<OrderDto>> GetOrderByIdForAdmin(Guid orderId);
+
+        [Put("/admin/orders/{orderId}/status")]
+        Task<ApiResponse<object>> UpdateOrderStatus(Guid orderId, [Body] UpdateOrderStatusDto statusDto);
     }
 }

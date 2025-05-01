@@ -13,7 +13,7 @@ namespace Bookstore.Mobile.Converters
                 // Sử dụng switch expression để trả về chuỗi tương ứng
                 return status switch
                 {
-                    OrderStatus.Pending => "Pending Payment",
+                    OrderStatus.Pending => "Pending",
                     OrderStatus.Confirmed => "Processing",
                     OrderStatus.Shipping => "Shipping",
                     OrderStatus.Completed => "Completed",
