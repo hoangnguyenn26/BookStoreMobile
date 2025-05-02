@@ -1,12 +1,39 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
+             xmlns:dto="clr-namespace:Bookstore.Mobile.Models"
+             x:DataType="vm:AddEditCategoryViewModel"
              x:Class="Bookstore.Mobile.Views.AddEditCategoryPage"
-             Title="AddEditCategoryPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="{Binding Title}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="10">
+            <Label Text="{Binding Title}" Style="{StaticResource Headline}" HorizontalOptions="Center" Margin="0,10,0,15"/>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="CenterAndExpand"/>
+            <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}"/>
+
+            <VerticalStackLayout Spacing="10" IsVisible="{Binding ShowFormContent}">
+                <Frame Style="{StaticResource EntryFrame}">
+                    <Entry Placeholder="Category Name *" Text="{Binding Name}" ReturnType="Next"/>
+                </Frame>
+                <Frame Style="{StaticResource EntryFrame}" HeightRequest="100">
+                    <Editor Placeholder="Description (Optional)" Text="{Binding Description}" AutoSize="TextChanges"/>
+                </Frame>
+                <Frame Style="{StaticResource EntryFrame}">
+                    <!-- Chọn Danh mục cha -->
+                    <Picker Title="Parent Category (Optional)"
+                             ItemsSource="{Binding ParentCategories}"
+                             ItemDisplayBinding="{Binding Name}"
+                             SelectedItem="{Binding SelectedParentCategory}"/>
+                </Frame>
+
+                <Button Text="Save Category"
+                        Command="{Binding SaveCategoryCommand}"
+                        IsEnabled="{Binding CanSaveCategoryPublic}"
+                        Margin="0,20,0,0"/>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
