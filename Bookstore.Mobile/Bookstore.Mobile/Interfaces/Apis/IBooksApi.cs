@@ -18,18 +18,18 @@ namespace Bookstore.Mobile.Interfaces.Apis
         Task<ApiResponse<BookDto>> GetBookById(Guid id);
 
         // Admin endpoints
-        [Post("/admin/books")]
+        [Post("/v1/books")]
         Task<ApiResponse<BookDto>> CreateBook([Body] CreateBookDto dto);
 
-        [Put("/admin/books/{id}")]
+        [Put("/v1/books/{id}")]
         Task<ApiResponse<object>> UpdateBook(Guid id, [Body] UpdateBookDto dto);
 
-        [Delete("/admin/books/{id}")]
+        [Delete("/v1/books/{id}")]
         Task<ApiResponse<object>> DeleteBook(Guid id);
 
         [Multipart]
-        [Post("/admin/books/{id}/image")]
-        Task<ApiResponse<object>> UploadBookCoverImage(Guid id, [AliasAs("file")] StreamPart file);
+        [Post("/v1/books/{id}/image")]
+        Task<ApiResponse<object>> UploadBookCoverImage(Guid id, [AliasAs("imageFile")] StreamPart imageFile);
 
     }
 }

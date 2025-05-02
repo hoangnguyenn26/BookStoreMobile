@@ -32,7 +32,7 @@
                             <Label Grid.Column="0" Text="Order ID:" FontAttributes="Bold" WidthRequest="120"/>
                             <Label Grid.Column="1" Text="{Binding OrderDetails.Id, Converter={StaticResource GuidShortenerConverter}}"/>
                         </Grid>
-                        <Grid ColumnDefinitions="Auto, *" IsVisible="{Binding OrderDetails.User, Converter={StaticResource ObjectNotNullBoolConverter}}">
+                        <Grid ColumnDefinitions="Auto, *" IsVisible="{Binding OrderDetails.UserId, Converter={StaticResource ObjectNotNullBoolConverter}}">
                             <!-- Cần ObjectNotNullBoolConverter -->
                             <Label Grid.Column="0" Text="Customer:" FontAttributes="Bold" WidthRequest="120"/>
                             <Label Grid.Column="1" Text="{Binding OrderDetails.UserName, TargetNullValue='Guest'}"/>

@@ -3,11 +3,12 @@ using Bookstore.Mobile.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+using Refit;
 using System.Collections.ObjectModel;
 
 namespace Bookstore.Mobile.ViewModels
 {
-    [QueryProperty(nameof(BookIdString), "BookId")] // Nhận string
+    [QueryProperty(nameof(BookIdString), "BookId")]
     public partial class AddEditBookViewModel : BaseViewModel
     {
         private readonly IBooksApi _booksApi;
@@ -18,7 +19,7 @@ namespace Bookstore.Mobile.ViewModels
 
         private Guid _actualBookId = Guid.Empty;
         private string? _bookIdString;
-        private bool _isDataLoaded = false; // Cờ tránh load lại khi không cần
+        private bool _isDataLoaded = false;
 
         public AddEditBookViewModel(IBooksApi booksApi, ICategoriesApi categoriesApi, IAuthorApi authorApi, ILogger<AddEditBookViewModel> logger)
         {
@@ -37,9 +38,9 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty] private string? _description;
         [ObservableProperty] private string? _iSBN;
         [ObservableProperty] private string? _publisher;
-        [ObservableProperty][NotifyCanExecuteChangedFor(nameof(SaveBookCommand))] private string? _publicationYear; // Dùng string để binding Entry dễ hơn
-        [ObservableProperty][NotifyCanExecuteChangedFor(nameof(SaveBookCommand))] private string? _price; // Dùng string
-        [ObservableProperty][NotifyCanExecuteChangedFor(nameof(SaveBookCommand))] private string? _stockQuantity; // Dùng string
+        [ObservableProperty][NotifyCanExecuteChangedFor(nameof(SaveBookCommand))] private string? _publicationYear;
+        [ObservableProperty][NotifyCanExecuteChangedFor(nameof(SaveBookCommand))] private string? _price;
+        [ObservableProperty][NotifyCanExecuteChangedFor(nameof(SaveBookCommand))] private string? _stockQuantity;
         [ObservableProperty] private string? _coverImageUrl; // Để hiển thị ảnh hiện tại
 
         [ObservableProperty] private ObservableCollection<CategoryDto> _categories;
@@ -49,8 +50,12 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty] private AuthorDto? _selectedAuthor;
 
         [ObservableProperty] private string? _errorMessage;
+        public bool CanSaveBookPublic => CanSaveBook();
+
+        [ObservableProperty]
+        private bool _isUploadingImage;
+
         public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-        // Chỉ hiện form khi không bận và không có lỗi load ban đầu
         public bool ShowFormContent => !IsBusy && !HasError && _isDataLoaded;
 
         // Property nhận giá trị string từ QueryProperty
@@ -166,9 +171,8 @@ namespace Bookstore.Mobile.ViewModels
                 if (authTask.Result.IsSuccessStatusCode && authTask.Result.Content != null)
                 {
                     Authors.Clear();
-                    Authors.Add(new AuthorDto { Id = Guid.Empty, Name = " - No Author - " }); // Option không chọn Author
+                    Authors.Add(new AuthorDto { Id = Guid.Empty, Name = " - No Author - " });
                     foreach (var auth in authTask.Result.Content.OrderBy(a => a.Name)) Authors.Add(auth);
-                    // Chọn mặc định nếu có thể
                     SelectedAuthor = Authors.FirstOrDefault();
                 }
                 else { _logger.LogWarning("Failed to load authors for picker."); }
@@ -177,23 +181,215 @@ namespace Bookstore.Mobile.ViewModels
             {
                 _logger.LogError(ex, "Error loading picker options.");
                 ErrorMessage = "Failed to load category/author options.";
-                OnPropertyChanged(nameof(HasError)); // Cập nhật HasError
+                OnPropertyChanged(nameof(HasError));
             }
         }
 
-        // Điều kiện để Save
+        //Điều kiện để save
         private bool CanSaveBook() =>
-            !string.IsNullOrWhiteSpace(BookTitle) &&
-            SelectedCategory != null && SelectedCategory.Id != Guid.Empty && // Phải chọn Category hợp lệ
-            decimal.TryParse(Price, out _) && decimal.Parse(Price) >= 0 &&     // Giá hợp lệ
-            int.TryParse(StockQuantity, out _) && int.Parse(StockQuantity) >= 0 && // Số lượng hợp lệ
-            (!int.TryParse(PublicationYear, out int year) || year > 1000 && year <= DateTime.Now.Year + 1) && // Năm XB hợp lệ
-            IsNotBusy;
+                     !string.IsNullOrWhiteSpace(BookTitle) &&
+                     SelectedCategory != null && SelectedCategory.Id != Guid.Empty &&
+                     decimal.TryParse(Price, out _) && decimal.Parse(Price) >= 0 &&
+                     int.TryParse(StockQuantity, out _) && int.Parse(StockQuantity) >= 0 &&
+                     (!int.TryParse(PublicationYear, out int year) || year > 1000 && year <= DateTime.Now.Year + 1) &&
+                     IsNotBusy && !IsUploadingImage; // <<-- Thêm điều kiện không đang upload ảnh
 
         [RelayCommand(CanExecute = nameof(CanSaveBook))]
-        private async Task SaveBookAsync() { await Task.CompletedTask; }
+        private async Task SaveBookAsync()
+        {
+            if (!CanSaveBook())
+            {
+                await DisplayAlertAsync("Validation Error", "Please fill in all required fields correctly.", "OK");
+                return;
+            }
 
-        [RelayCommand]
-        private async Task UploadCoverImageAsync() { await Task.CompletedTask; }
+            IsBusy = true;
+            ErrorMessage = null;
+            _logger.LogInformation("Attempting to save book (Actual Id: {BookId})", _actualBookId);
+
+            try
+            {
+                bool success = false;
+                ApiResponse<object>? response = null; // Dùng chung cho PUT/DELETE
+                ApiResponse<BookDto>? createResponse = null; // Riêng cho POST
+
+                // --- Chuẩn bị DTO ---
+                // Parse các giá trị số từ string
+                if (!decimal.TryParse(Price, out decimal priceValue)) priceValue = 0;
+                if (!int.TryParse(StockQuantity, out int stockValue)) stockValue = 0;
+                int? publicationYearValue = int.TryParse(PublicationYear, out int year) ? year : null;
+
+                // Lấy Id từ Picker đã chọn
+                Guid categoryIdValue = SelectedCategory?.Id ?? Guid.Empty;
+                Guid? authorIdValue = (SelectedAuthor?.Id == Guid.Empty) ? null : SelectedAuthor?.Id;
+
+                if (_actualBookId == Guid.Empty)
+                {
+                    var createDto = new CreateBookDto
+                    {
+                        Title = BookTitle!,
+                        Description = Description,
+                        ISBN = ISBN,
+                        Publisher = Publisher,
+                        PublicationYear = publicationYearValue,
+                        Price = priceValue,
+                        StockQuantity = stockValue,
+                        CategoryId = categoryIdValue,
+                        AuthorId = authorIdValue
+                        // CoverImageUrl sẽ được xử lý riêng qua upload
+                    };
+                    _logger.LogInformation("Calling CreateBook API...");
+                    createResponse = await _booksApi.CreateBook(createDto);
+                    success = createResponse.IsSuccessStatusCode;
+                    if (!success)
+                    {
+                        string errorContent = "Unknown error";
+                        if (createResponse?.Error?.Content != null)
+                        {
+                            // Thử đọc như chuỗi trước
+                            if (createResponse.Error.Content is string strContent)
+                            {
+                                errorContent = strContent;
+                            }
+                            else
+                            {
+                                errorContent = createResponse.ReasonPhrase ?? "Failed to create book";
+                            }
+                        }
+                        else // Nếu không có Error hoặc Content, dùng ReasonPhrase
+                        {
+                            errorContent = createResponse?.ReasonPhrase ?? "Failed to create book";
+                        }
+                        ErrorMessage = errorContent;
+                    }
+                }
+                else // CẬP NHẬT
+                {
+                    var updateDto = new UpdateBookDto
+                    {
+                        Title = BookTitle!,
+                        Description = Description,
+                        ISBN = ISBN,
+                        Publisher = Publisher,
+                        PublicationYear = publicationYearValue,
+                        Price = priceValue,
+                        StockQuantity = stockValue,
+                        CategoryId = categoryIdValue,
+                        AuthorId = authorIdValue
+                    };
+                    _logger.LogInformation("Calling UpdateBook API for BookId {BookId}...", _actualBookId);
+                    response = await _booksApi.UpdateBook(_actualBookId, updateDto);
+                    success = response.IsSuccessStatusCode;
+                    if (!success)
+                    {
+                        string errorContent = "Unknown error";
+                        if (response?.Error?.Content != null)
+                        {
+                            if (response.Error.Content is string strContent) { errorContent = strContent; }
+                            else { errorContent = response.ReasonPhrase ?? "Failed to update book"; }
+                        }
+                        else { errorContent = response?.ReasonPhrase ?? "Failed to update book"; }
+                        ErrorMessage = errorContent;
+                    }
+                }
+
+                // --- Xử lý kết quả ---
+                if (success)
+                {
+                    _logger.LogInformation("Book saved successfully (Id: {BookId})", _actualBookId == Guid.Empty ? (createResponse?.Content?.Id.ToString() ?? "(New)") : _actualBookId.ToString());
+                    await Shell.Current.GoToAsync("..");
+                }
+                else
+                {
+                    _logger.LogWarning("Failed to save book {BookId}. Reason: {Reason}", _actualBookId, ErrorMessage);
+                    await DisplayAlertAsync("Save Failed", ErrorMessage ?? "Could not save the book.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception while saving book {BookId}", _actualBookId);
+                ErrorMessage = $"An unexpected error occurred: {ex.Message}";
+                await DisplayAlertAsync("Error", ErrorMessage);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        [RelayCommand(CanExecute = nameof(CanUploadImage))]
+        private async Task UploadCoverImageAsync()
+        {
+            if (_actualBookId == Guid.Empty || IsBusy) return;
+
+            IsUploadingImage = true;
+            IsBusy = true;
+            ErrorMessage = null;
+
+            try
+            {
+                _logger.LogInformation("Initiating cover image upload for Book {BookId}", _actualBookId);
+                // Sử dụng MediaPicker để chọn ảnh
+                if (MediaPicker.Default.IsCaptureSupported)
+                {
+                    FileResult? photo = await MediaPicker.Default.PickPhotoAsync(new MediaPickerOptions
+                    {
+                        Title = "Select Book Cover"
+                    });
+
+                    if (photo != null)
+                    {
+                        _logger.LogInformation("Photo picked: {FileName}", photo.FileName);
+                        // Lấy Stream từ FileResult
+                        using var sourceStream = await photo.OpenReadAsync();
+
+                        var filePart = new StreamPart(sourceStream, photo.FileName, photo.ContentType);
+
+                        _logger.LogInformation("Calling UploadBookCoverImage API for BookId {BookId}...", _actualBookId);
+                        // Gọi API Upload ảnh
+                        var response = await _booksApi.UploadBookCoverImage(_actualBookId, filePart);
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            _logger.LogInformation("Cover image uploaded successfully for Book {BookId}. Reloading details...", _actualBookId);
+                            // Thành công! Cần load lại chi tiết sách để cập nhật CoverImageUrl mới
+                            await LoadBookDetailsAsync(_actualBookId); // Load lại để thấy ảnh mới
+                            await DisplayAlertAsync("Success", "Cover image uploaded successfully!", "OK");
+                        }
+                        else
+                        {
+                            string errorContent = response.Error?.Content ?? response.ReasonPhrase ?? "Failed to upload image.";
+                            ErrorMessage = $"Upload Error: {errorContent}";
+                            _logger.LogWarning("Failed to upload cover image for Book {BookId}. Status: {StatusCode}, Reason: {Reason}", _actualBookId, response.StatusCode, ErrorMessage);
+                            await DisplayAlertAsync("Upload Failed", ErrorMessage);
+                        }
+                    }
+                    else
+                    {
+                        _logger.LogInformation("No photo selected by user.");
+                    }
+                }
+                else
+                {
+                    ErrorMessage = "Photo capture/picking is not supported on this device.";
+                    _logger.LogWarning(ErrorMessage);
+                    await DisplayAlertAsync("Not Supported", ErrorMessage, "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception during cover image upload for Book {BookId}", _actualBookId);
+                ErrorMessage = $"An unexpected error occurred during upload: {ex.Message}";
+                await DisplayAlertAsync("Upload Error", ErrorMessage);
+            }
+            finally
+            {
+                IsUploadingImage = false;
+                IsBusy = false;
+            }
+        }
+
+        // Điều kiện để có thể Upload ảnh
+        private bool CanUploadImage() => _actualBookId != Guid.Empty;
     }
 }
