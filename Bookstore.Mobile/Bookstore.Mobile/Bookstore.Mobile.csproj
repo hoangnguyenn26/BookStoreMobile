@@ -151,6 +151,9 @@
 	  <MauiXaml Update="Views\RegisterPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\StockReceiptDetailsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\StockReceiptListPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

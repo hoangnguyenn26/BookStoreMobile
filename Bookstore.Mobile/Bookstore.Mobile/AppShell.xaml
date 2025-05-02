@@ -119,10 +119,10 @@
     <ShellContent ContentTemplate="{DataTemplate views:AddEditCategoryPage}" Route="AddEditCategoryPage" Shell.FlyoutItemIsVisible="False"/>
     <ShellContent ContentTemplate="{DataTemplate views:AddEditAuthorPage}" Route="AddEditAuthorPage" Shell.FlyoutItemIsVisible="False"/>
     <ShellContent ContentTemplate="{DataTemplate views:AddEditBookPage}" Route="AddEditBookPage" Shell.FlyoutItemIsVisible="False"/>
-    <!--<ShellContent ContentTemplate="{DataTemplate views:StockReceiptDetailsPage}" Route="StockReceiptDetailsPage" Shell.FlyoutItemIsVisible="False"/>
+    <ShellContent ContentTemplate="{DataTemplate views:StockReceiptDetailsPage}" Route="StockReceiptDetailsPage" Shell.FlyoutItemIsVisible="False"/>
     <ShellContent ContentTemplate="{DataTemplate views:CreateStockReceiptPage}" Route="CreateStockReceiptPage" Shell.FlyoutItemIsVisible="False"/>
-    <ShellContent ContentTemplate="{DataTemplate views:AddEditPromotionPage}" Route="AddEditPromotionPage" Shell.FlyoutItemIsVisible="False"/>
-    <ShellContent ContentTemplate="{DataTemplate views:AdminUserDetailsPage}" Route="AdminUserDetailsPage" Shell.FlyoutItemIsVisible="False"/>-->
-    <ShellContent ContentTemplate="{DataTemplate views:LoginPage}" Route="LoginPage" Shell.FlyoutItemIsVisible="False" Shell.NavBarIsVisible="False"/>
+    <!--<ShellContent ContentTemplate="{DataTemplate views:AddEditPromotionPage}" Route="AddEditPromotionPage" Shell.FlyoutItemIsVisible="False"/>
+    <ShellContent ContentTemplate="{DataTemplate views:AdminUserDetailsPage}" Route="AdminUserDetailsPage" Shell.FlyoutItemIsVisible="False"/>
+    <ShellContent ContentTemplate="{DataTemplate views:LoginPage}" Route="LoginPage" Shell.FlyoutItemIsVisible="False" Shell.NavBarIsVisible="False"/>-->
 
 </Shell>

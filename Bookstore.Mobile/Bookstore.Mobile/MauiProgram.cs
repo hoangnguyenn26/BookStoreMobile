@@ -107,10 +107,10 @@ namespace Bookstore.Mobile
             //builder.Services.AddTransient<AddEditPromotionViewModel>();
 
             builder.Services.AddTransient<AdminReportsViewModel>();
-            builder.Services.AddTransient<StockReceiptListViewModel>();
 
+            builder.Services.AddTransient<StockReceiptListViewModel>();
             builder.Services.AddTransient<CreateStockReceiptViewModel>();
-            //builder.Services.AddTransient<StockReceiptDetailsViewModel>();
+            builder.Services.AddTransient<StockReceiptDetailsViewModel>();
 
             //builder.Services.AddTransient<InventoryAdjustmentViewModel>();
 
@@ -158,8 +158,8 @@ namespace Bookstore.Mobile
 
             builder.Services.AddTransient<StockReceiptListPage>();
             builder.Services.AddTransient<CreateStockReceiptPage>();
+            builder.Services.AddTransient<StockReceiptDetailsPage>();
 
-            //builder.Services.AddTransient<StockReceiptDetailsPage>();
             //builder.Services.AddTransient<InventoryAdjustmentPage>();
 
             return builder.Build();
@@ -229,9 +229,9 @@ namespace Bookstore.Mobile
             //        .ConfigureHttpClient(c => c.BaseAddress = baseUri)
             //        .AddHttpMessageHandler<AuthHeaderHandler>();
 
-            //services.AddRefitClient<IStockReceiptApi>(refitSettings)
-            //        .ConfigureHttpClient(c => c.BaseAddress = baseUri)
-            //        .AddHttpMessageHandler<AuthHeaderHandler>();
+            services.AddRefitClient<IStockReceiptApi>(refitSettings)
+                    .ConfigureHttpClient(c => c.BaseAddress = baseUri)
+                    .AddHttpMessageHandler<AuthHeaderHandler>();
 
             //services.AddRefitClient<IAdminInventoryApi>(refitSettings)
             //        .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress)) // Ví dụ dùng lại biến
