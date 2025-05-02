@@ -2,7 +2,6 @@
 using Bookstore.Mobile.Interfaces.Apis;
 using Bookstore.Mobile.Interfaces.Services;
 using Bookstore.Mobile.Models;
-using Bookstore.Mobile.Views;
 using Microsoft.Extensions.Logging;
 using Refit;
 using System.Text.Json;
@@ -197,7 +196,6 @@ namespace Bookstore.Mobile.Services
 
             OnAuthStateChanged();
             await Task.CompletedTask;
-            await Shell.Current.GoToAsync(nameof(LoginPage));
         }
         // --- Thêm cơ chế thông báo thay đổi trạng thái ---
         public event EventHandler? AuthStateChanged;

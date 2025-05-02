@@ -18,33 +18,78 @@
     </Shell.Resources>
 
     <Shell.FlyoutHeader>
-        <VerticalStackLayout Padding="10"
-                             BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}">
-            <Label Text="Bookstore App"
-                   TextColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource White}}"
-                   FontSize="Large"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center" />
+        <VerticalStackLayout Padding="10" BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}">
+            <Label Text="Bookstore App" TextColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource White}}" FontSize="Large" FontAttributes="Bold" HorizontalOptions="Center" />
         </VerticalStackLayout>
     </Shell.FlyoutHeader>
 
-    <!-- ========== User Section ========== -->
     <FlyoutItem Title="Home" Icon="home_FILL0_wght400_GRAD0_opsz24.png">
         <ShellContent Title="Home"
                       ContentTemplate="{DataTemplate views:HomePage}"
-                      Route="HomePage" />
+                      Route="HomePage"/>
     </FlyoutItem>
 
     <FlyoutItem Title="Categories" Icon="category_FILL0_wght400_GRAD0_opsz24.png">
         <ShellContent Title="Categories"
                       ContentTemplate="{DataTemplate views:CategoriesPage}"
-                      Route="CategoriesPage" />
+                      Route="CategoriesPage"/>
     </FlyoutItem>
 
     <FlyoutItem Title="My Cart" Icon="shopping_cart_FILL0_wght400_GRAD0_opsz24.png">
         <ShellContent Title="Cart"
                       ContentTemplate="{DataTemplate views:CartPage}"
-                      Route="CartPage" />
+                      Route="CartPage"/>
+    </FlyoutItem>
+
+    <!--<FlyoutItem Title="My Wishlist" Icon="wishlist.png">
+        <ShellContent Title="Wishlist"
+                      ContentTemplate="{DataTemplate views:WishlistPage}"
+                      Route="WishlistPage" />
+    </FlyoutItem>-->
+
+
+    <FlyoutItem Title="Store Management" Icon="store.png"
+                IsVisible="{Binding IsAdminOrStaff}">
+        <ShellContent Title="Dashboard"
+                      Icon="dashboard_FILL0_wght400_GRAD0_opsz24.png"
+                      ContentTemplate="{DataTemplate views:AdminDashboardPage}"
+                      Route="AdminDashboardPage" />
+        <ShellContent Title="Orders"
+                      Icon="receipt_long_FILL0_wght400_GRAD0_opsz24.png"
+                      ContentTemplate="{DataTemplate views:AdminOrderListPage}"
+                      Route="AdminOrderListPage" />
+        <ShellContent Title="Inventory"
+                      Icon="inventory_2_FILL0_wght400_GRAD0_opsz24.png"
+                      ContentTemplate="{DataTemplate views:StockReceiptListPage}"
+                      Route="StockReceiptListPage" />
+        <ShellContent Title="Books"
+                      Icon="menu_book_FILL0_wght400_GRAD0_opsz24.png"
+                      ContentTemplate="{DataTemplate views:AdminBookListPage}"
+                      Route="AdminBookListPage"/>
+        <ShellContent Title="Categories"
+                      Icon="category_FILL0_wght400_GRAD0_opsz24.png"
+                      ContentTemplate="{DataTemplate views:AdminCategoryListPage}"
+                      Route="AdminCategoryListPage"/>
+        <ShellContent Title="Authors"
+                      Icon="face_retouching_natural_FILL0_wght400_GRAD0_opsz24.png"
+                      ContentTemplate="{DataTemplate views:AdminAuthorListPage}"
+                      Route="AdminAuthorListPage"/>
+    </FlyoutItem>
+
+    <FlyoutItem Title="System Admin" Icon="admin_panel_settings_FILL0_wght400_GRAD0_opsz24.png"
+                IsVisible="{Binding IsAdmin}">
+        <ShellContent Title="Users"
+                      Icon="group_FILL0_wght400_GRAD0_opsz24.png"
+                      ContentTemplate="{DataTemplate views:AdminUserListPage}"
+                      Route="AdminUserListPage" />
+        <ShellContent Title="Promotions"
+                      Icon="percent_FILL0_wght400_GRAD0_opsz24.png"
+                      ContentTemplate="{DataTemplate views:AdminPromotionListPage}"
+                      Route="AdminPromotionListPage" />
+        <ShellContent Title="Reports"
+                      Icon="analytics_FILL0_wght400_GRAD0_opsz24.png"
+                      ContentTemplate="{DataTemplate views:AdminReportsPage}"
+                      Route="AdminReportsPage" />
     </FlyoutItem>
 
     <FlyoutItem Title="My Account" Icon="account_circle.png">
@@ -62,74 +107,22 @@
                       Route="OrderHistoryPage" />
     </FlyoutItem>
 
-    <!-- ========== Staff Section ========== -->
-    <FlyoutItem FlyoutDisplayOptions="AsMultipleItems" IsVisible="{Binding IsStaffOrAdmin}">
-        <ShellContent Title="--- Staff Functions ---" IsEnabled="False" Shell.FlyoutItemIsVisible="True" />
-    </FlyoutItem>
+    <ShellContent ContentTemplate="{DataTemplate views:RegisterPage}" Route="RegisterPage" Shell.FlyoutItemIsVisible="False" Shell.NavBarIsVisible="False"/>
+    <ShellContent ContentTemplate="{DataTemplate views:BooksPage}" Route="BooksPage" Shell.FlyoutItemIsVisible="False"/>
+    <ShellContent ContentTemplate="{DataTemplate views:BookDetailsPage}" Route="BookDetailsPage" Shell.FlyoutItemIsVisible="False"/>
+    <ShellContent ContentTemplate="{DataTemplate views:AddEditAddressPage}" Route="AddEditAddressPage" Shell.FlyoutItemIsVisible="False"/>
+    <ShellContent ContentTemplate="{DataTemplate views:OrderDetailsPage}" Route="OrderDetailsPage" Shell.FlyoutItemIsVisible="False"/>
+    <ShellContent ContentTemplate="{DataTemplate views:SubmitReviewPage}" Route="SubmitReviewPage" Shell.FlyoutItemIsVisible="False"/>
+    <ShellContent ContentTemplate="{DataTemplate views:CheckoutPage}" Route="CheckoutPage" Shell.FlyoutItemIsVisible="False"/>
 
-    <FlyoutItem Title="Store Management"
-                Icon="store.png"
-                IsVisible="{Binding IsStaffOrAdmin}">
-        <ShellContent Title="Dashboard"
-                      Icon="dashboard_FILL0_wght400_GRAD0_opsz24.png"
-                      ContentTemplate="{DataTemplate views:AdminDashboardPage}"
-                      Route="AdminDashboardPage" />
-        <ShellContent Title="Orders"
-                      Icon="receipt_long_FILL0_wght400_GRAD0_opsz24.png"
-                      ContentTemplate="{DataTemplate views:AdminOrderListPage}"
-                      Route="AdminOrderListPage" />
-        <ShellContent Title="Inventory"
-                      Icon="inventory_2_FILL0_wght400_GRAD0_opsz24.png"
-                      ContentTemplate="{DataTemplate views:StockReceiptListPage}"
-                      Route="StockReceiptListPage" />
-        <ShellContent Title="Products"
-                      Icon="sell_FILL0_wght400_GRAD0_opsz24.png"
-                      ContentTemplate="{DataTemplate views:AdminProductHomePage}"
-                      Route="AdminProductHomePage"/>
-    </FlyoutItem>
-
-    <!-- ========== Admin Section ========== -->
-    <FlyoutItem FlyoutDisplayOptions="AsMultipleItems" IsVisible="{Binding IsAdmin}">
-        <ShellContent Title="--- Admin Functions ---" IsEnabled="False" Shell.FlyoutItemIsVisible="True" />
-    </FlyoutItem>
-
-    <FlyoutItem Title="System Admin"
-                Icon="admin_panel_settings_FILL0_wght400_GRAD0_opsz24.png"
-                IsVisible="{Binding IsAdmin}">
-        <ShellContent Title="Users"
-                      Icon="group_FILL0_wght400_GRAD0_opsz24.png"
-                      ContentTemplate="{DataTemplate views:AdminUserListPage}"
-                      Route="AdminUserListPage" />
-        <ShellContent Title="Promotions"
-                      Icon="percent_FILL0_wght400_GRAD0_opsz24.png"
-                      ContentTemplate="{DataTemplate views:AdminPromotionListPage}"
-                      Route="AdminPromotionListPage" />
-        <ShellContent Title="Reports"
-                      Icon="analytics_FILL0_wght400_GRAD0_opsz24.png"
-                      ContentTemplate="{DataTemplate views:AdminReportsPage}"
-                      Route="AdminReportsPage" />
-    </FlyoutItem>
-
-    <!-- ========== Hidden Pages (Navigation Only) ========== -->
-    <ShellContent ContentTemplate="{DataTemplate views:LoginPage}" Route="LoginPage" Shell.FlyoutItemIsVisible="False" Shell.NavBarIsVisible="False" />
-    <ShellContent ContentTemplate="{DataTemplate views:RegisterPage}" Route="RegisterPage" Shell.FlyoutItemIsVisible="False" Shell.NavBarIsVisible="False" />
-    <ShellContent ContentTemplate="{DataTemplate views:BooksPage}" Route="BooksPage" Shell.FlyoutItemIsVisible="False" />
-    <ShellContent ContentTemplate="{DataTemplate views:BookDetailsPage}" Route="BookDetailsPage" Shell.FlyoutItemIsVisible="False" />
-    <ShellContent ContentTemplate="{DataTemplate views:AddEditAddressPage}" Route="AddEditAddressPage" Shell.FlyoutItemIsVisible="False" />
-    <ShellContent ContentTemplate="{DataTemplate views:OrderDetailsPage}" Route="OrderDetailsPage" Shell.FlyoutItemIsVisible="False" />
-    <ShellContent ContentTemplate="{DataTemplate views:SubmitReviewPage}" Route="SubmitReviewPage" Shell.FlyoutItemIsVisible="False" />
-    <ShellContent ContentTemplate="{DataTemplate views:CheckoutPage}" Route="CheckoutPage" Shell.FlyoutItemIsVisible="False" />
-    <!--<ShellContent ContentTemplate="{DataTemplate views:WishlistPage}" Route="WishlistPage" Shell.FlyoutItemIsVisible="False"/>-->
-    <ShellContent ContentTemplate="{DataTemplate views:AdminOrderDetailsPage}" Route="AdminOrderDetailsPage" Shell.FlyoutItemIsVisible="False" />
-    <ShellContent ContentTemplate="{DataTemplate views:AddEditCategoryPage}" Route="AddEditCategoryPage" Shell.FlyoutItemIsVisible="False" />
-    <ShellContent ContentTemplate="{DataTemplate views:AdminCategoryListPage}" Route="AdminCategoryListPage" Shell.FlyoutItemIsVisible="False" />
-    <ShellContent ContentTemplate="{DataTemplate views:AddEditAuthorPage}" Route="AddEditAuthorPage" Shell.FlyoutItemIsVisible="False" />
-    <ShellContent ContentTemplate="{DataTemplate views:AdminAuthorListPage}" Route="AdminAuthorListPage" Shell.FlyoutItemIsVisible="False" />
-    <ShellContent ContentTemplate="{DataTemplate views:AddEditBookPage}" Route="AddEditBookPage" Shell.FlyoutItemIsVisible="False" />
-    <ShellContent ContentTemplate="{DataTemplate views:AdminBookListPage}" Route="AdminBookListPage" Shell.FlyoutItemIsVisible="False" />
-    <!--<ShellContent ContentTemplate="{DataTemplate views:StockReceiptDetailsPage}" Route="StockReceiptDetailsPage" Shell.FlyoutItemIsVisible="False"/>-->
-    <ShellContent ContentTemplate="{DataTemplate views:CreateStockReceiptPage}" Route="CreateStockReceiptPage" Shell.FlyoutItemIsVisible="False" />
-    <!--<ShellContent ContentTemplate="{DataTemplate views:AddEditPromotionPage}" Route="AddEditPromotionPage" Shell.FlyoutItemIsVisible="False"/>-->
-    <!--<ShellContent ContentTemplate="{DataTemplate views:AdminUserDetailsPage}" Route="AdminUserDetailsPage" Shell.FlyoutItemIsVisible="False"/>-->
+    <ShellContent ContentTemplate="{DataTemplate views:AdminOrderDetailsPage}" Route="AdminOrderDetailsPage" Shell.FlyoutItemIsVisible="False"/>
+    <ShellContent ContentTemplate="{DataTemplate views:AddEditCategoryPage}" Route="AddEditCategoryPage" Shell.FlyoutItemIsVisible="False"/>
+    <ShellContent ContentTemplate="{DataTemplate views:AddEditAuthorPage}" Route="AddEditAuthorPage" Shell.FlyoutItemIsVisible="False"/>
+    <!--<ShellContent ContentTemplate="{DataTemplate views:AddEditBookPage}" Route="AddEditBookPage" Shell.FlyoutItemIsVisible="False"/>
+    <ShellContent ContentTemplate="{DataTemplate views:StockReceiptDetailsPage}" Route="StockReceiptDetailsPage" Shell.FlyoutItemIsVisible="False"/>
+    <ShellContent ContentTemplate="{DataTemplate views:CreateStockReceiptPage}" Route="CreateStockReceiptPage" Shell.FlyoutItemIsVisible="False"/>
+    <ShellContent ContentTemplate="{DataTemplate views:AddEditPromotionPage}" Route="AddEditPromotionPage" Shell.FlyoutItemIsVisible="False"/>
+    <ShellContent ContentTemplate="{DataTemplate views:AdminUserDetailsPage}" Route="AdminUserDetailsPage" Shell.FlyoutItemIsVisible="False"/>-->
+    <ShellContent ContentTemplate="{DataTemplate views:LoginPage}" Route="LoginPage" Shell.FlyoutItemIsVisible="False" Shell.NavBarIsVisible="False"/>
 
 </Shell>

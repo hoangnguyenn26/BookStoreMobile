@@ -32,11 +32,13 @@ namespace Bookstore.Mobile.ViewModels
         partial void OnSearchTermChanged(string? value) => FilterAuthors(value);
 
         [RelayCommand]
-        private async Task LoadAuthorsAsync(bool force = false)
+        private async Task LoadAuthorsAsync(object? parameter)
         {
+            bool force = parameter is bool b && b;
             if (IsBusy) return;
             IsBusy = true;
             ErrorMessage = null;
+
             try
             {
                 if (force || !_allAuthors.Any())

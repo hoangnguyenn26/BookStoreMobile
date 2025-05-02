@@ -7,7 +7,6 @@ public partial class App : Application
 {
     private readonly IAuthService _authService;
 
-    // KHÔNG inject AppShell ở đây
     public App(IAuthService authService)
     {
         InitializeComponent();
@@ -23,7 +22,7 @@ public partial class App : Application
         await WaitForShellReady();
         if (!_authService.IsLoggedIn)
         {
-            await Shell.Current.GoToAsync(nameof(LoginPage));
+            await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
         }
     }
 

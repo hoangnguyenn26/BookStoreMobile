@@ -70,8 +70,10 @@ namespace Bookstore.Mobile.ViewModels
         }
 
         [RelayCommand]
-        private async Task LoadBooksAsync(bool isRefreshing = false)
+        private async Task LoadBooksAsync(object? parameter)
         {
+            bool isRefreshing = parameter is bool b && b;
+
             if (_isLoadingMore || (!isRefreshing && !_canLoadMore)) return;
             if (!isRefreshing && IsBusy) return;
 
@@ -93,10 +95,7 @@ namespace Bookstore.Mobile.ViewModels
                 {
                     if (response.Content.Any())
                     {
-                        MainThread.BeginInvokeOnMainThread(() =>
-                        {
-                            foreach (var book in response.Content) Books.Add(book);
-                        });
+                        foreach (var book in response.Content) Books.Add(book);
                         _currentPage++;
                         _canLoadMore = response.Content.Count() == PageSize;
                     }
@@ -118,7 +117,8 @@ namespace Bookstore.Mobile.ViewModels
         {
             if (_isLoadingMore || !_canLoadMore || IsBusy) return;
             _isLoadingMore = true;
-            await LoadBooksAsync(isRefreshing: false);
+            _logger.LogInformation("LoadMoreBooksCommand triggered.");
+            await LoadBooksAsync(false);
             _isLoadingMore = false;
         }
 
@@ -126,8 +126,8 @@ namespace Bookstore.Mobile.ViewModels
         private void ClearFilters()
         {
             if (IsBusy) return;
-            SelectedCategoryFilter = Categories.FirstOrDefault(c => c.Id == Guid.Empty); // Chọn "All"
-            SelectedAuthorFilter = Authors.FirstOrDefault(a => a.Id == Guid.Empty); // Chọn "All"
+            SelectedCategoryFilter = Categories.FirstOrDefault(c => c.Id == Guid.Empty);
+            SelectedAuthorFilter = Authors.FirstOrDefault(a => a.Id == Guid.Empty);
             SearchTerm = string.Empty;
             OnPropertyChanged(nameof(SearchTerm));
         }

@@ -31,8 +31,9 @@ namespace Bookstore.Mobile.ViewModels
         partial void OnSearchTermChanged(string? value) => FilterCategories(value);
 
         [RelayCommand]
-        private async Task LoadCategoriesAsync(bool force = false)
+        private async Task LoadCategoriesAsync(object? parameter)
         {
+            bool force = parameter is bool b && b;
             if (IsBusy) return;
             IsBusy = true;
             ErrorMessage = null;

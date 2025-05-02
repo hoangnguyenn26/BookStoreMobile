@@ -21,7 +21,7 @@
         <ActivityIndicator Grid.Row="2" Grid.RowSpan="2" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center"/>
         <Label Grid.Row="3" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}" VerticalOptions="Center" HorizontalOptions="Center"/>
 
-        <RefreshView Grid.Row="3" Command="{Binding LoadBooksCommand}" CommandParameter="true" IsRefreshing="{Binding IsBusy}" IsVisible="{Binding ShowContent}">
+        <RefreshView Grid.Row="3" Command="{Binding LoadBooksCommand}"  CommandParameter="True"  IsRefreshing="{Binding IsBusy}" IsVisible="{Binding ShowContent}">
             <CollectionView ItemsSource="{Binding Books}" SelectionMode="None" Margin="10"
                             RemainingItemsThreshold="5"
                             RemainingItemsThresholdReachedCommand="{Binding LoadMoreBooksCommand}">

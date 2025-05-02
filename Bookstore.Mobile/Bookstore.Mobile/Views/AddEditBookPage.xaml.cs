@@ -1,9 +1,14 @@
+using Bookstore.Mobile.ViewModels;
+
 namespace Bookstore.Mobile.Views;
 
 public partial class AddEditBookPage : ContentPage
 {
-	public AddEditBookPage()
-	{
-		InitializeComponent();
-	}
+    private readonly AddEditBookViewModel _viewModel;
+    public AddEditBookPage(AddEditBookViewModel viewModel)
+    {
+        InitializeComponent();
+        _viewModel = viewModel;
+        BindingContext = _viewModel;
+    }
 }
