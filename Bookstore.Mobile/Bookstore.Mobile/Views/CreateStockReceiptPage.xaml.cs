@@ -12,4 +12,9 @@ public partial class CreateStockReceiptPage : ContentPage
         _viewModel = viewModel;
         BindingContext = _viewModel;
     }
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        _viewModel.OnAppearing();
+    }
 }

@@ -1,12 +1,133 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
+             xmlns:models="clr-namespace:Bookstore.Mobile.Models"
+             x:DataType="vm:CreateStockReceiptViewModel"
              x:Class="Bookstore.Mobile.Views.CreateStockReceiptPage"
-             Title="CreateStockReceiptPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="{Binding Title}">
+
+    <Grid RowDefinitions="*, Auto">
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="15" Spacing="15">
+                <Label Text="Create New Stock Receipt" Style="{StaticResource Headline}" Margin="0,0,0,10"/>
+
+                <!-- Thông tin chung -->
+                <Frame Style="{StaticResource CardFrame}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="General Information" FontAttributes="Bold"/>
+                        <Picker Title="Select Supplier (Optional)"
+                                ItemsSource="{Binding Suppliers}"
+                                ItemDisplayBinding="{Binding Name}"
+                                SelectedItem="{Binding SelectedSupplier}"/>
+                        <DatePicker Date="{Binding ReceiptDate}"/>
+                        <Editor Placeholder="Notes (Optional)" 
+                                Text="{Binding Notes}" 
+                                HeightRequest="80"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Chi tiết sách nhập -->
+                <Label Text="Received Books" FontAttributes="Bold" Margin="0,10,0,0"/>
+                <Border Style="{StaticResource CardBorder}">
+                    <VerticalStackLayout>
+                        <!-- Danh sách các chi tiết đã thêm -->
+                        <CollectionView ItemsSource="{Binding ReceiptDetails}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="vm:CreateStockReceiptDetailViewModelDto">
+                                    <Grid Padding="10,5" ColumnDefinitions="*, Auto, Auto, Auto">
+                                        <Label Grid.Column="0" VerticalOptions="Center">
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span Text="{Binding BookSearchResult.Title}" FontAttributes="Bold"/>
+                                                    <Span Text="{Binding BookSearchResult.Author.Name, StringFormat=' ({0})'}" FontSize="Micro"/>
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+                                        <Label Grid.Column="1" 
+                                               Text="{Binding DetailData.QuantityReceived, StringFormat='Qty: {0}'}" 
+                                               VerticalOptions="Center" Margin="10,0"/>
+                                        <Label Grid.Column="2" 
+                                               Text="{Binding DetailData.PurchasePrice, StringFormat='{0:C}', TargetNullValue='N/A'}" 
+                                               VerticalOptions="Center" Margin="10,0"/>
+                                        <Button Grid.Column="3" 
+                                                BackgroundColor="Transparent" 
+                                                Padding="0" 
+                                                HeightRequest="30" 
+                                                WidthRequest="30" 
+                                                VerticalOptions="Center"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CreateStockReceiptViewModel}}, Path=RemoveDetailCommand}"
+                                                CommandParameter="{Binding .}">
+                                            <Button.ImageSource>
+                                                <FontImageSource Glyph="" 
+                                                                FontFamily="MaterialSymbolsRounded" 
+                                                                Color="{StaticResource ErrorLight}"/>
+                                            </Button.ImageSource>
+                                        </Button>
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                        <!-- Phần thêm chi tiết mới -->
+                        <BoxView HeightRequest="1" Color="{StaticResource SurfaceVariantLight}" Margin="0,10"/>
+                        <VerticalStackLayout Padding="10" Spacing="8">
+                            <Label Text="Add New Item:" FontAttributes="Italic"/>
+
+                            <SearchBar Placeholder="Search Book to Add..."
+                                       Text="{Binding BookSearchTerm}"/>
+
+                            <!-- Hiển thị kết quả tìm kiếm sách -->
+                            <ListView ItemsSource="{Binding BookSearchResults}" 
+                                      SelectedItem="{Binding SelectedBookSearchResult}" 
+                                      IsVisible="{Binding ShowSearchResults}" 
+                                      HeightRequest="150">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="models:BookDto">
+                                        <ViewCell>
+                                            <Grid Padding="10" ColumnDefinitions="*,Auto">
+                                                <Label Grid.Column="0" Text="{Binding Title}"/>
+                                                <Label Grid.Column="1" Text="{Binding AuthorName}" FontAttributes="Italic"/>
+                                            </Grid>
+                                        </ViewCell>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+
+                            <Grid ColumnDefinitions="*,*" 
+                                  ColumnSpacing="10" 
+                                  IsVisible="{Binding SelectedBookSearchResult, Converter={StaticResource ObjectNotNullBoolConverter}}">
+                                <Entry Grid.Column="0" 
+                                       Placeholder="Quantity Received *" 
+                                       Keyboard="Numeric" 
+                                       Text="{Binding NewDetailQuantity}"/>
+                                <Entry Grid.Column="1" 
+                                       Placeholder="Purchase Price (Opt.)" 
+                                       Keyboard="Numeric" 
+                                       Text="{Binding NewDetailPrice}"/>
+                            </Grid>
+                            <Button Text="Add Item" 
+                                    Command="{Binding AddDetailCommand}" 
+                                    IsEnabled="{Binding CanAddDetail}" 
+                                    HorizontalOptions="End"/>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <ActivityIndicator IsRunning="{Binding IsBusy}" 
+                                   IsVisible="{Binding IsBusy}" 
+                                   HorizontalOptions="CenterAndExpand"/>
+                <Label Text="{Binding ErrorMessage}" 
+                       Style="{StaticResource ErrorLabel}" 
+                       IsVisible="{Binding HasError}"/>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Nút Lưu Phiếu Nhập -->
+        <Button Grid.Row="1" 
+                Text="Save Stock Receipt"
+                Command="{Binding SaveReceiptCommand}"
+                IsEnabled="{Binding CanSaveReceipt}"
+                Margin="15"/>
+    </Grid>
 </ContentPage>

@@ -225,9 +225,9 @@ namespace Bookstore.Mobile
             //        .ConfigureHttpClient(c => c.BaseAddress = baseUri)
             //        .AddHttpMessageHandler<AuthHeaderHandler>();
 
-            //services.AddRefitClient<ISupplierApi>(refitSettings)
-            //        .ConfigureHttpClient(c => c.BaseAddress = baseUri)
-            //        .AddHttpMessageHandler<AuthHeaderHandler>();
+            services.AddRefitClient<ISupplierApi>(refitSettings)
+                    .ConfigureHttpClient(c => c.BaseAddress = baseUri)
+                    .AddHttpMessageHandler<AuthHeaderHandler>();
 
             services.AddRefitClient<IStockReceiptApi>(refitSettings)
                     .ConfigureHttpClient(c => c.BaseAddress = baseUri)

@@ -9,4 +9,8 @@ public partial class BookDetailsPage : ContentPage
         InitializeComponent();
         BindingContext = viewModel;
     }
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+    }
 }
