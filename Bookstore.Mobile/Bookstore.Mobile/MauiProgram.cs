@@ -112,7 +112,7 @@ namespace Bookstore.Mobile
             builder.Services.AddTransient<CreateStockReceiptViewModel>();
             builder.Services.AddTransient<StockReceiptDetailsViewModel>();
 
-            //builder.Services.AddTransient<InventoryAdjustmentViewModel>();
+            builder.Services.AddTransient<InventoryAdjustmentViewModel>();
 
 
 
@@ -160,7 +160,7 @@ namespace Bookstore.Mobile
             builder.Services.AddTransient<CreateStockReceiptPage>();
             builder.Services.AddTransient<StockReceiptDetailsPage>();
 
-            //builder.Services.AddTransient<InventoryAdjustmentPage>();
+            builder.Services.AddTransient<InventoryAdjustmentPage>();
 
             return builder.Build();
         }
@@ -233,9 +233,9 @@ namespace Bookstore.Mobile
                     .ConfigureHttpClient(c => c.BaseAddress = baseUri)
                     .AddHttpMessageHandler<AuthHeaderHandler>();
 
-            //services.AddRefitClient<IAdminInventoryApi>(refitSettings)
-            //        .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress)) // Ví dụ dùng lại biến
-            //        .AddHttpMessageHandler<AuthHeaderHandler>();
+            services.AddRefitClient<IInventoryApi>(refitSettings)
+                    .ConfigureHttpClient(c => c.BaseAddress = new Uri(apiBaseAddress))
+                    .AddHttpMessageHandler<AuthHeaderHandler>();
 
             //services.AddRefitClient<IAdminPromotionApi>(refitSettings)
             //        .ConfigureHttpClient(c => c.BaseAddress = baseUri)

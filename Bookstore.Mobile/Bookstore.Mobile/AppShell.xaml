@@ -74,6 +74,10 @@
                       Icon="face_retouching_natural_FILL0_wght400_GRAD0_opsz24.png"
                       ContentTemplate="{DataTemplate views:AdminAuthorListPage}"
                       Route="AdminAuthorListPage"/>
+        <ShellContent Title="Adjust Stock"
+              Icon="face_retouching_natural_FILL0_wght400_GRAD0_opsz24.png"
+              ContentTemplate="{DataTemplate views:InventoryAdjustmentPage}"
+              Route="InventoryAdjustmentPage"/>
     </FlyoutItem>
 
     <FlyoutItem Title="System Admin" Icon="admin_panel_settings_FILL0_wght400_GRAD0_opsz24.png"
@@ -121,9 +125,10 @@
     <ShellContent ContentTemplate="{DataTemplate views:AddEditBookPage}" Route="AddEditBookPage" Shell.FlyoutItemIsVisible="False"/>
     <ShellContent ContentTemplate="{DataTemplate views:StockReceiptDetailsPage}" Route="StockReceiptDetailsPage" Shell.FlyoutItemIsVisible="False"/>
     <ShellContent ContentTemplate="{DataTemplate views:CreateStockReceiptPage}" Route="CreateStockReceiptPage" Shell.FlyoutItemIsVisible="False"/>
+    <ShellContent ContentTemplate="{DataTemplate views:InventoryAdjustmentPage}" Route="InventoryAdjustmentPage" Shell.FlyoutItemIsVisible="False"/>
     
+    <ShellContent ContentTemplate="{DataTemplate views:LoginPage}" Route="LoginPage" Shell.FlyoutItemIsVisible="False" Shell.NavBarIsVisible="False"/>
     <!--<ShellContent ContentTemplate="{DataTemplate views:AddEditPromotionPage}" Route="AddEditPromotionPage" Shell.FlyoutItemIsVisible="False"/>
-    <ShellContent ContentTemplate="{DataTemplate views:AdminUserDetailsPage}" Route="AdminUserDetailsPage" Shell.FlyoutItemIsVisible="False"/>
-    <ShellContent ContentTemplate="{DataTemplate views:LoginPage}" Route="LoginPage" Shell.FlyoutItemIsVisible="False" Shell.NavBarIsVisible="False"/>-->
+    <ShellContent ContentTemplate="{DataTemplate views:AdminUserDetailsPage}" Route="AdminUserDetailsPage" Shell.FlyoutItemIsVisible="False"/>-->
 
 </Shell>

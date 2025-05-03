@@ -43,6 +43,7 @@ namespace Bookstore.Mobile
             Routing.RegisterRoute(nameof(AddEditCategoryPage), typeof(AddEditCategoryPage));
             Routing.RegisterRoute(nameof(AddEditAuthorPage), typeof(AddEditAuthorPage));
             Routing.RegisterRoute(nameof(AddEditBookPage), typeof(AddEditBookPage));
+            Routing.RegisterRoute(nameof(InventoryAdjustmentPage), typeof(InventoryAdjustmentPage));
 
             // ... các trang quản lý khác
         }

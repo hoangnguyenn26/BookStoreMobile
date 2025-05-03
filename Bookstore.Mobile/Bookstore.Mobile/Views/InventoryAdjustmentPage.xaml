@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
+             xmlns:enums="clr-namespace:Bookstore.Mobile.Enums"
+             xmlns:dto="clr-namespace:Bookstore.Mobile.Models"
+             x:DataType="vm:InventoryAdjustmentViewModel"
+             x:Class="Bookstore.Mobile.Views.InventoryAdjustmentPage"
+             Title="{Binding Title}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="10">
+            <Label Text="Adjust Inventory" Style="{StaticResource Headline}" HorizontalOptions="Center" Margin="0,10,0,15"/>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="CenterAndExpand"/>
+            <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}"/>
+
+            <VerticalStackLayout Spacing="10" IsVisible="{Binding IsNotBusy}">
+                <!-- Chọn Sách -->
+                <Label Text="Select Book *" FontAttributes="Bold"/>
+                <SearchBar Placeholder="Search Book..."
+                            Text="{Binding BookSearchTerm}"
+                            SearchCommand="{Binding SearchBookCommand}"/>
+                <ListView ItemsSource="{Binding BookSearchResults}"
+                           SelectedItem="{Binding SelectedBookSearchResult}"
+                           IsVisible="{Binding ShowSearchResults}" HeightRequest="150">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="dto:BookDto">
+                            <TextCell Text="{Binding Title}" Detail="{Binding Author.Name}"/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <!-- Hiển thị sách đã chọn và tồn kho hiện tại -->
+                <Label Text="{Binding SelectedBookDisplay}" FontAttributes="Bold" IsVisible="{Binding IsBookSelected}" Margin="0,5,0,0"/>
+
+                <!-- Số lượng thay đổi (+/-) -->
+                <Frame Style="{StaticResource EntryFrame}">
+                    <Entry Placeholder="Change Quantity (+/-) *" Keyboard="Numeric" Text="{Binding ChangeQuantity}"/>
+                </Frame>
+
+                <!-- Lý do điều chỉnh -->
+                <Frame Style="{StaticResource EntryFrame}">
+                    <Picker Title="Select Reason *"
+                             ItemsSource="{Binding AdjustmentReasons}"
+                             SelectedItem="{Binding SelectedReason}"
+                             ItemDisplayBinding="{Binding .}"/>
+                    <!-- Hiển thị trực tiếp tên Enum -->
+                </Frame>
+
+                <!-- Ghi chú -->
+                <Frame Style="{StaticResource EntryFrame}" HeightRequest="80">
+                    <Editor Placeholder="Notes (Optional)" Text="{Binding Notes}" AutoSize="TextChanges"/>
+                </Frame>
+
+                <Button Text="Adjust Stock"
+                         Command="{Binding AdjustStockCommand}"
+                         IsEnabled="{Binding CanAdjustStock}"
+                         Margin="0,20,0,0"/>
+
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
