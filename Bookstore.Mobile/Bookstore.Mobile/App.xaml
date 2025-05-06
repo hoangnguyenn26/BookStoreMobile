@@ -22,6 +22,10 @@
             <converters:StockToColorConverter x:Key="StockToColorConverter"/>
             <converters:RatingToStarIconConverter x:Key="RatingToStarIconConverter"/>
             <converters:EnumToItemsSourceConverter x:Key="EnumToItemsSourceConverter"/>
+            <converters:ListToStringConverter x:Key="ListToStringConverter"/>
+            <converters:BoolToStatusTextConverter x:Key="BoolToStatusTextConverter"/>
+            <converters:BoolToStatusColorConverter x:Key="BoolToStatusColorConverter"/>
+            <converters:ObjectNotNullBoolConverter x:Key="ObjectNotNullBoolConverter"/>
 
         </ResourceDictionary>
     </Application.Resources>

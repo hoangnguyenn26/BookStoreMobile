@@ -33,6 +33,7 @@ namespace Bookstore.Mobile
             Routing.RegisterRoute(nameof(AdminPromotionListPage), typeof(AdminPromotionListPage));
             Routing.RegisterRoute(nameof(AdminReportsPage), typeof(AdminReportsPage));
             Routing.RegisterRoute(nameof(AdminUserListPage), typeof(AdminUserListPage));
+            Routing.RegisterRoute(nameof(AdminUserDetailsPage), typeof(AdminUserDetailsPage));
             Routing.RegisterRoute(nameof(CreateStockReceiptPage), typeof(CreateStockReceiptPage));
             Routing.RegisterRoute(nameof(StockReceiptListPage), typeof(StockReceiptListPage));
             Routing.RegisterRoute(nameof(StockReceiptDetailsPage), typeof(StockReceiptDetailsPage));

@@ -1,12 +1,75 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
+             xmlns:dto="clr-namespace:Bookstore.Mobile.Models"
+             xmlns:converters="clr-namespace:Bookstore.Mobile.Converters"
+             x:DataType="vm:AdminUserListViewModel"
              x:Class="Bookstore.Mobile.Views.AdminUserListPage"
-             Title="AdminUserListPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="{Binding Title}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:ListToStringConverter x:Key="ListToStringConverter"/>
+            <converters:BoolToStatusTextConverter x:Key="BoolToStatusTextConverter"/>
+            <converters:BoolToStatusColorConverter x:Key="BoolToStatusColorConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto, Auto, *">
+        <Label Grid.Row="0" Text="Manage Users" Style="{StaticResource Headline}" Margin="15,10"/>
+
+        <!-- Filters -->
+        <HorizontalStackLayout Grid.Row="1" Margin="15,0,15,10" Spacing="10">
+            <Picker Title="Filter by Role"
+                    ItemsSource="{Binding AvailableRoles}"
+                    SelectedItem="{Binding SelectedRoleFilter}"
+                    HorizontalOptions="FillAndExpand"/>
+            <Picker Title="Filter by Status"
+                    ItemsSource="{Binding AvailableStatuses}"
+                    SelectedItem="{Binding SelectedStatusFilter}"
+                    HorizontalOptions="FillAndExpand"/>
+            <Button Text="Clear" Command="{Binding ClearFiltersCommand}" FontSize="Micro" Style="{StaticResource TextButton}" Padding="5"/>
+        </HorizontalStackLayout>
+
+        <ActivityIndicator Grid.Row="1" Grid.RowSpan="2" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center"/>
+        <Label Grid.Row="2" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}" VerticalOptions="Center" HorizontalOptions="Center"/>
+
+        <!-- User List - Using string parameter -->
+        <RefreshView Grid.Row="2" Command="{Binding LoadUsersCommand}" CommandParameter="true" IsRefreshing="{Binding IsBusy}" IsVisible="{Binding ShowContent}">
+            <CollectionView ItemsSource="{Binding Users}"
+                            SelectionMode="None"
+                            Margin="10"
+                            RemainingItemsThreshold="5"
+                            RemainingItemsThresholdReachedCommand="{Binding LoadMoreUsersCommand}">
+                <CollectionView.EmptyView>
+                    <Label Text="No users found matching criteria." HorizontalOptions="Center" VerticalOptions="Center" Margin="20"/>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="dto:UserDto">
+                        <Border Style="{StaticResource CardBorder}" Padding="10,8" Margin="0,0,0,8">
+                            <Border.GestureRecognizers>
+                                <!-- Cho phép nhấn vào cả card để xem chi tiết -->
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminUserListViewModel}}, Path=GoToUserDetailsCommand}"
+                                                       CommandParameter="{Binding Id}"/>
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="10">
+                                <!-- Cột 0: Thông tin User -->
+                                <Label Grid.Row="0" Grid.Column="0" Text="{Binding UserName}" FontAttributes="Bold" LineBreakMode="TailTruncation"/>
+                                <Label Grid.Row="1" Grid.Column="0" Text="{Binding Email}" FontSize="Small" LineBreakMode="TailTruncation"/>
+                                <Label Grid.Row="2" Grid.Column="0" Text="{Binding Roles, Converter={StaticResource ListToStringConverter}}" FontSize="Micro" TextColor="{AppThemeBinding Light={StaticResource Gray600Light}, Dark={StaticResource Gray300Dark}}" LineBreakMode="TailTruncation"/>
+
+                                <!-- Cột 1: Trạng thái -->
+                                <Label Grid.Row="0" Grid.Column="1"
+                                       Text="{Binding IsActive, Converter={StaticResource BoolToStatusTextConverter}}"
+                                       TextColor="{Binding IsActive, Converter={StaticResource BoolToStatusColorConverter}}"
+                                       FontAttributes="Bold" FontSize="Small" HorizontalTextAlignment="End" VerticalOptions="Start"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
 </ContentPage>

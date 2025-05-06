@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
+             xmlns:dto="clr-namespace:Bookstore.Mobile.Models"
+             xmlns:converters="clr-namespace:Bookstore.Mobile.Converters"
+             x:DataType="vm:AdminUserDetailsViewModel"
+             x:Class="Bookstore.Mobile.Views.AdminUserDetailsPage"
+             Title="{Binding Title}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:ListToStringConverter x:Key="ListToStringConverter"/>
+            <converters:ObjectNotNullBoolConverter x:Key="ObjectNotNullBoolConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="CenterAndExpand" Margin="0,20"/>
+            <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}" Margin="0,10"/>
+
+            <VerticalStackLayout Spacing="15" IsVisible="{Binding ShowContent}">
+                <Label Text="{Binding Title}" Style="{StaticResource Headline}" HorizontalOptions="Center" Margin="0,0,0,10"/>
+
+                <Frame Style="{StaticResource CardFrame}">
+                    <VerticalStackLayout Spacing="7">
+                        <Label Text="User Information" FontAttributes="Bold" FontSize="Medium" Margin="0,0,0,5"/>
+                        <Grid ColumnDefinitions="Auto, *">
+                            <Label Grid.Column="0" Text="User ID:" FontAttributes="Bold" WidthRequest="120"/>
+                            <Label Grid.Column="1" Text="{Binding UserDetails.Id}" FontSize="Small"/>
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto, *">
+                            <Label Grid.Column="0" Text="Username:" FontAttributes="Bold" WidthRequest="120"/>
+                            <Label Grid.Column="1" Text="{Binding UserDetails.UserName}"/>
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto, *">
+                            <Label Grid.Column="0" Text="Email:" FontAttributes="Bold" WidthRequest="120"/>
+                            <Label Grid.Column="1" Text="{Binding UserDetails.Email}"/>
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto, *">
+                            <Label Grid.Column="0" Text="Full Name:" FontAttributes="Bold" WidthRequest="120"/>
+                            <Label Grid.Column="1" Text="{Binding UserFullName}"/>
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto, *">
+                            <Label Grid.Column="0" Text="Phone:" FontAttributes="Bold" WidthRequest="120"/>
+                            <Label Grid.Column="1" Text="{Binding UserDetails.PhoneNumber, TargetNullValue='N/A'}"/>
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto, *">
+                            <Label Grid.Column="0" Text="Roles:" FontAttributes="Bold" WidthRequest="120"/>
+                            <Label Grid.Column="1" Text="{Binding UserDetails.Roles, Converter={StaticResource ListToStringConverter}}"/>
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto, *">
+                            <Label Grid.Column="0" Text="Created:" FontAttributes="Bold" WidthRequest="120"/>
+                            <Label Grid.Column="1" Text="{Binding UserDetails.CreatedAtUtc, StringFormat='{0:dd MMM yyyy HH:mm}'}" FontSize="Small"/>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <Frame Style="{StaticResource CardFrame}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Account Status" FontAttributes="Bold" FontSize="Medium"/>
+                        <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                            <Switch IsToggled="{Binding IsUserActive}" VerticalOptions="Center"/>
+                            <Label Text="{Binding UserDetails.IsActive, Converter={StaticResource BoolToStatusTextConverter}}"
+                                     TextColor="{Binding UserDetails.IsActive, Converter={StaticResource BoolToStatusColorConverter}}"
+                                     FontAttributes="Bold" VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                        <Button Text="Save Status Change"
+                                 Command="{Binding UpdateStatusCommand}"
+                                 IsEnabled="{Binding CanUpdateStatus}"
+                                 HorizontalOptions="End"/>
+                        <ActivityIndicator IsRunning="{Binding IsUpdatingStatus}" IsVisible="{Binding IsUpdatingStatus}" HorizontalOptions="End"/>
+                        <Label Text="{Binding UpdateStatusMessage}" TextColor="{Binding UpdateStatusColor}" IsVisible="{Binding ShowUpdateStatusMessage}" HorizontalOptions="End"/>
+                    </VerticalStackLayout>
+                </Frame>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
