@@ -173,28 +173,39 @@ namespace Bookstore.Mobile.ViewModels
 
         private async Task CheckWishlistStatusAsync()
         {
+            if (!_authService.IsLoggedIn || BookDetails == null)
+            {
+                IsInWishlist = false; // Không đăng nhập thì không có wishlist
+                return;
+            }
             try
             {
-                _logger.LogInformation("Checking wishlist status for Book {BookId}", _actualBookId);
+                _logger.LogInformation("Checking wishlist status for Book {BookId}", BookDetails.Id);
                 var wishlistResponse = await _wishlistApi.GetWishlist();
+
                 if (wishlistResponse.IsSuccessStatusCode && wishlistResponse.Content != null)
                 {
-                    IsInWishlist = wishlistResponse.Content.Any(item => item.BookId == _actualBookId);
-                    _logger.LogInformation("Wishlist status for Book {BookId}: {IsInWishlist}", _actualBookId, IsInWishlist);
+                    IsInWishlist = wishlistResponse.Content.Any(item => item.BookId == BookDetails.Id);
+                    _logger.LogInformation("Wishlist status for Book {BookId}: {IsInWishlist}", BookDetails.Id, IsInWishlist);
                 }
                 else
                 {
                     _logger.LogWarning("Failed to get wishlist to check status. Status: {StatusCode}", wishlistResponse.StatusCode);
+                    IsInWishlist = false;
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception while checking wishlist status for Book {BookId}", _actualBookId);
+                _logger.LogError(ex, "Exception while checking wishlist status for Book {BookId}", BookDetails.Id);
                 IsInWishlist = false;
+            }
+            finally
+            {
             }
         }
 
-        [RelayCommand(CanExecute = nameof(IsNotBusy))]
+        private bool CanToggleWishlist() => BookDetails != null && IsNotBusy;
+        [RelayCommand(CanExecute = nameof(CanToggleWishlist))]
         private async Task ToggleWishlistAsync()
         {
             if (!_authService.IsLoggedIn)
@@ -203,42 +214,49 @@ namespace Bookstore.Mobile.ViewModels
                 await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
                 return;
             }
-            if (BookDetails == null) return;
+
+            if (BookDetails == null || IsBusy) return;
+
             IsBusy = true;
             ErrorMessage = null;
+
             try
             {
                 ApiResponse<object>? response;
                 if (IsInWishlist)
                 {
-                    _logger.LogInformation("Removing book {BookId} from wishlist for User {UserId}", _actualBookId, _authService.CurrentUser?.Id);
-                    response = await _wishlistApi.RemoveFromWishlist(_actualBookId);
+                    _logger.LogInformation("Removing book {BookId} from wishlist.", BookDetails.Id);
+                    response = await _wishlistApi.RemoveFromWishlist(BookDetails.Id);
                 }
                 else
                 {
-                    _logger.LogInformation("Adding book {BookId} to wishlist for User {UserId}", _actualBookId, _authService.CurrentUser?.Id);
-                    response = await _wishlistApi.AddToWishlist(_actualBookId);
+                    _logger.LogInformation("Adding book {BookId} to wishlist.", BookDetails.Id);
+                    response = await _wishlistApi.AddToWishlist(BookDetails.Id);
                 }
+
                 if (response.IsSuccessStatusCode)
                 {
                     IsInWishlist = !IsInWishlist;
-                    _logger.LogInformation("Wishlist status toggled successfully for Book {BookId}. New status: {IsInWishlist}", _actualBookId, IsInWishlist);
+                    _logger.LogInformation("Wishlist status toggled successfully for Book {BookId}. New status: {IsInWishlist}", BookDetails.Id, IsInWishlist);
                 }
                 else
                 {
                     string errorContent = response.Error?.Content ?? response.ReasonPhrase ?? "Failed to update wishlist.";
-                    ErrorMessage = $"Error: {errorContent}";
-                    _logger.LogWarning("Failed to toggle wishlist for Book {BookId}. Status: {StatusCode}, Reason: {Reason}", _actualBookId, response.StatusCode, ErrorMessage);
-                    await DisplayAlertAsync("Error", ErrorMessage);
+                    ErrorMessage = $"Wishlist Error: {errorContent}";
+                    _logger.LogWarning("Failed to toggle wishlist for Book {BookId}. Status: {StatusCode}, Reason: {Reason}", BookDetails.Id, response.StatusCode, ErrorMessage);
+                    await DisplayAlertAsync("Wishlist Error", ErrorMessage);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Exception while toggling wishlist for Book {BookId}", _actualBookId);
+                _logger.LogError(ex, "Exception while toggling wishlist for Book {BookId}", BookDetails.Id);
                 ErrorMessage = $"An unexpected error occurred: {ex.Message}";
                 await DisplayAlertAsync("Error", ErrorMessage);
             }
-            finally { IsBusy = false; }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         [RelayCommand(CanExecute = nameof(CanAddToCart))]

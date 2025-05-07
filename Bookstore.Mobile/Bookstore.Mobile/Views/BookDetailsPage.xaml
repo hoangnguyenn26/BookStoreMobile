@@ -58,7 +58,7 @@
 
                     <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
                             Command="{Binding ToggleWishlistCommand}"
-                            IsEnabled="{Binding IsNotBusy}"
+                            IsEnabled="{Binding CanToggleWishlist}"
                             BackgroundColor="{StaticResource Transparent}"
                             BorderColor="{StaticResource PrimaryLight}"
                             BorderWidth="1"

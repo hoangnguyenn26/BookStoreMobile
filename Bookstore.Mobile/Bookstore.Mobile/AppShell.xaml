@@ -41,11 +41,11 @@
                       Route="CartPage"/>
     </FlyoutItem>
 
-    <!--<FlyoutItem Title="My Wishlist" Icon="wishlist.png">
+    <FlyoutItem Title="My Wishlist" Icon="wishlist.png">
         <ShellContent Title="Wishlist"
                       ContentTemplate="{DataTemplate views:WishlistPage}"
                       Route="WishlistPage" />
-    </FlyoutItem>-->
+    </FlyoutItem>
 
 
     <FlyoutItem Title="Store Management" Icon="store.png"

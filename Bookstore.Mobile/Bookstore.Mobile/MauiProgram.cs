@@ -75,7 +75,7 @@ namespace Bookstore.Mobile
             builder.Services.AddTransient<CategoriesViewModel>();
             builder.Services.AddTransient<BooksViewModel>();
             builder.Services.AddTransient<BookDetailsViewModel>();
-            //builder.Services.AddTransient<WishlistViewModel>();
+            builder.Services.AddTransient<WishlistViewModel>();
             builder.Services.AddTransient<CartViewModel>();
             builder.Services.AddTransient<ProfileViewModel>();
             builder.Services.AddTransient<AddressListViewModel>();
@@ -123,7 +123,7 @@ namespace Bookstore.Mobile
             builder.Services.AddTransient<CategoriesPage>();
             builder.Services.AddTransient<BooksPage>();
             builder.Services.AddTransient<BookDetailsPage>();
-            //builder.Services.AddTransient<WishlistPage>();
+            builder.Services.AddTransient<WishlistPage>();
             builder.Services.AddTransient<CartPage>();
             builder.Services.AddTransient<ProfilePage>();
             builder.Services.AddTransient<AddressListPage>();

@@ -28,8 +28,8 @@ namespace Bookstore.Mobile.ViewModels
         // Properties cho Binding
         [ObservableProperty][NotifyCanExecuteChangedFor(nameof(SaveCategoryCommand))] private string? _name;
         [ObservableProperty] private string? _description;
-        [ObservableProperty] private CategoryDto? _selectedParentCategory; // Lưu trữ CategoryDto được chọn
-        [ObservableProperty] private ObservableCollection<CategoryDto> _parentCategories; // Danh sách cho Picker
+        [ObservableProperty] private CategoryDto? _selectedParentCategory;
+        [ObservableProperty] private ObservableCollection<CategoryDto> _parentCategories;
 
         [ObservableProperty] private string? _errorMessage;
         public bool HasError => !string.IsNullOrEmpty(ErrorMessage);

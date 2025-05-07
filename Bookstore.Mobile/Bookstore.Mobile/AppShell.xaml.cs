@@ -23,6 +23,7 @@ namespace Bookstore.Mobile
             Routing.RegisterRoute(nameof(OrderDetailsPage), typeof(OrderDetailsPage));
             Routing.RegisterRoute(nameof(CheckoutPage), typeof(CheckoutPage));
             Routing.RegisterRoute(nameof(SubmitReviewPage), typeof(SubmitReviewPage));
+            Routing.RegisterRoute(nameof(WishlistPage), typeof(WishlistPage));
 
             //trang Admin/Staff
             Routing.RegisterRoute(nameof(AdminDashboardPage), typeof(AdminDashboardPage));
