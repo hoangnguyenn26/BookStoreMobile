@@ -101,7 +101,7 @@ namespace Bookstore.Mobile
             builder.Services.AddTransient<AddEditBookViewModel>();
 
             builder.Services.AddTransient<AdminUserListViewModel>();
-            //builder.Services.AddTransient<AdminUserDetailsViewModel>();
+            builder.Services.AddTransient<AdminUserDetailsViewModel>();
 
             builder.Services.AddTransient<AdminPromotionListViewModel>();
             //builder.Services.AddTransient<AddEditPromotionViewModel>();
@@ -149,7 +149,7 @@ namespace Bookstore.Mobile
             builder.Services.AddTransient<AddEditBookPage>();
 
             builder.Services.AddTransient<AdminUserListPage>();
-            //builder.Services.AddTransient<AdminUserDetailsPage>();
+            builder.Services.AddTransient<AdminUserDetailsPage>();
 
             builder.Services.AddTransient<AdminPromotionListPage>();
             //builder.Services.AddTransient<AddEditPromotionPage>();
@@ -241,9 +241,9 @@ namespace Bookstore.Mobile
             //        .ConfigureHttpClient(c => c.BaseAddress = baseUri)
             //        .AddHttpMessageHandler<AuthHeaderHandler>();
 
-            //services.AddRefitClient<IAdminUserApi>(refitSettings)
-            //       .ConfigureHttpClient(c => c.BaseAddress = baseUri)
-            //       .AddHttpMessageHandler<AuthHeaderHandler>();
+            services.AddRefitClient<IAdminUserApi>(refitSettings)
+                   .ConfigureHttpClient(c => c.BaseAddress = baseUri)
+                   .AddHttpMessageHandler<AuthHeaderHandler>();
         }
     }
 

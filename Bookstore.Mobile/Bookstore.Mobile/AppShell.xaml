@@ -128,7 +128,7 @@
     <ShellContent ContentTemplate="{DataTemplate views:InventoryAdjustmentPage}" Route="InventoryAdjustmentPage" Shell.FlyoutItemIsVisible="False"/>
     
     <ShellContent ContentTemplate="{DataTemplate views:LoginPage}" Route="LoginPage" Shell.FlyoutItemIsVisible="False" Shell.NavBarIsVisible="False"/>
-    <!--<ShellContent ContentTemplate="{DataTemplate views:AddEditPromotionPage}" Route="AddEditPromotionPage" Shell.FlyoutItemIsVisible="False"/>
-    <ShellContent ContentTemplate="{DataTemplate views:AdminUserDetailsPage}" Route="AdminUserDetailsPage" Shell.FlyoutItemIsVisible="False"/>-->
+    <!--<ShellContent ContentTemplate="{DataTemplate views:AddEditPromotionPage}" Route="AddEditPromotionPage" Shell.FlyoutItemIsVisible="False"/>-->
+    <ShellContent ContentTemplate="{DataTemplate views:AdminUserDetailsPage}" Route="AdminUserDetailsPage" Shell.FlyoutItemIsVisible="False"/>
 
 </Shell>
