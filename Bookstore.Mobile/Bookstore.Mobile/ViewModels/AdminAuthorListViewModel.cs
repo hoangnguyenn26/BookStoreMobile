@@ -1,5 +1,4 @@
-﻿// Bookstore.Mobile/ViewModels/AdminAuthorListViewModel.cs
-using Bookstore.Mobile.Interfaces.Apis;
+﻿using Bookstore.Mobile.Interfaces.Apis;
 using Bookstore.Mobile.Models;
 using Bookstore.Mobile.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -13,7 +12,10 @@ namespace Bookstore.Mobile.ViewModels
     {
         private readonly IAuthorApi _authorApi;
         private readonly ILogger<AdminAuthorListViewModel> _logger;
-        private List<AuthorDto> _allAuthors = new();
+        private int _currentPage = 1;
+        private const int PageSize = 15;
+        private bool _canLoadMore = true;
+        private bool _hasLoaded = false;
 
         public AdminAuthorListViewModel(IAuthorApi authorApi, ILogger<AdminAuthorListViewModel> logger)
         {
@@ -23,85 +25,131 @@ namespace Bookstore.Mobile.ViewModels
             Authors = new ObservableCollection<AuthorDto>();
         }
 
-        [ObservableProperty] private ObservableCollection<AuthorDto> _authors;
-        [ObservableProperty] private string? _searchTerm;
-        [ObservableProperty] private string? _errorMessage;
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-        public bool ShowContent => !IsBusy && !HasError;
+        [ObservableProperty]
+        private ObservableCollection<AuthorDto> _authors;
+
+        [ObservableProperty]
+        private string? _searchTerm;
 
         partial void OnSearchTermChanged(string? value) => FilterAuthors(value);
 
         [RelayCommand]
-        private async Task LoadAuthorsAsync(object? parameter)
+        private async Task LoadAuthorsAsync(bool isRefresh = false)
         {
-            bool force = parameter is bool b && b;
-            if (IsBusy) return;
-            IsBusy = true;
-            ErrorMessage = null;
-
-            try
+            await RunSafeAsync(async () =>
             {
-                if (force || !_allAuthors.Any())
+                if (isRefresh)
                 {
-                    var response = await _authorApi.GetAuthors();
-                    if (response.IsSuccessStatusCode && response.Content != null)
-                    {
-                        _allAuthors = response.Content.OrderBy(a => a.Name).ToList();
-                    }
-                    else
-                    {
-                        ErrorMessage = response.Error?.Content ?? "Failed to load";
-                        _allAuthors.Clear();
-                    }
+                    _currentPage = 1;
+                    _canLoadMore = true;
+                    Authors.Clear();
                 }
-                FilterAuthors(SearchTerm);
-            }
-            catch (Exception ex) { ErrorMessage = ex.Message; _allAuthors.Clear(); Authors.Clear(); }
-            finally { IsBusy = false; OnPropertyChanged(nameof(ShowContent)); }
+
+                var response = await _authorApi.GetAuthors(_currentPage, PageSize);
+                if (response.IsSuccessStatusCode && response.Content != null)
+                {
+                    foreach (var author in response.Content.OrderBy(a => a.Name))
+                        Authors.Add(author);
+                    _canLoadMore = response.Content.Count() == PageSize;
+                }
+                else
+                {
+                    ErrorMessage = response.Error?.Content ?? "Failed to load authors.";
+                }
+            }, showBusy: true);
         }
+
+        [RelayCommand]
+        private async Task LoadMoreAuthorsAsync()
+        {
+            if (IsBusy || !_canLoadMore) return;
+
+            await RunSafeAsync(async () =>
+            {
+                _currentPage++;
+                var response = await _authorApi.GetAuthors(_currentPage, PageSize);
+                if (response.IsSuccessStatusCode && response.Content != null)
+                {
+                    foreach (var author in response.Content.OrderBy(a => a.Name))
+                        Authors.Add(author);
+                    _canLoadMore = response.Content.Count() == PageSize;
+                }
+            }, showBusy: true);
+        }
+
+        [RelayCommand]
+        private async Task RefreshAsync() => await LoadAuthorsAsync(true);
 
         private void FilterAuthors(string? searchTerm)
         {
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                Authors.Clear();
-                IEnumerable<AuthorDto> filtered = _allAuthors;
-                if (!string.IsNullOrWhiteSpace(searchTerm))
+                if (string.IsNullOrWhiteSpace(searchTerm))
                 {
-                    filtered = _allAuthors.Where(a => a.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+                    LoadAuthorsCommand.Execute(false);
+                    return;
                 }
-                foreach (var auth in filtered) { Authors.Add(auth); }
+
+                var filtered = Authors
+                    .Where(a => a.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+                Authors.Clear();
+                foreach (var auth in filtered)
+                {
+                    Authors.Add(auth);
+                }
             });
         }
 
-        [RelayCommand] private async Task SearchAsync() => await LoadAuthorsAsync(true);
-        [RelayCommand] private async Task GoToAddAuthorAsync() => await Shell.Current.GoToAsync($"{nameof(AddEditAuthorPage)}?AuthorId={Guid.Empty}");
-        [RelayCommand] private async Task GoToEditAuthorAsync(Guid? authorId) { if (authorId.HasValue) await Shell.Current.GoToAsync($"{nameof(AddEditAuthorPage)}?AuthorId={authorId.Value}"); }
+        [RelayCommand]
+        private async Task GoToAddAuthorAsync() =>
+            await Shell.Current.GoToAsync($"{nameof(AddEditAuthorPage)}?AuthorId={Guid.Empty}");
+
+        [RelayCommand]
+        private async Task GoToEditAuthorAsync(Guid? authorId)
+        {
+            if (authorId.HasValue)
+                await Shell.Current.GoToAsync($"{nameof(AddEditAuthorPage)}?AuthorId={authorId.Value}");
+        }
 
         [RelayCommand]
         private async Task DeleteAuthorAsync(Guid? authorId)
         {
             if (!authorId.HasValue || IsBusy) return;
-            bool confirm = await Application.Current.MainPage.DisplayAlert("Confirm Delete", "Delete this author?", "Yes", "No");
+
+            bool confirm = await Application.Current.MainPage.DisplayAlert(
+                "Confirm Delete",
+                "Delete this author?",
+                "Yes",
+                "No");
             if (!confirm) return;
-            IsBusy = true;
-            try
+
+            await RunSafeAsync(async () =>
             {
                 var response = await _authorApi.DeleteAuthor(authorId.Value);
                 if (response.IsSuccessStatusCode)
                 {
-                    await LoadAuthorsAsync(true); // Reload
+                    var toRemove = Authors.FirstOrDefault(a => a.Id == authorId.Value);
+                    if (toRemove != null)
+                        Authors.Remove(toRemove);
                 }
                 else
                 {
-                    string error = response.Error?.Content ?? "Failed to delete";
-                    await DisplayAlertAsync("Error", error);
+                    throw new Exception(response.Error?.Content ?? "Failed to delete author");
                 }
-            }
-            catch (Exception ex) { await DisplayAlertAsync("Error", ex.Message); }
-            finally { IsBusy = false; }
+            }, showBusy: true);
         }
 
-        public void OnAppearing() { if (Authors.Count == 0) LoadAuthorsCommand.Execute(false); }
+        public void OnAppearing()
+        {
+            if (!_hasLoaded)
+            {
+                _hasLoaded = true;
+                LoadAuthorsCommand.Execute(false);
+            }
+        }
+
+        public void OnDisappearing() => _hasLoaded = false;
     }
 }

@@ -17,6 +17,7 @@ namespace Bookstore.Mobile.ViewModels
         private const int PageSize = 15;
         private bool _isLoadingMore = false;
         private bool _canLoadMore = true;
+        private bool _hasLoaded = false;
 
         public StockReceiptListViewModel(IStockReceiptApi receiptApi, ILogger<StockReceiptListViewModel> logger)
         {
@@ -29,77 +30,62 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty]
         private ObservableCollection<StockReceiptDto> _receipts;
 
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(HasError))]
-        [NotifyPropertyChangedFor(nameof(ShowContent))]
-        private string? _errorMessage;
-
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-        public bool ShowContent => !IsBusy && !HasError;
-
         [RelayCommand]
-        private async Task LoadReceiptsAsync(object? parameter)
+        private async Task LoadReceiptsAsync(object forceRefreshObj = null)
         {
-            bool isRefreshing = parameter is bool b && b;
-            if (_isLoadingMore || (!isRefreshing && !_canLoadMore)) return;
-            if (!isRefreshing && IsBusy) return;
+            // Default to false if not provided
+            bool forceRefresh = false;
 
-            IsBusy = true;
-            if (isRefreshing)
+            // Handle different input types
+            if (forceRefreshObj is bool b)
+            {
+                forceRefresh = b;
+            }
+            else if (forceRefreshObj is string str && bool.TryParse(str, out bool parsedBool))
+            {
+                forceRefresh = parsedBool;
+            }
+            else if (forceRefreshObj != null)
+            {
+                _logger.LogWarning($"Unexpected parameter type: {forceRefreshObj.GetType()}");
+            }
+
+            if (forceRefresh)
             {
                 _currentPage = 1;
-                Receipts.Clear();
                 _canLoadMore = true;
             }
-            ErrorMessage = null;
 
-            try
+            await RunSafeAsync(async () =>
             {
-                _logger.LogInformation("Loading stock receipts, Page: {Page}", _currentPage);
                 var response = await _receiptApi.GetAllReceipts(_currentPage, PageSize);
-
                 if (response.IsSuccessStatusCode && response.Content != null)
                 {
-                    if (response.Content.Any())
-                    {
-                        foreach (var receipt in response.Content)
-                            Receipts.Add(receipt);
+                    if (forceRefresh)
+                        Receipts.Clear();
 
-                        _currentPage++;
-                        _canLoadMore = response.Content.Count() == PageSize;
-                    }
-                    else
-                    {
-                        _canLoadMore = false;
-                    }
+                    foreach (var receipt in response.Content)
+                        Receipts.Add(receipt);
 
-                    _logger.LogInformation("Loaded {Count} receipts. Can load more: {CanLoadMore}",
-                        response.Content?.Count() ?? 0, _canLoadMore);
+                    _canLoadMore = response.Content.Count() == PageSize;
                 }
                 else
                 {
-                    ErrorMessage = response.Error?.Content ?? "Failed to load receipts";
-                    _logger.LogWarning("Failed to load receipts. Status: {StatusCode}", response.StatusCode);
+                    ErrorMessage = response.Error?.Content ?? "Failed to load receipts.";
+                    if (forceRefresh) Receipts.Clear();
                 }
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = "An error occurred while loading receipts";
-                _logger.LogError(ex, "Error loading stock receipts");
-            }
-            finally
-            {
-                IsBusy = false;
-                OnPropertyChanged(nameof(ShowContent));
-            }
+            }, showBusy: !_isLoadingMore);
         }
 
         [RelayCommand]
         private async Task LoadMoreReceiptsAsync()
         {
-            if (_isLoadingMore || !_canLoadMore || IsBusy) return;
+            if (_isLoadingMore || !_canLoadMore || IsBusy)
+                return;
+
             _isLoadingMore = true;
-            _logger.LogInformation("LoadMoreReceiptAsync triggered.");
+            _currentPage++;
+
             try
             {
                 await LoadReceiptsAsync(false);
@@ -113,7 +99,6 @@ namespace Bookstore.Mobile.ViewModels
         [RelayCommand]
         private async Task GoToCreateReceiptAsync()
         {
-            _logger.LogInformation("Navigating to Create Stock Receipt Page.");
             await Shell.Current.GoToAsync(nameof(CreateStockReceiptPage));
         }
 
@@ -121,15 +106,16 @@ namespace Bookstore.Mobile.ViewModels
         private async Task GoToReceiptDetailsAsync(StockReceiptDto? selectedReceipt)
         {
             if (selectedReceipt == null) return;
-
-            _logger.LogInformation("Navigating to Stock Receipt Details Id: {ReceiptId}", selectedReceipt.Id);
             await Shell.Current.GoToAsync($"{nameof(StockReceiptDetailsPage)}?ReceiptId={selectedReceipt.Id}");
         }
 
         public void OnAppearing()
         {
-            if (Receipts.Count == 0)
-                LoadReceiptsCommand.Execute(false);
+            if (!_hasLoaded)
+            {
+                _hasLoaded = true;
+                LoadReceiptsCommand.ExecuteAsync(null);
+            }
         }
     }
 }

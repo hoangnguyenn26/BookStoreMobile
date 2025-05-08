@@ -29,11 +29,6 @@ namespace Bookstore.Mobile.ViewModels
         [NotifyCanExecuteChangedFor(nameof(LoginCommand))]
         private string? _password;
 
-        [ObservableProperty]
-        private string? _errorMessage;
-
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-
         private bool CanLogin() =>
             !string.IsNullOrWhiteSpace(LoginIdentifier) &&
             !string.IsNullOrWhiteSpace(Password) &&
@@ -42,24 +37,15 @@ namespace Bookstore.Mobile.ViewModels
         [RelayCommand(CanExecute = nameof(CanLogin))]
         private async Task LoginAsync()
         {
-            if (IsBusy || !CanLogin()) return; // Kiểm tra lại CanExecute ở đây
-
-            IsBusy = true;
-            ErrorMessage = null; // Xóa lỗi cũ
-
-            try
+            await RunSafeAsync(async () =>
             {
                 _logger.LogInformation("Login attempt for: {LoginId}", LoginIdentifier);
-
                 var loginRequest = new LoginRequestDto
                 {
                     LoginIdentifier = LoginIdentifier!,
                     Password = Password!
                 };
-
-                // Gọi AuthService để thực hiện đăng nhập API
                 var loginSuccess = await _authService.LoginAsync(loginRequest);
-
                 if (loginSuccess)
                 {
                     _logger.LogInformation("Login successful for {LoginId}. Navigating to main page.", LoginIdentifier);
@@ -67,22 +53,11 @@ namespace Bookstore.Mobile.ViewModels
                 }
                 else
                 {
-                    // Lấy thông báo lỗi từ AuthService
                     ErrorMessage = _authService.LastErrorMessage ?? "Invalid username or password.";
                     _logger.LogWarning("Login failed for {LoginId}: {Error}", LoginIdentifier, ErrorMessage);
                     await DisplayAlertAsync("Login Failed", ErrorMessage);
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Exception during login for {LoginId}", LoginIdentifier);
-                ErrorMessage = $"An unexpected error occurred: {ex.Message}";
-                await DisplayAlertAsync("Error", ErrorMessage);
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            }, nameof(ShowContent));
         }
 
         [RelayCommand]
@@ -92,7 +67,5 @@ namespace Bookstore.Mobile.ViewModels
             _logger.LogInformation("Navigating to Register Page");
             await Shell.Current.GoToAsync(nameof(RegisterPage));
         }
-
-
     }
 }

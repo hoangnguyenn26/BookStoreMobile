@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Bookstore.Mobile.ViewModels
 {
@@ -26,48 +27,23 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty]
         private ObservableCollection<CategoryDto> _categories;
 
-        [ObservableProperty]
-        private string? _errorMessage;
-
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-
         [RelayCommand]
         private async Task LoadCategoriesAsync()
         {
-            if (IsBusy) return;
-            IsBusy = true;
-            ErrorMessage = null;
-            try
+            await RunSafeAsync(async () =>
             {
-                _logger.LogInformation("Loading categories...");
                 var response = await _categoriesApi.GetCategories();
                 if (response.IsSuccessStatusCode && response.Content != null)
                 {
                     Categories.Clear();
-                    foreach (var category in response.Content)
-                    {
-                        Categories.Add(category);
-                    }
-                    _logger.LogInformation("Loaded {Count} categories.", Categories.Count);
+                    foreach (var cat in response.Content.OrderBy(c => c.Name))
+                        Categories.Add(cat);
                 }
                 else
                 {
-                    string errorContent = response.Error?.Content
-                        ?? response.ReasonPhrase
-                        ?? "Failed to load category.";
-                    ErrorMessage = $"Error: {errorContent}";
-                    _logger.LogWarning("Failed to load categories. Status: {StatusCode}, Reason: {Reason}", response.StatusCode, ErrorMessage);
+                    ErrorMessage = response.Error?.Content ?? "Failed to load categories.";
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Exception while loading categories.");
-                ErrorMessage = $"An unexpected error occurred: {ex.Message}";
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            }, nameof(ShowContent));
         }
 
         [RelayCommand]

@@ -42,8 +42,7 @@ namespace Bookstore.Mobile.ViewModels
             }
         }
 
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-        public bool ShowContent => !IsBusy && OrderDetails != null && !HasError;
+        public override bool ShowContent => !IsBusy && OrderDetails != null && !HasError;
         public bool HasShippingAddress => OrderDetails?.ShippingAddress != null;
         public decimal OrderSubtotal => OrderDetails?.OrderDetails?.Sum(d => d.UnitPrice * d.Quantity) ?? 0;
         public bool CanCancelOrder => OrderDetails?.Status == OrderStatus.Pending && IsNotBusy;
@@ -58,7 +57,6 @@ namespace Bookstore.Mobile.ViewModels
             OnPropertyChanged(nameof(OrderSubtotal));
             OnPropertyChanged(nameof(CanCancelOrder));
 
-
             if (!string.IsNullOrEmpty(idString) && Guid.TryParse(idString, out Guid parsedId) && parsedId != Guid.Empty)
             {
                 _actualOrderId = parsedId;
@@ -71,7 +69,6 @@ namespace Bookstore.Mobile.ViewModels
                 Title = "Order Details";
                 ErrorMessage = "Invalid Order ID received.";
                 _logger.LogWarning("Invalid Order ID string received: {OrderIdString}", idString);
-                OnPropertyChanged(nameof(HasError));
                 OnPropertyChanged(nameof(ShowContent));
             }
         }
@@ -79,41 +76,23 @@ namespace Bookstore.Mobile.ViewModels
         [RelayCommand]
         private async Task LoadOrderDetailsAsync()
         {
-            if (IsBusy || _actualOrderId == Guid.Empty) return;
-            IsBusy = true;
-            ErrorMessage = null;
-
-            try
+            await RunSafeAsync(async () =>
             {
+                if (_actualOrderId == Guid.Empty) return;
                 _logger.LogInformation("Loading order details for Actual Id: {OrderId}", _actualOrderId);
                 var response = await _orderApi.GetMyOrderById(_actualOrderId);
-
                 if (response.IsSuccessStatusCode && response.Content != null)
                 {
                     OrderDetails = response.Content;
-                    Title = $"Order #{OrderDetails.Id.ToString().Substring(0, 8).ToUpper()}";
-                    _logger.LogInformation("Order details loaded successfully.");
+                    OnPropertyChanged(nameof(HasShippingAddress));
+                    OnPropertyChanged(nameof(OrderSubtotal));
+                    OnPropertyChanged(nameof(CanCancelOrder));
                 }
                 else
                 {
-                    string errorContent = response.Error?.Content ?? response.ReasonPhrase ?? "Failed to load order details.";
-                    ErrorMessage = $"Error: {errorContent}";
-                    _logger.LogWarning("Failed to load order {OrderId}. Status: {StatusCode}, Reason: {Reason}", _actualOrderId, response.StatusCode, ErrorMessage);
+                    ErrorMessage = response.Error?.Content ?? "Failed to load order details.";
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Exception while loading order {OrderId}.", _actualOrderId);
-                ErrorMessage = $"An unexpected error occurred: {ex.Message}";
-            }
-            finally
-            {
-                IsBusy = false;
-                OnPropertyChanged(nameof(ShowContent));
-                OnPropertyChanged(nameof(HasShippingAddress));
-                OnPropertyChanged(nameof(OrderSubtotal));
-                OnPropertyChanged(nameof(CanCancelOrder));
-            }
+            }, nameof(ShowContent));
         }
 
         [RelayCommand(CanExecute = nameof(CanCancelOrder))]

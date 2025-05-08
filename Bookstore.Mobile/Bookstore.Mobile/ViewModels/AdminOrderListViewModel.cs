@@ -35,11 +35,7 @@ namespace Bookstore.Mobile.ViewModels
         private ObservableCollection<OrderSummaryDto> _orders;
 
         [ObservableProperty]
-        private string? _errorMessage;
-
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(ShowContent))]
-        private bool _isBusy;
+        private string? _searchTerm;
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(LoadOrdersCommand))]
@@ -57,7 +53,7 @@ namespace Bookstore.Mobile.ViewModels
             try
             {
                 IsBusy = true;
-                if (isRefreshing || SelectedStatusFilter != "All")  // Reset trang nếu filter thay đổi
+                if (isRefreshing || SelectedStatusFilter != "All")  // Reset page if filter changes
                 {
                     _currentPage = 1;
                     Orders.Clear();

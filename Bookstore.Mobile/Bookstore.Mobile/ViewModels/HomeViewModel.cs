@@ -32,65 +32,41 @@ namespace Bookstore.Mobile.ViewModels
         private HomeDashboardDto _dashboardData;
 
         [ObservableProperty]
-        private string? _errorMessage;
-
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-
-        [ObservableProperty]
         private string _welcomeMessage = "Welcome!";
 
         [ObservableProperty]
         private bool _isLoggedIn;
 
-        private void UpdateWelcomeMessage()
-        {
-            IsLoggedIn = _authService.IsLoggedIn;
-            if (IsLoggedIn && _authService.CurrentUser != null)
-            {
-                WelcomeMessage = $"Hi, {_authService.CurrentUser.FirstName ?? _authService.CurrentUser.UserName}!";
-            }
-            else
-            {
-                WelcomeMessage = "Welcome to the Bookstore!";
-            }
-        }
-
-
-        // Command để tải dữ liệu Dashboard
         [RelayCommand]
-        private async Task LoadDashboardDataAsync()
+        private async Task LoadDashboardAsync()
         {
-            if (IsBusy) return;
-            IsBusy = true;
-            ErrorMessage = null;
-
-            try
+            await RunSafeAsync(async () =>
             {
-                _logger.LogInformation("Loading dashboard data...");
+                _logger.LogInformation("Loading dashboard data");
                 var response = await _dashboardApi.GetHomeDashboard();
-
                 if (response.IsSuccessStatusCode && response.Content != null)
                 {
                     DashboardData = response.Content;
-                    _logger.LogInformation("Dashboard data loaded successfully.");
+                    UpdateWelcomeMessage();
                 }
                 else
                 {
-                    string errorContent = response.Error?.Content ?? response.ReasonPhrase ?? "Failed to load dashboard data.";
-                    ErrorMessage = $"Error: {errorContent}";
-                    _logger.LogWarning("Failed to load dashboard data. Status: {StatusCode}, Reason: {Reason}", response.StatusCode, ErrorMessage);
-                    // await DisplayAlertAsync("Error", ErrorMessage);
+                    ErrorMessage = response.Error?.Content ?? "Failed to load dashboard data.";
                 }
-            }
-            catch (Exception ex)
+            }, nameof(ShowContent));
+        }
+
+        private void UpdateWelcomeMessage()
+        {
+            if (_authService.IsLoggedIn && _authService.CurrentUser != null)
             {
-                _logger.LogError(ex, "Exception while loading dashboard data.");
-                ErrorMessage = $"An unexpected error occurred: {ex.Message}";
-                // await DisplayAlertAsync("Error", ErrorMessage);
+                WelcomeMessage = $"Welcome, {_authService.CurrentUser.FirstName ?? _authService.CurrentUser.UserName}!";
+                IsLoggedIn = true;
             }
-            finally
+            else
             {
-                IsBusy = false;
+                WelcomeMessage = "Welcome!";
+                IsLoggedIn = false;
             }
         }
 
@@ -121,7 +97,7 @@ namespace Bookstore.Mobile.ViewModels
             // Chỉ tải dữ liệu nếu chưa có hoặc cần làm mới
             if (DashboardData.NewestBooks.Count == 0)
             {
-                LoadDashboardDataCommand.Execute(null);
+                LoadDashboardCommand.Execute(null);
             }
         }
     }

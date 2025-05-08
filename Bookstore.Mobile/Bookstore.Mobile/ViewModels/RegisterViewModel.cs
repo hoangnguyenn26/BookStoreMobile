@@ -1,5 +1,4 @@
-﻿
-using Bookstore.Mobile.Interfaces.Services;
+﻿using Bookstore.Mobile.Interfaces.Services;
 using Bookstore.Mobile.Models;
 using Bookstore.Mobile.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -45,11 +44,6 @@ namespace Bookstore.Mobile.ViewModels
         [NotifyCanExecuteChangedFor(nameof(RegisterCommand))]
         private string? _confirmPassword;
 
-        [ObservableProperty]
-        private string? _errorMessage;
-
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-
         private bool CanRegister() =>
             !string.IsNullOrWhiteSpace(UserName) &&
             !string.IsNullOrWhiteSpace(Email) &&
@@ -60,13 +54,8 @@ namespace Bookstore.Mobile.ViewModels
         [RelayCommand(CanExecute = nameof(CanRegister))]
         private async Task RegisterAsync()
         {
-            if (IsBusy || !CanRegister()) return;
-            IsBusy = true;
-            ErrorMessage = null;
-
-            try
+            await RunSafeAsync(async () =>
             {
-                // Tạo DTO request
                 var registerDto = new RegisterRequestDto
                 {
                     UserName = UserName!,
@@ -80,7 +69,6 @@ namespace Bookstore.Mobile.ViewModels
 
                 _logger.LogInformation("Registration attempt for {Username}", UserName);
 
-                // Gọi AuthService để thực hiện đăng ký API
                 var success = await _authService.RegisterAsync(registerDto);
 
                 if (success)
@@ -95,17 +83,7 @@ namespace Bookstore.Mobile.ViewModels
                     _logger.LogWarning("Registration failed for {Username}: {Error}", UserName, ErrorMessage);
                     await DisplayAlertAsync("Registration Failed", ErrorMessage);
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Exception during registration for {Username}", UserName);
-                ErrorMessage = $"An unexpected error occurred: {ex.Message}";
-                await DisplayAlertAsync("Error", ErrorMessage);
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            }, nameof(ShowContent));
         }
 
         [RelayCommand]

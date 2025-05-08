@@ -19,6 +19,7 @@ namespace Bookstore.Mobile.ViewModels
         private const int PageSize = 15;
         private bool _isLoadingMore = false;
         private bool _canLoadMore = true;
+        private bool _hasLoaded = false;
 
         public AdminBookListViewModel(IBooksApi booksApi, ICategoriesApi categoriesApi, IAuthorApi authorApi, ILogger<AdminBookListViewModel> logger)
         {
@@ -39,9 +40,8 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty] private string? _searchTerm;
         [ObservableProperty] private CategoryDto? _selectedCategoryFilter;
         [ObservableProperty] private AuthorDto? _selectedAuthorFilter;
-        [ObservableProperty] private string? _errorMessage;
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-        public bool ShowContent => !IsBusy && !HasError;
+
+        public override bool ShowContent => !IsBusy && !HasError;
 
         partial void OnSelectedCategoryFilterChanged(CategoryDto? value) => LoadBooksCommand.Execute(true);
         partial void OnSelectedAuthorFilterChanged(AuthorDto? value) => LoadBooksCommand.Execute(true);
@@ -49,7 +49,7 @@ namespace Bookstore.Mobile.ViewModels
         [RelayCommand]
         private async Task LoadFilterOptionsAsync()
         {
-            try
+            await RunSafeAsync(async () =>
             {
                 var catResponse = await _categoriesApi.GetCategories();
                 if (catResponse.IsSuccessStatusCode && catResponse.Content != null)
@@ -65,51 +65,48 @@ namespace Bookstore.Mobile.ViewModels
                     Authors.Add(new AuthorDto { Id = Guid.Empty, Name = "All Authors" });
                     foreach (var auth in authResponse.Content.OrderBy(a => a.Name)) Authors.Add(auth);
                 }
-            }
-            catch (Exception ex) { _logger.LogError(ex, "Failed to load filter options"); }
+            }, nameof(ShowContent));
         }
 
         [RelayCommand]
-        private async Task LoadBooksAsync(object? parameter)
+        private async Task LoadBooksAsync()
         {
-            bool isRefreshing = parameter is bool b && b;
-
-            if (_isLoadingMore || (!isRefreshing && !_canLoadMore)) return;
-            if (!isRefreshing && IsBusy) return;
-
-            IsBusy = true;
-            if (isRefreshing) { _currentPage = 1; Books.Clear(); _canLoadMore = true; }
-            ErrorMessage = null;
-
             try
             {
-                Guid? categoryFilterId = (SelectedCategoryFilter?.Id == Guid.Empty) ? null : SelectedCategoryFilter?.Id;
-                Guid? authorFilterId = (SelectedAuthorFilter?.Id == Guid.Empty) ? null : SelectedAuthorFilter?.Id;
+                IsBusy = true; // Ensure spinner starts
+                _currentPage = 1;
+                _canLoadMore = true;
 
-                _logger.LogInformation("Loading books for admin. Cat: {CatId}, Auth: {AuthId}, Search: {Search}, Page: {Page}",
-                    categoryFilterId ?? Guid.Empty, authorFilterId ?? Guid.Empty, SearchTerm ?? "N/A", _currentPage);
-
-                var response = await _booksApi.GetBooks(categoryFilterId, authorFilterId, SearchTerm, _currentPage, PageSize);
+                var response = await _booksApi.GetBooks(
+                    SelectedCategoryFilter?.Id,
+                    SelectedAuthorFilter?.Id,
+                    SearchTerm,
+                    _currentPage,
+                    PageSize
+                );
 
                 if (response.IsSuccessStatusCode && response.Content != null)
                 {
-                    if (response.Content.Any())
-                    {
-                        foreach (var book in response.Content) Books.Add(book);
-                        _currentPage++;
-                        _canLoadMore = response.Content.Count() == PageSize;
-                    }
-                    else { _canLoadMore = false; }
-                    _logger.LogInformation("Loaded {Count} books. Can load more: {CanLoadMore}", response.Content?.Count() ?? 0, _canLoadMore);
+                    Books.Clear();
+                    foreach (var book in response.Content)
+                        Books.Add(book);
+
+                    _canLoadMore = response.Content.Count() == PageSize;
                 }
                 else
                 {
                     ErrorMessage = response.Error?.Content ?? "Failed to load books.";
-                    _logger.LogWarning("Failed to load books. Status: {StatusCode}, Reason: {Reason}", response.StatusCode, ErrorMessage);
                 }
             }
-            catch (Exception ex) { ErrorMessage = ex.Message; _logger.LogError(ex, "Error loading books."); }
-            finally { IsBusy = false; OnPropertyChanged(nameof(ShowContent)); }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to load books");
+                ErrorMessage = "Failed to load books. Please try again.";
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         [RelayCommand]
@@ -117,9 +114,31 @@ namespace Bookstore.Mobile.ViewModels
         {
             if (_isLoadingMore || !_canLoadMore || IsBusy) return;
             _isLoadingMore = true;
-            _logger.LogInformation("LoadMoreBooksCommand triggered.");
-            await LoadBooksAsync(false);
-            _isLoadingMore = false;
+            _currentPage++;
+            _logger.LogInformation($"Loading page {_currentPage}");
+
+            try
+            {
+                var response = await _booksApi.GetBooks(
+                    SelectedCategoryFilter?.Id,
+                    SelectedAuthorFilter?.Id,
+                    SearchTerm,
+                    _currentPage,
+                    PageSize
+                );
+
+                if (response.IsSuccessStatusCode && response.Content != null)
+                {
+                    foreach (var book in response.Content)
+                        Books.Add(book);
+
+                    _canLoadMore = response.Content.Count() == PageSize;
+                }
+            }
+            finally
+            {
+                _isLoadingMore = false;
+            }
         }
 
         [RelayCommand]
@@ -133,7 +152,7 @@ namespace Bookstore.Mobile.ViewModels
         }
 
 
-        [RelayCommand] private async Task SearchAsync() => await LoadBooksAsync(true);
+        [RelayCommand] private async Task SearchAsync() => await LoadBooksAsync();
         [RelayCommand] private async Task GoToAddBookAsync() => await Shell.Current.GoToAsync($"{nameof(AddEditBookPage)}?BookId={Guid.Empty}");
         [RelayCommand] private async Task GoToEditBookAsync(Guid? bookId) { if (bookId.HasValue) await Shell.Current.GoToAsync($"{nameof(AddEditBookPage)}?BookId={bookId.Value}"); }
 
@@ -149,7 +168,7 @@ namespace Bookstore.Mobile.ViewModels
                 var response = await _booksApi.DeleteBook(bookId.Value);
                 if (response.IsSuccessStatusCode)
                 {
-                    await LoadBooksAsync(true); // Reload
+                    await LoadBooksAsync(); // Reload
                 }
                 else
                 {
@@ -161,6 +180,18 @@ namespace Bookstore.Mobile.ViewModels
             finally { IsBusy = false; }
         }
 
-        public void OnAppearing() { if (Books.Count == 0) LoadBooksCommand.Execute(false); }
+        public void OnAppearing()
+        {
+            if (!_hasLoaded)
+            {
+                _hasLoaded = true;
+                LoadBooksCommand.Execute(false);
+            }
+        }
+
+        public void OnDisappearing()
+        {
+            _hasLoaded = false;
+        }
     }
 }

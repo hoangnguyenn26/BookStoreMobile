@@ -23,19 +23,19 @@
         </VerticalStackLayout>
     </Shell.FlyoutHeader>
 
-    <FlyoutItem Title="Home" Icon="home_FILL0_wght400_GRAD0_opsz24.png">
+    <FlyoutItem Title="Home" Icon="home_rounded.png">
         <ShellContent Title="Home"
                       ContentTemplate="{DataTemplate views:HomePage}"
                       Route="HomePage"/>
     </FlyoutItem>
 
-    <FlyoutItem Title="Categories" Icon="category_FILL0_wght400_GRAD0_opsz24.png">
+    <FlyoutItem Title="Categories" Icon="category.png">
         <ShellContent Title="Categories"
                       ContentTemplate="{DataTemplate views:CategoriesPage}"
                       Route="CategoriesPage"/>
     </FlyoutItem>
 
-    <FlyoutItem Title="My Cart" Icon="shopping_cart_FILL0_wght400_GRAD0_opsz24.png">
+    <FlyoutItem Title="My Cart" Icon="shopping_cart.png">
         <ShellContent Title="Cart"
                       ContentTemplate="{DataTemplate views:CartPage}"
                       Route="CartPage"/>
@@ -51,23 +51,23 @@
     <FlyoutItem Title="Store Management" Icon="store.png"
                 IsVisible="{Binding IsAdminOrStaff}">
         <ShellContent Title="Dashboard"
-                      Icon="dashboard_FILL0_wght400_GRAD0_opsz24.png"
+                      Icon="dashboard.png"
                       ContentTemplate="{DataTemplate views:AdminDashboardPage}"
                       Route="AdminDashboardPage" />
         <ShellContent Title="Orders"
-                      Icon="receipt_long_FILL0_wght400_GRAD0_opsz24.png"
+                      Icon="receipt_long.png"
                       ContentTemplate="{DataTemplate views:AdminOrderListPage}"
                       Route="AdminOrderListPage" />
         <ShellContent Title="Inventory"
-                      Icon="inventory_2_FILL0_wght400_GRAD0_opsz24.png"
+                      Icon="inventory_2.png"
                       ContentTemplate="{DataTemplate views:StockReceiptListPage}"
                       Route="StockReceiptListPage" />
         <ShellContent Title="Books"
-                      Icon="menu_book_FILL0_wght400_GRAD0_opsz24.png"
+                      Icon="menu_book.png"
                       ContentTemplate="{DataTemplate views:AdminBookListPage}"
                       Route="AdminBookListPage"/>
         <ShellContent Title="Categories"
-                      Icon="category_FILL0_wght400_GRAD0_opsz24.png"
+                      Icon="category.png"
                       ContentTemplate="{DataTemplate views:AdminCategoryListPage}"
                       Route="AdminCategoryListPage"/>
         <ShellContent Title="Authors"
@@ -80,33 +80,33 @@
               Route="InventoryAdjustmentPage"/>
     </FlyoutItem>
 
-    <FlyoutItem Title="System Admin" Icon="admin_panel_settings_FILL0_wght400_GRAD0_opsz24.png"
+    <FlyoutItem Title="System Admin" Icon="admin_panel_settings.png"
                 IsVisible="{Binding IsAdmin}">
         <ShellContent Title="Users"
-                      Icon="group_FILL0_wght400_GRAD0_opsz24.png"
+                      Icon="group.png"
                       ContentTemplate="{DataTemplate views:AdminUserListPage}"
                       Route="AdminUserListPage" />
         <ShellContent Title="Promotions"
-                      Icon="percent_FILL0_wght400_GRAD0_opsz24.png"
+                      Icon="percent.png"
                       ContentTemplate="{DataTemplate views:AdminPromotionListPage}"
                       Route="AdminPromotionListPage" />
         <ShellContent Title="Reports"
-                      Icon="analytics_FILL0_wght400_GRAD0_opsz24.png"
+                      Icon="analytics.png"
                       ContentTemplate="{DataTemplate views:AdminReportsPage}"
                       Route="AdminReportsPage" />
     </FlyoutItem>
 
     <FlyoutItem Title="My Account" Icon="account_circle.png">
         <ShellContent Title="Profile"
-                      Icon="person_FILL0_wght400_GRAD0_opsz24.png"
+                      Icon="person.png"
                       ContentTemplate="{DataTemplate views:ProfilePage}"
                       Route="ProfilePage" />
         <ShellContent Title="Addresses"
-                      Icon="home_pin_FILL0_wght400_GRAD0_opsz24.png"
+                      Icon="home_pin.png"
                       ContentTemplate="{DataTemplate views:AddressListPage}"
                       Route="AddressListPage" />
         <ShellContent Title="Order History"
-                      Icon="history_FILL0_wght400_GRAD0_opsz24.png"
+                      Icon="history.png"
                       ContentTemplate="{DataTemplate views:OrderHistoryPage}"
                       Route="OrderHistoryPage" />
     </FlyoutItem>

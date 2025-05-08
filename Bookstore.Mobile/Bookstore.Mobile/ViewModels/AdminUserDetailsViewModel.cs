@@ -36,16 +36,17 @@ namespace Bookstore.Mobile.ViewModels
         }
 
         [ObservableProperty] private UserDto? _userDetails;
+        [ObservableProperty] private bool _isUserActive;
+
+        public override bool ShowContent => !IsBusy && UserDetails != null && !HasError;
+
         [ObservableProperty] private string? _errorMessage;
         public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-        public bool ShowContent => !IsBusy && UserDetails != null && !HasError;
         public string UserFullName => $"{UserDetails?.FirstName} {UserDetails?.LastName}".Trim();
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(UpdateStatusCommand))]
-        private bool _isUserActive;
-
-        [ObservableProperty] private bool _isUpdatingStatus;
+        private bool _isUpdatingStatus;
         [ObservableProperty] private string? _updateStatusMessage;
         [ObservableProperty] private Color? _updateStatusColor;
         public bool ShowUpdateStatusMessage => !string.IsNullOrEmpty(UpdateStatusMessage);
@@ -63,46 +64,26 @@ namespace Bookstore.Mobile.ViewModels
             {
                 _actualUserId = Guid.Empty; ErrorMessage = "Invalid User ID."; IsBusy = false;
             }
-            OnPropertyChanged(nameof(ShowContent)); OnPropertyChanged(nameof(HasError));
+            OnPropertyChanged(nameof(ShowContent));
         }
 
         [RelayCommand]
         private async Task LoadUserDetailsAsync()
         {
-            if (_actualUserId == Guid.Empty) return;
-            if (!IsBusy) IsBusy = true; // Đảm bảo IsBusy là true
-            ErrorMessage = null; UpdateStatusMessage = null;
-
-            try
+            await RunSafeAsync(async () =>
             {
-                _logger.LogInformation("Loading user details for admin. UserId: {UserId}", _actualUserId);
+                if (_actualUserId == Guid.Empty) return;
                 var response = await _userApi.GetUserById(_actualUserId);
-
                 if (response.IsSuccessStatusCode && response.Content != null)
                 {
                     UserDetails = response.Content;
-                    IsUserActive = UserDetails.IsActive; // Khởi tạo trạng thái cho Switch
-                    Title = $"User: {UserDetails.UserName}";
-                    _logger.LogInformation("User details loaded successfully for {UserId}.", _actualUserId);
+                    _isUserActive = UserDetails.IsActive;
                 }
                 else
                 {
                     ErrorMessage = response.Error?.Content ?? "Failed to load user details.";
-                    _logger.LogWarning("Failed to load user {UserId}. Status: {StatusCode}", _actualUserId, response.StatusCode);
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Exception loading user details for {UserId}", _actualUserId);
-                ErrorMessage = "An error occurred while loading user details.";
-            }
-            finally
-            {
-                IsBusy = false;
-                OnPropertyChanged(nameof(ShowContent));
-                OnPropertyChanged(nameof(UserFullName));
-                UpdateStatusCommand.NotifyCanExecuteChanged(); // Cập nhật trạng thái nút Save
-            }
+            }, nameof(ShowContent));
         }
 
         [RelayCommand(CanExecute = nameof(CanUpdateStatus))]

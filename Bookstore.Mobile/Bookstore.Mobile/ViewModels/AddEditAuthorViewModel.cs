@@ -28,10 +28,7 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty][NotifyCanExecuteChangedFor(nameof(SaveAuthorCommand))] private string? _name;
         [ObservableProperty] private string? _biography;
 
-        [ObservableProperty] private string? _errorMessage;
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-        public bool ShowFormContent => !IsBusy && !HasError;
-
+        public override bool ShowContent => !IsBusy && !HasError;
         public bool CanSaveAuthorPublic => CanSaveAuthor();
 
         public string? AuthorIdString
@@ -46,44 +43,35 @@ namespace Bookstore.Mobile.ViewModels
             if (Guid.TryParse(idString, out Guid parsedId) && parsedId != Guid.Empty)
             {
                 _actualAuthorId = parsedId; Title = "Edit Author";
-                await LoadAuthorDetailsAsync(parsedId);
+                await LoadAuthorDetailsAsync();
             }
             else
             {
                 _actualAuthorId = Guid.Empty; Title = "Add New Author";
                 ResetForm();
             }
-            IsBusy = false; OnPropertyChanged(nameof(ShowFormContent));
+            IsBusy = false; OnPropertyChanged(nameof(ShowContent));
         }
 
         private void ResetForm() { Name = Biography = null; }
 
-        private async Task LoadAuthorDetailsAsync(Guid authorIdToLoad)
+        [RelayCommand]
+        private async Task LoadAuthorDetailsAsync()
         {
-            Title = "Edit Author"; // Cập nhật title sớm hơn
-            try
+            await RunSafeAsync(async () =>
             {
-                _logger.LogInformation("Loading author details for Id: {AuthorId}", authorIdToLoad);
-                // Gọi API GET /api/v1/authors/{id} (Public endpoint)
-                var response = await _authorApi.GetAuthorById(authorIdToLoad);
+                if (_actualAuthorId == Guid.Empty) return;
+                var response = await _authorApi.GetAuthorById(_actualAuthorId);
                 if (response.IsSuccessStatusCode && response.Content != null)
                 {
-                    var author = response.Content;
-                    Name = author.Name;
-                    Biography = author.Biography;
-                    _logger.LogInformation("Author details loaded successfully.");
+                    Name = response.Content.Name;
+                    Biography = response.Content.Biography;
                 }
                 else
                 {
-                    ErrorMessage = "Failed to load author details.";
-                    _logger.LogWarning("Failed to load author {AuthorId} for editing. Status: {StatusCode}", authorIdToLoad, response.StatusCode);
+                    ErrorMessage = response.Error?.Content ?? "Failed to load author details.";
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error loading author details for {AuthorId}", authorIdToLoad);
-                ErrorMessage = "An error occurred while loading author details.";
-            }
+            }, nameof(ShowContent));
         }
 
         // Điều kiện để Save

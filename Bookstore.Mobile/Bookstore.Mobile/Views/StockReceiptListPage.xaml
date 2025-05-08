@@ -3,23 +3,59 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
              xmlns:dto="clr-namespace:Bookstore.Mobile.Models"
+             xmlns:converters="clr-namespace:Bookstore.Mobile.Converters"
+             xmlns:system="clr-namespace:System;assembly=netstandard"
              x:DataType="vm:StockReceiptListViewModel"
              x:Class="Bookstore.Mobile.Views.StockReceiptListPage"
              Title="{Binding Title}">
 
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Styles -->
+            <Style x:Key="Headline" TargetType="Label">
+                <Setter Property="FontSize" Value="20"/>
+                <Setter Property="FontAttributes" Value="Bold"/>
+            </Style>
+
+            <Style x:Key="TextButton" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="Transparent"/>
+                <Setter Property="TextColor" Value="{StaticResource Primary}"/>
+            </Style>
+
+            <Style x:Key="ErrorLabel" TargetType="Label">
+                <Setter Property="TextColor" Value="Red"/>
+                <Setter Property="HorizontalOptions" Value="Center"/>
+            </Style>
+
+            <Style x:Key="CardBorder" TargetType="Border">
+                <Setter Property="BackgroundColor" Value="White"/>
+                <Setter Property="Stroke" Value="LightGray"/>
+                <Setter Property="StrokeShape" Value="Rectangle"/>
+                <Setter Property="StrokeThickness" Value="1"/>
+            </Style>
+
+            <!-- Converters -->
+            <converters:GuidShortenerConverter x:Key="GuidShortenerConverter"/>
+            <converters:ObjectNotNullBoolConverter x:Key="ObjectNotNullBoolConverter"/>
+            <converters:StringNotNullOrEmptyBoolConverter x:Key="StringNotNullOrEmptyBoolConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
     <Grid RowDefinitions="Auto, *">
+        <!-- Header -->
         <Grid Grid.Row="0" Padding="15,10" ColumnDefinitions="*,Auto">
             <Label Text="Stock Receipts" Style="{StaticResource Headline}" VerticalOptions="Center"/>
             <Button Grid.Column="1" Text="+ New Receipt" Command="{Binding GoToCreateReceiptCommand}" Style="{StaticResource TextButton}"/>
         </Grid>
 
-        <!-- State Indicators -->
+        <!-- Loading Indicator -->
         <ActivityIndicator Grid.Row="0" Grid.RowSpan="2" 
                           IsRunning="{Binding IsBusy}" 
                           IsVisible="{Binding IsBusy}" 
                           VerticalOptions="Center" 
                           HorizontalOptions="Center"/>
 
+        <!-- Error Message -->
         <Label Grid.Row="1" 
                Text="{Binding ErrorMessage}" 
                Style="{StaticResource ErrorLabel}" 
@@ -29,24 +65,25 @@
 
         <!-- Main Content -->
         <RefreshView Grid.Row="1" 
-                     Command="{Binding LoadReceiptsCommand}" 
-                     CommandParameter="true" 
+                     Command="{Binding LoadReceiptsCommand}"
+                     CommandParameter="True" 
                      IsRefreshing="{Binding IsBusy}" 
                      IsVisible="{Binding ShowContent}">
             <CollectionView ItemsSource="{Binding Receipts}"
                            SelectionMode="Single"
                            SelectionChangedCommand="{Binding GoToReceiptDetailsCommand}"
-                           SelectionChangedCommandParameter="{Binding Source={RelativeSource Self}, Path=SelectedItem}"
-                           RemainingItemsThreshold="5"
-                           RemainingItemsThresholdReachedCommand="{Binding LoadMoreReceiptsCommand}"
-                           VerticalOptions="FillAndExpand">
+                           SelectionChangedCommandParameter="{Binding SelectedItem, Source={RelativeSource Self}}"
+                           RemainingItemsThreshold="2"
+                           RemainingItemsThresholdReachedCommand="{Binding LoadMoreReceiptsCommand}">
 
                 <CollectionView.EmptyView>
                     <StackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="20">
-                        <Label Text="No stock receipts found." HorizontalOptions="Center" VerticalOptions="Center" Margin="20"/>
+                        <Label Text="No stock receipts found." 
+                               HorizontalOptions="Center" 
+                               VerticalOptions="Center"/>
                         <Button Text="Retry" 
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:StockReceiptListViewModel}}, Path=LoadReceiptsCommand}"
-                                CommandParameter="true"
+                                Command="{Binding LoadReceiptsCommand}"
+                                CommandParameter="True"
                                 Margin="0,10"
                                 Style="{StaticResource TextButton}"/>
                     </StackLayout>
@@ -74,8 +111,9 @@
 
                                 <!-- Supplier -->
                                 <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
-                                       Text="{Binding Supplier.Name, TargetNullValue='Supplier: N/A'}" 
-                                       FontAttributes="Bold"/>
+                                       Text="{Binding Supplier.Name, StringFormat='Supplier: {0}'}" 
+                                       FontAttributes="Bold"
+                                       IsVisible="{Binding Supplier, Converter={StaticResource NullToBoolConverter}}"/>
                             </Grid>
                         </Border>
                     </DataTemplate>

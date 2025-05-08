@@ -44,7 +44,7 @@ namespace Bookstore.Mobile.ViewModels
         public bool ShowSearchResults => BookSearchResults.Count > 0;
         public bool IsBookSelected => SelectedBookSearchResult != null;
         public string SelectedBookDisplay => SelectedBookSearchResult != null ? $"{SelectedBookSearchResult.Title} (Stock: {SelectedBookSearchResult.StockQuantity})" : string.Empty;
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
+        public override bool ShowContent => !IsBusy && !HasError;
         public bool CanAdjustStock =>
             SelectedBookSearchResult != null &&
             int.TryParse(ChangeQuantity, out int qty) && qty != 0 &&
@@ -54,17 +54,14 @@ namespace Bookstore.Mobile.ViewModels
         [RelayCommand]
         private async Task SearchBookAsync()
         {
-            if (string.IsNullOrWhiteSpace(BookSearchTerm) || BookSearchTerm.Length < 2)
+            await RunSafeAsync(async () =>
             {
-                MainThread.BeginInvokeOnMainThread(() => BookSearchResults.Clear());
-                OnPropertyChanged(nameof(ShowSearchResults));
-                return;
-            }
-
-            IsBusy = true;
-            ErrorMessage = null;
-            try
-            {
+                if (string.IsNullOrWhiteSpace(BookSearchTerm) || BookSearchTerm.Length < 2)
+                {
+                    MainThread.BeginInvokeOnMainThread(() => BookSearchResults.Clear());
+                    OnPropertyChanged(nameof(ShowSearchResults));
+                    return;
+                }
                 _logger.LogInformation("Searching books with term: {SearchTerm}", BookSearchTerm);
                 var response = await _booksApi.GetBooks(null, null, BookSearchTerm, 1, 20);
                 if (response.IsSuccessStatusCode && response.Content != null)
@@ -73,7 +70,7 @@ namespace Bookstore.Mobile.ViewModels
                     {
                         BookSearchResults.Clear();
                         foreach (var book in response.Content) BookSearchResults.Add(book);
-                        OnPropertyChanged(nameof(ShowSearchResults)); // Notify UI
+                        OnPropertyChanged(nameof(ShowSearchResults));
                     });
                 }
                 else
@@ -83,21 +80,8 @@ namespace Bookstore.Mobile.ViewModels
                     ErrorMessage = $"Search Error: {error}";
                     MainThread.BeginInvokeOnMainThread(() => BookSearchResults.Clear());
                     OnPropertyChanged(nameof(ShowSearchResults));
-                    OnPropertyChanged(nameof(HasError));
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Exception during book search.");
-                ErrorMessage = "Error searching books.";
-                MainThread.BeginInvokeOnMainThread(() => BookSearchResults.Clear());
-                OnPropertyChanged(nameof(ShowSearchResults));
-                OnPropertyChanged(nameof(HasError));
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            }, nameof(ShowContent));
         }
 
         partial void OnSelectedBookSearchResultChanged(BookDto? value)

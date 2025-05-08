@@ -10,60 +10,90 @@
 
     <ContentPage.Resources>
         <converters:StringNotNullOrEmptyBoolConverter x:Key="StringNotNullOrEmptyBoolConverter"/>
+        <converters:StockToColorConverter x:Key="StockToColorConverter"/>
     </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto, *">
-        <Label Grid.Row="0" Text="My Wishlist" Style="{StaticResource Headline}" Margin="15,10"/>
+        <Label Grid.Row="0" Text="{Binding Title}" Style="{StaticResource Headline}" Margin="15,10"/>
 
-        <ActivityIndicator Grid.Row="0" Grid.RowSpan="2" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center"/>
-        <Label Grid.Row="1" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}" VerticalOptions="Center" HorizontalOptions="Center"/>
+        <ActivityIndicator Grid.Row="0" Grid.RowSpan="2" 
+                         IsRunning="{Binding IsBusy}" 
+                         IsVisible="{Binding IsBusy}" 
+                         VerticalOptions="Center" 
+                         HorizontalOptions="Center"/>
+
+        <Label Grid.Row="1" Text="{Binding ErrorMessage}" 
+              Style="{StaticResource ErrorLabel}" 
+              IsVisible="{Binding HasError}" 
+              VerticalOptions="Center" 
+              HorizontalOptions="Center"/>
 
         <!-- Wishlist items list -->
-        <RefreshView Grid.Row="1" Command="{Binding LoadWishlistCommand}" IsRefreshing="{Binding IsBusy}" IsVisible="{Binding ShowContent}">
+        <RefreshView Grid.Row="1" 
+                   Command="{Binding LoadWishlistCommand}" 
+                   IsRefreshing="{Binding IsBusy}" 
+                   IsVisible="{Binding ShowContent}">
             <CollectionView ItemsSource="{Binding WishlistItems}"
-                            SelectionMode="Single"
-                            SelectionChangedCommand="{Binding GoToBookDetailsCommand}"
-                            SelectionChangedCommandParameter="{Binding SelectedItem.Book.Id, Source={RelativeSource AncestorType={x:Type CollectionView}}}"
-                            Margin="10">
+                          SelectionMode="None"
+                          Margin="10">
                 <CollectionView.EmptyView>
                     <StackLayout Padding="50" HorizontalOptions="Center" VerticalOptions="Center" Spacing="10">
                         <Image Source="empty_wishlist.png" HeightRequest="100" Aspect="AspectFit" HorizontalOptions="Center"/>
                         <Label Text="Your wishlist is empty." FontSize="Medium" HorizontalOptions="Center"/>
                         <Label Text="Add some books you love!" FontSize="Small" HorizontalOptions="Center" TextColor="{StaticResource Gray600Light}"/>
-                        <Button Text="Discover Books" Command="{Binding GoShoppingCommand}" HorizontalOptions="Center" Margin="0,20,0,0" Style="{StaticResource OutlineButton}"/>
+                        <Button Text="Discover Books" 
+                               Command="{Binding GoShoppingCommand}" 
+                               HorizontalOptions="Center" 
+                               Margin="0,20,0,0" 
+                               Style="{StaticResource OutlineButton}"/>
                     </StackLayout>
                 </CollectionView.EmptyView>
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="dto_wl:WishlistItemDto">
-                        <Border Style="{StaticResource CardBorder}" Padding="10" Margin="0,0,0,10">
-                            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
-                                <!-- Book cover -->
-                                <Image Grid.Column="0"
-                                       Source="{Binding Book.CoverImageUrl, TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
-                                       Aspect="AspectFill"
-                                       WidthRequest="90"
-                                       HeightRequest="120"/>
+                        <SwipeView>
+                            <SwipeView.RightItems>
+                                <SwipeItems>
+                                    <SwipeItem Text="Remove" 
+                                              BackgroundColor="{StaticResource ErrorLight}"
+                                              Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WishlistViewModel}}, Path=RemoveFromWishlistCommand}"
+                                              CommandParameter="{Binding Book.Id}"/>
+                                </SwipeItems>
+                            </SwipeView.RightItems>
 
-                                <!-- Book info -->
-                                <VerticalStackLayout Grid.Column="1" Spacing="5" VerticalOptions="Center">
-                                    <Label Text="{Binding Book.Title}" FontAttributes="Bold" FontSize="Medium" LineBreakMode="TailTruncation"/>
-                                    <Label Text="{Binding Book.Author.Name, TargetNullValue='Unknown Author'}" FontSize="Small" TextColor="{StaticResource Gray600Light}"/>
-                                    <Label Text="{Binding Book.Price, StringFormat='{0:C}'}" FontAttributes="Bold" FontSize="Small" TextColor="{StaticResource PrimaryLight}"/>
-                                    <Label Text="{Binding Book.StockQuantity, StringFormat='Stock: {0}'}" FontSize="Micro"
-                                           TextColor="{Binding Book.StockQuantity, Converter={StaticResource StockToColorConverter}}"/>
-                                </VerticalStackLayout>
+                            <Border Style="{StaticResource CardBorder}" Padding="10" Margin="0,0,0,10">
+                                <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
+                                    <!-- Book cover -->
+                                    <Image Grid.Column="0"
+                                           Source="{Binding Book.CoverImageUrl, TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
+                                           Aspect="AspectFill"
+                                           WidthRequest="90"
+                                           HeightRequest="120"/>
 
-                                <!-- Remove from wishlist button -->
-                                <Button Grid.Column="2" BackgroundColor="Transparent" Padding="5" VerticalOptions="Start" HorizontalOptions="End"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WishlistViewModel}}, Path=RemoveFromWishlistCommand}"
-                                        CommandParameter="{Binding Book.Id}">
-                                    <Button.ImageSource>
-                                        <FontImageSource Glyph="" FontFamily="MaterialSymbolsRounded" Color="{StaticResource PrimaryLight}" Size="28"/>
-                                    </Button.ImageSource>
-                                </Button>
-                            </Grid>
-                        </Border>
+                                    <!-- Book info -->
+                                    <VerticalStackLayout Grid.Column="1" Spacing="5" VerticalOptions="Center">
+                                        <Label Text="{Binding Book.Title}" FontAttributes="Bold" FontSize="Medium" LineBreakMode="TailTruncation"/>
+                                        <Label Text="{Binding Book.Author.Name, TargetNullValue='Unknown Author'}" FontSize="Small" TextColor="{StaticResource Gray600Light}"/>
+                                        <Label Text="{Binding Book.Price, StringFormat='{0:C}'}" FontAttributes="Bold" FontSize="Small" TextColor="{StaticResource PrimaryLight}"/>
+                                        <Label Text="{Binding Book.StockQuantity, StringFormat='Stock: {0}'}" FontSize="Micro"
+                                               TextColor="{Binding Book.StockQuantity, Converter={StaticResource StockToColorConverter}}"/>
+                                    </VerticalStackLayout>
+
+                                    <!-- Details button -->
+                                    <Button Grid.Column="2" 
+                                           BackgroundColor="Transparent" 
+                                           Padding="5" 
+                                           VerticalOptions="Center" 
+                                           HorizontalOptions="End"
+                                           Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WishlistViewModel}}, Path=GoToBookDetailsCommand}"
+                                           CommandParameter="{Binding Book.Id}">
+                                        <Button.ImageSource>
+                                            <FontImageSource Glyph="➔" FontFamily="MaterialSymbolsRounded" Color="{StaticResource PrimaryLight}" Size="28"/>
+                                        </Button.ImageSource>
+                                    </Button>
+                                </Grid>
+                            </Border>
+                        </SwipeView>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>

@@ -17,7 +17,7 @@ namespace Bookstore.Mobile.ViewModels
         // private readonly INavigationService _navigationService;
 
         private int _currentPage = 1;
-        private const int PageSize = 10;
+        private const int PageSize = 20;
         private bool _isLoadingMore = false;
         private bool _canLoadMore = true;
 
@@ -55,6 +55,8 @@ namespace Bookstore.Mobile.ViewModels
             }
         }
         [ObservableProperty]
+        private string? _searchTerm;
+        [ObservableProperty]
         private string? _errorMessage;
         public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
 
@@ -77,25 +79,12 @@ namespace Bookstore.Mobile.ViewModels
 
         // --- Commands ---
         [RelayCommand]
-        private async Task LoadBooksAsync(bool isRefreshing = false)
+        private async Task LoadBooksAsync()
         {
-
-            if (IsBusy || (!isRefreshing && !_canLoadMore)) return;
-
-            if (isRefreshing)
+            await RunSafeAsync(async () =>
             {
-                _currentPage = 1;
-                Books.Clear();
-                _canLoadMore = true;
-            }
-            ErrorMessage = null;
-
-            try
-            {
-                _logger.LogInformation("Loading books for CategoryId: {CategoryId}, Page: {Page}", CategoryId ?? Guid.Empty, _currentPage);
-                // Gọi API với các tham số hiện tại
-                var response = await _booksApi.GetBooks(CategoryId, null, null, _currentPage, PageSize);
-
+                _logger.LogInformation("Loading books (Page: {Page})", _currentPage);
+                var response = await _booksApi.GetBooks(null, null, null, _currentPage, PageSize);
                 if (response.IsSuccessStatusCode && response.Content != null)
                 {
                     if (response.Content.Any())
@@ -122,16 +111,7 @@ namespace Bookstore.Mobile.ViewModels
                     ErrorMessage = $"Error: {errorContent}";
                     _logger.LogWarning("Failed to load books. Status: {StatusCode}, Reason: {Reason}", response.StatusCode, ErrorMessage);
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Exception while loading books.");
-                ErrorMessage = $"An unexpected error occurred: {ex.Message}";
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            }, nameof(ShowContent));
         }
 
         // Command cho Infinite Scrolling / Pull-to-refresh
@@ -141,7 +121,7 @@ namespace Bookstore.Mobile.ViewModels
             if (_isLoadingMore || !_canLoadMore) return;
             _isLoadingMore = true;
             _logger.LogInformation("LoadMoreBooksCommand triggered.");
-            await LoadBooksAsync(isRefreshing: false);
+            await LoadBooksAsync();
             _isLoadingMore = false;
         }
 

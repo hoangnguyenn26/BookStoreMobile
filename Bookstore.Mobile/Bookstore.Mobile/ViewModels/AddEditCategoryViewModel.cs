@@ -128,16 +128,13 @@ namespace Bookstore.Mobile.ViewModels
         [RelayCommand]
         private async Task LoadParentCategoryOptionsAsync()
         {
-            if (IsBusy) return;
-            IsBusy = true;
-            try
+            await RunSafeAsync(async () =>
             {
                 var response = await _categoriesApi.GetCategories();
                 if (response.IsSuccessStatusCode && response.Content != null)
                 {
                     ParentCategories.Clear();
                     ParentCategories.Add(new CategoryDto { Id = Guid.Empty, Name = "- None -" });
-
                     foreach (var cat in response.Content.OrderBy(c => c.Name))
                     {
                         if (_actualCategoryId == Guid.Empty || cat.Id != _actualCategoryId)
@@ -145,7 +142,6 @@ namespace Bookstore.Mobile.ViewModels
                             ParentCategories.Add(cat);
                         }
                     }
-
                     if (_actualCategoryId != Guid.Empty && _selectedParentCategory != null)
                     {
                         SelectedParentCategory = ParentCategories.FirstOrDefault(c => c.Id == _selectedParentCategory.Id);
@@ -155,20 +151,8 @@ namespace Bookstore.Mobile.ViewModels
                 {
                     ErrorMessage = "Failed to load parent categories.";
                 }
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = "Error loading parent categories";
-                _logger.LogError(ex, "Error loading parent categories");
-            }
-            finally
-            {
-                IsBusy = false;
-                OnPropertyChanged(nameof(ShowFormContent));
-                OnPropertyChanged(nameof(HasError));
-            }
+            }, nameof(ShowFormContent));
         }
-
 
         private bool CanSaveCategory() => !string.IsNullOrWhiteSpace(Name) && IsNotBusy;
 

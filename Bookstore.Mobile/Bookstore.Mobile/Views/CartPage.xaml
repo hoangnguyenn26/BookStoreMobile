@@ -3,9 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
              xmlns:dto_cart="clr-namespace:Bookstore.Mobile.Models"
+             xmlns:converters="clr-namespace:Bookstore.Mobile.Converters"
              x:DataType="vm:CartViewModel"
              x:Class="Bookstore.Mobile.Views.CartPage"
              Title="{Binding Title}">
+
+    <ContentPage.Resources>
+        <converters:ImageUrlConverter x:Key="ImageUrlConverter"/>
+    </ContentPage.Resources>
 
     <Grid RowDefinitions="*, Auto">
 
@@ -14,65 +19,67 @@
         <Label Grid.Row="0" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}" VerticalOptions="Center" HorizontalOptions="Center"/>
 
         <!-- Danh sách Items trong Giỏ hàng -->
-        <CollectionView Grid.Row="0"
-                         ItemsSource="{Binding CartItems}"
-                         IsVisible="{Binding ShowContent}"
+        <RefreshView Grid.Row="0"
+                    Command="{Binding LoadCartCommand}"
+                    IsRefreshing="{Binding IsBusy}">
+            <CollectionView ItemsSource="{Binding CartItems}"
+                         IsVisible="{Binding ShowContent, Mode=TwoWay}"
                          Margin="10">
-            <CollectionView.EmptyView>
-                <StackLayout Padding="50" HorizontalOptions="Center" VerticalOptions="Center">
-                    <Label Text="Your cart is empty." FontSize="Large" HorizontalOptions="Center"/>
-                    <Button Text="Go Shopping" Command="{Binding GoShoppingCommand}" HorizontalOptions="Center" Margin="0,20,0,0"/>
-                </StackLayout>
-            </CollectionView.EmptyView>
+                <CollectionView.EmptyView>
+                    <StackLayout Padding="50" HorizontalOptions="Center" VerticalOptions="Center">
+                        <Label Text="Your cart is empty." FontSize="Large" HorizontalOptions="Center"/>
+                        <Button Text="Go Shopping" Command="{Binding GoShoppingCommand}" HorizontalOptions="Center" Margin="0,20,0,0"/>
+                    </StackLayout>
+                </CollectionView.EmptyView>
 
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="dto_cart:CartItemDto">
-                    <Border Style="{StaticResource CardBorder}" Padding="10" Margin="0,0,0,10">
-                        <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
-                            <!-- Ảnh sách -->
-                            <Image Grid.Column="0" Source="{Binding Book.CoverImageUrl, Converter={StaticResource ImageUrlConverter}, ConverterParameter='Thumb', TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
-                                    Aspect="AspectFill" WidthRequest="80" HeightRequest="100"/>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="dto_cart:CartItemDto">
+                        <Border Style="{StaticResource CardBorder}" Padding="10" Margin="0,0,0,10">
+                            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
+                                <!-- Ảnh sách -->
+                                <Image Grid.Column="0" Source="{Binding Book.CoverImageUrl, Converter={StaticResource ImageUrlConverter}, ConverterParameter='Thumb', TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
+                                        Aspect="AspectFill" WidthRequest="80" HeightRequest="100"/>
 
-                            <!-- Thông tin sách và Số lượng -->
-                            <VerticalStackLayout Grid.Column="1" Spacing="5">
-                                <Label Text="{Binding Book.Title}" FontAttributes="Bold" LineBreakMode="TailTruncation"/>
-                                <Label Text="{Binding Book.Author.Name}" FontSize="Small"/>
-                                <!-- Giả sử BookDto có AuthorName -->
-                                <Label Text="{Binding Book.Price, StringFormat='{0:C}'}" FontAttributes="Bold"/>
+                                <!-- Thông tin sách và Số lượng -->
+                                <VerticalStackLayout Grid.Column="1" Spacing="5">
+                                    <Label Text="{Binding Book.Title}" FontAttributes="Bold" LineBreakMode="TailTruncation"/>
+                                    <Label Text="{Binding Book.Author.Name}" FontSize="Small"/>
+                                    <!-- Giả sử BookDto có AuthorName -->
+                                    <Label Text="{Binding Book.Price, StringFormat='{0:C}'}" FontAttributes="Bold"/>
 
-                                <!-- Khu vực chỉnh số lượng -->
-                                <HorizontalStackLayout Spacing="10" VerticalOptions="End">
-                                    <Button Text="-" Padding="10,5" MinimumWidthRequest="40" HeightRequest="40" CornerRadius="20"
-                                               Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CartViewModel}}, Path=DecreaseQuantityCommand}"
-                                               CommandParameter="{Binding .}"/>
-                                    <Label Text="{Binding Quantity}" VerticalOptions="Center" FontSize="Medium" WidthRequest="30" HorizontalTextAlignment="Center"/>
-                                    <Button Text="+" Padding="10,5" MinimumWidthRequest="40" HeightRequest="40" CornerRadius="20"
-                                               Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CartViewModel}}, Path=IncreaseQuantityCommand}"
-                                               CommandParameter="{Binding .}"/>
-                                </HorizontalStackLayout>
-                            </VerticalStackLayout>
+                                    <!-- Khu vực chỉnh số lượng -->
+                                    <HorizontalStackLayout Spacing="10" VerticalOptions="End">
+                                        <Button Text="-" Padding="10,5" MinimumWidthRequest="40" HeightRequest="40" CornerRadius="20"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CartViewModel}}, Path=DecreaseQuantityCommand}"
+                                                CommandParameter="{Binding .}"/>
+                                        <Label Text="{Binding Quantity}" VerticalOptions="Center" FontSize="Medium" WidthRequest="30" HorizontalTextAlignment="Center"/>
+                                        <Button Text="+" Padding="10,5" MinimumWidthRequest="40" HeightRequest="40" CornerRadius="20"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CartViewModel}}, Path=IncreaseQuantityCommand}"
+                                                CommandParameter="{Binding .}"/>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
 
-                            <!-- Giá tiền Item và Nút Xóa -->
-                            <VerticalStackLayout Grid.Column="2" Spacing="5" HorizontalOptions="End">
-                                <Label Text="{Binding TotalItemPrice, StringFormat='{0:C}'}" FontAttributes="Bold" HorizontalTextAlignment="End"/>
-                                <Button BackgroundColor="Transparent" Padding="0"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CartViewModel}}, Path=RemoveItemCommand}"
-                                            CommandParameter="{Binding .}">
-                                    <Button.ImageSource>
-                                        <FontImageSource Glyph="" FontFamily="MaterialSymbolsRounded" Color="{StaticResource ErrorLight}"/>
-                                    </Button.ImageSource>
-                                </Button>
-                            </VerticalStackLayout>
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-
+                                <!-- Giá tiền Item và Nút Xóa -->
+                                <VerticalStackLayout Grid.Column="2" Spacing="5" HorizontalOptions="End">
+                                    <Label Text="{Binding TotalItemPrice, StringFormat='{0:C}'}" FontAttributes="Bold" HorizontalTextAlignment="End"/>
+                                    <Button BackgroundColor="Transparent" Padding="0"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CartViewModel}}, Path=RemoveItemCommand}"
+                                                CommandParameter="{Binding .}">
+                                        <Button.ImageSource>
+                                            <FontImageSource Glyph="🗑️" FontFamily="MaterialSymbolsRounded" Color="{StaticResource ErrorLight}"/>
+                                        </Button.ImageSource>
+                                    </Button>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
 
         <!-- Phần Tổng tiền và Checkout -->
         <Border Grid.Row="1" StrokeThickness="1" Stroke="LightGray" Padding="15" Margin="10,0,10,10"
-                 IsVisible="{Binding HasItems}">
+                IsVisible="{Binding HasItems, Mode=TwoWay}">
             <!-- Chỉ hiển thị khi có hàng -->
             <VerticalStackLayout Spacing="10">
                 <Grid ColumnDefinitions="*, Auto">

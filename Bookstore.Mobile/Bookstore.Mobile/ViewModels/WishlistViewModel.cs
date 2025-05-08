@@ -14,7 +14,9 @@ namespace Bookstore.Mobile.ViewModels
         private readonly IAuthService _authService;
         private readonly ILogger<WishlistViewModel> _logger;
 
-        public WishlistViewModel(IWishlistApi wishlistApi, IAuthService authService, ILogger<WishlistViewModel> logger)
+        public WishlistViewModel(IWishlistApi wishlistApi,
+                               IAuthService authService,
+                               ILogger<WishlistViewModel> logger)
         {
             _wishlistApi = wishlistApi ?? throw new ArgumentNullException(nameof(wishlistApi));
             _authService = authService ?? throw new ArgumentNullException(nameof(authService));
@@ -26,68 +28,43 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty]
         private ObservableCollection<WishlistItemDto> _wishlistItems;
 
-        [ObservableProperty]
-        private string? _errorMessage;
-
-        [ObservableProperty]
-        private bool _showContent;
-
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-
         [RelayCommand]
         private async Task LoadWishlistAsync()
         {
-            if (IsBusy) return;
-
-            if (!_authService.IsLoggedIn)
+            await RunSafeAsync(async () =>
             {
-                _logger.LogWarning("User not logged in. Cannot load wishlist.");
-                ErrorMessage = "Please login to view your wishlist.";
-                WishlistItems.Clear();
-                ShowContent = !IsBusy && !HasError;
-                return;
-            }
+                if (!_authService.IsLoggedIn)
+                {
+                    _logger.LogWarning("User not logged in. Cannot load wishlist.");
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        ErrorMessage = "Please login to view your wishlist.";
+                        WishlistItems.Clear();
+                    });
+                    return;
+                }
 
-            IsBusy = true;
-            ErrorMessage = null;
-            try
-            {
-                _logger.LogInformation("Loading user wishlist...");
                 var response = await _wishlistApi.GetWishlist();
-
                 if (response.IsSuccessStatusCode && response.Content != null)
                 {
-                    WishlistItems.Clear();
-                    foreach (var item in response.Content.OrderByDescending(i => i.CreatedAtUtc))
+                    MainThread.BeginInvokeOnMainThread(() =>
                     {
-                        if (item.Book != null)
+                        WishlistItems.Clear();
+                        foreach (var item in response.Content)
                         {
                             WishlistItems.Add(item);
                         }
-                        else
-                        {
-                            _logger.LogWarning("Wishlist item with BookId {BookId} has null Book details. Skipping.", item.BookId);
-                        }
-                    }
-                    _logger.LogInformation("Loaded {Count} items in wishlist.", WishlistItems.Count);
+                    });
                 }
                 else
                 {
-                    string errorContent = response.Error?.Content ?? response.ReasonPhrase ?? "Failed to load wishlist.";
-                    ErrorMessage = $"Error: {errorContent}";
-                    _logger.LogWarning("Failed to load wishlist. Status: {StatusCode}, Reason: {Reason}", response.StatusCode, ErrorMessage);
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        ErrorMessage = response.Error?.Content ?? "Failed to load wishlist.";
+                        WishlistItems.Clear();
+                    });
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Exception while loading wishlist.");
-                ErrorMessage = $"An unexpected error occurred: {ex.Message}";
-            }
-            finally
-            {
-                IsBusy = false;
-                ShowContent = !IsBusy && !HasError;
-            }
+            }, true);
         }
 
         [RelayCommand]
@@ -98,15 +75,16 @@ namespace Bookstore.Mobile.ViewModels
             var itemToRemove = WishlistItems.FirstOrDefault(item => item.Book.Id == bookId.Value);
             if (itemToRemove == null) return;
 
-            bool confirm = await Application.Current.MainPage.DisplayAlert("Remove Item", $"Remove '{itemToRemove.Book.Title}' from your wishlist?", "Yes", "No");
+            bool confirm = await Application.Current.MainPage.DisplayAlert(
+                "Remove Item",
+                $"Remove '{itemToRemove.Book.Title}' from your wishlist?",
+                "Yes",
+                "No");
             if (!confirm) return;
 
-            IsBusy = true;
-            ErrorMessage = null;
-            _logger.LogInformation("Removing Book {BookId} from wishlist.", bookId.Value);
-
-            try
+            await RunSafeAsync(async () =>
             {
+                _logger.LogInformation("Removing Book {BookId} from wishlist.", bookId.Value);
                 var response = await _wishlistApi.RemoveFromWishlist(bookId.Value);
 
                 if (response.IsSuccessStatusCode)
@@ -121,28 +99,25 @@ namespace Bookstore.Mobile.ViewModels
                 else
                 {
                     string errorContent = response.Error?.Content ?? response.ReasonPhrase ?? "Failed to remove item.";
-                    ErrorMessage = $"Error: {errorContent}";
-                    _logger.LogWarning("Failed to remove Book {BookId} from wishlist. Status: {StatusCode}, Reason: {Reason}", bookId.Value, response.StatusCode, ErrorMessage);
-                    await DisplayAlertAsync("Error", ErrorMessage);
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        ErrorMessage = $"Error: {errorContent}";
+                    });
+                    _logger.LogWarning("Failed to remove Book {BookId} from wishlist. Status: {StatusCode}, Reason: {Reason}",
+                        bookId.Value, response.StatusCode, ErrorMessage);
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Exception while removing Book {BookId} from wishlist.", bookId.Value);
-                ErrorMessage = $"An unexpected error occurred: {ex.Message}";
-                await DisplayAlertAsync("Error", ErrorMessage);
-            }
-            finally
-            {
-                IsBusy = false;
-                ShowContent = !IsBusy && !HasError;
-            }
+            }, true);
         }
 
         [RelayCommand]
         private async Task GoToBookDetailsAsync(Guid? bookId)
         {
-            if (!bookId.HasValue || bookId.Value == Guid.Empty) return;
+            if (!bookId.HasValue || bookId.Value == Guid.Empty)
+            {
+                _logger.LogWarning("Attempted to navigate to book details with invalid book ID");
+                return;
+            }
+
             _logger.LogInformation("Navigating to Book Details for Id: {BookId} from wishlist.", bookId.Value);
             await Shell.Current.GoToAsync($"{nameof(BookDetailsPage)}?BookId={bookId.Value}");
         }
@@ -156,7 +131,10 @@ namespace Bookstore.Mobile.ViewModels
 
         public void OnAppearing()
         {
-            LoadWishlistCommand.Execute(null);
+            if (!IsBusy)
+            {
+                LoadWishlistCommand.Execute(null);
+            }
         }
     }
 }

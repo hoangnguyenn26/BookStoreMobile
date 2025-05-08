@@ -12,7 +12,10 @@ namespace Bookstore.Mobile.ViewModels
     {
         private readonly ICategoriesApi _categoriesApi;
         private readonly ILogger<AdminCategoryListViewModel> _logger;
-        private List<CategoryDto> _allCategories = new();
+        private int _currentPage = 1;
+        private const int PageSize = 15;
+        private bool _canLoadMore = true;
+        private bool _hasLoaded = false;
 
         public AdminCategoryListViewModel(ICategoriesApi categoriesApi, ILogger<AdminCategoryListViewModel> logger)
         {
@@ -22,100 +25,132 @@ namespace Bookstore.Mobile.ViewModels
             Categories = new ObservableCollection<CategoryDto>();
         }
 
-        [ObservableProperty] private ObservableCollection<CategoryDto> _categories;
-        [ObservableProperty] private string? _searchTerm;
-        [ObservableProperty] private string? _errorMessage;
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-        public bool ShowContent => !IsBusy && !HasError;
+        [ObservableProperty]
+        private ObservableCollection<CategoryDto> _categories;
+
+        [ObservableProperty]
+        private string? _searchTerm;
 
         partial void OnSearchTermChanged(string? value) => FilterCategories(value);
 
         [RelayCommand]
-        private async Task LoadCategoriesAsync(object? parameter)
+        private async Task LoadCategoriesAsync(bool isRefresh = false)
         {
-            bool force = parameter is bool b && b;
-            if (IsBusy) return;
-            IsBusy = true;
-            ErrorMessage = null;
-            try
+            await RunSafeAsync(async () =>
             {
-                if (force || !_allCategories.Any())
+                if (isRefresh)
                 {
-                    _logger.LogInformation("Loading all categories for admin.");
-                    var response = await _categoriesApi.GetCategories();
-                    if (response.IsSuccessStatusCode && response.Content != null)
-                    {
-                        _allCategories = response.Content.OrderBy(c => c.Name).ToList();
-                        _logger.LogInformation("Loaded {Count} total categories.", _allCategories.Count);
-                    }
-                    else
-                    {
-                        string errorContent = response.Error?.Content ?? response.ReasonPhrase ?? "Failed to load categories.";
-                        ErrorMessage = $"Error: {errorContent}";
-                        _logger.LogWarning("Failed to load categories. Status: {StatusCode}, Reason: {Reason}", response.StatusCode, ErrorMessage);
-                        _allCategories.Clear();
-                    }
+                    _currentPage = 1;
+                    _canLoadMore = true;
+                    Categories.Clear();
                 }
-                FilterCategories(SearchTerm); // Apply filter after loading/reloading
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Exception while loading categories.");
-                ErrorMessage = $"An unexpected error occurred: {ex.Message}";
-                _allCategories.Clear();
-                Categories.Clear();
-            }
-            finally
-            {
-                IsBusy = false;
-                OnPropertyChanged(nameof(ShowContent));
-            }
+
+                var response = await _categoriesApi.GetCategories(_currentPage, PageSize);
+                if (response.IsSuccessStatusCode && response.Content != null)
+                {
+                    foreach (var cat in response.Content.OrderBy(c => c.Name))
+                        Categories.Add(cat);
+                    _canLoadMore = response.Content.Count() == PageSize;
+                }
+                else
+                {
+                    ErrorMessage = response.Error?.Content ?? "Failed to load categories.";
+                }
+            }, showBusy: true);
         }
+
+        [RelayCommand]
+        private async Task LoadMoreCategoriesAsync()
+        {
+            if (IsBusy || !_canLoadMore) return;
+
+            await RunSafeAsync(async () =>
+            {
+                _currentPage++;
+                var response = await _categoriesApi.GetCategories(_currentPage, PageSize);
+                if (response.IsSuccessStatusCode && response.Content != null)
+                {
+                    foreach (var cat in response.Content.OrderBy(c => c.Name))
+                        Categories.Add(cat);
+                    _canLoadMore = response.Content.Count() == PageSize;
+                }
+            }, showBusy: true);
+        }
+
+        [RelayCommand]
+        private async Task RefreshAsync() => await LoadCategoriesAsync(true);
 
         private void FilterCategories(string? searchTerm)
         {
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                Categories.Clear();
-                IEnumerable<CategoryDto> filtered = _allCategories;
-                if (!string.IsNullOrWhiteSpace(searchTerm))
+                if (string.IsNullOrWhiteSpace(searchTerm))
                 {
-                    filtered = _allCategories.Where(c => c.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                                                     (c.Description?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false));
+                    LoadCategoriesCommand.Execute(false);
+                    return;
                 }
-                foreach (var cat in filtered) { Categories.Add(cat); }
-                _logger.LogDebug("Filtered categories displayed: {Count}", Categories.Count);
+
+                var filtered = Categories
+                    .Where(c => c.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                               (c.Description?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false))
+                    .ToList();
+
+                Categories.Clear();
+                foreach (var cat in filtered)
+                {
+                    Categories.Add(cat);
+                }
             });
         }
 
-        [RelayCommand] private async Task SearchAsync() => await LoadCategoriesAsync(true);
-        [RelayCommand] private async Task GoToAddCategoryAsync() => await Shell.Current.GoToAsync($"{nameof(AddEditCategoryPage)}?CategoryId={Guid.Empty}");
-        [RelayCommand] private async Task GoToEditCategoryAsync(Guid? categoryId) { if (categoryId.HasValue) await Shell.Current.GoToAsync($"{nameof(AddEditCategoryPage)}?CategoryId={categoryId.Value}"); }
+        [RelayCommand]
+        private async Task GoToAddCategoryAsync() =>
+            await Shell.Current.GoToAsync($"{nameof(AddEditCategoryPage)}?CategoryId={Guid.Empty}");
+
+        [RelayCommand]
+        private async Task GoToEditCategoryAsync(Guid? categoryId)
+        {
+            if (categoryId.HasValue)
+                await Shell.Current.GoToAsync($"{nameof(AddEditCategoryPage)}?CategoryId={categoryId.Value}");
+        }
 
         [RelayCommand]
         private async Task DeleteCategoryAsync(Guid? categoryId)
         {
             if (!categoryId.HasValue || IsBusy) return;
-            bool confirm = await Application.Current.MainPage.DisplayAlert("Confirm Delete", "Delete this category?", "Yes", "No");
+
+            bool confirm = await Application.Current.MainPage.DisplayAlert(
+                "Confirm Delete",
+                "Delete this category?",
+                "Yes",
+                "No");
             if (!confirm) return;
-            IsBusy = true;
-            try
+
+            await RunSafeAsync(async () =>
             {
                 var response = await _categoriesApi.DeleteCategory(categoryId.Value);
                 if (response.IsSuccessStatusCode)
                 {
-                    await LoadCategoriesAsync(true); // Reload list
+                    var toRemove = Categories.FirstOrDefault(c => c.Id == categoryId.Value);
+                    if (toRemove != null)
+                        Categories.Remove(toRemove);
                 }
                 else
                 {
-                    string error = response.Error?.Content ?? "Failed to delete";
-                    await DisplayAlertAsync("Error", error);
+                    throw new Exception(response.Error?.Content ?? "Failed to delete category");
                 }
-            }
-            catch (Exception ex) { await DisplayAlertAsync("Error", ex.Message); }
-            finally { IsBusy = false; }
+            }, showBusy: true);
         }
 
-        public void OnAppearing() { if (Categories.Count == 0) LoadCategoriesCommand.Execute(false); }
+        public void OnAppearing()
+        {
+            if (!_hasLoaded)
+            {
+                _hasLoaded = true;
+                LoadCategoriesCommand.Execute(false);
+            }
+        }
+
+        public void OnDisappearing() => _hasLoaded = false;
     }
 }

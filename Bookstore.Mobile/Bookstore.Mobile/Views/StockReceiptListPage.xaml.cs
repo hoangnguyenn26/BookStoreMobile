@@ -11,4 +11,9 @@ public partial class StockReceiptListPage : ContentPage
         _viewModel = viewModel;
         BindingContext = _viewModel;
     }
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        (BindingContext as StockReceiptListViewModel)?.OnAppearing();
+    }
 }

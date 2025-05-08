@@ -6,7 +6,7 @@ namespace Bookstore.Mobile.Interfaces.Apis
     public interface IAuthorApi
     {
         [Get("/v1/authors")]
-        Task<ApiResponse<IEnumerable<AuthorDto>>> GetAuthors();
+        Task<ApiResponse<IEnumerable<AuthorDto>>> GetAuthors([Query] int page = 1, [Query] int pageSize = 10);
 
         [Get("/v1/authors/{id}")]
         Task<ApiResponse<AuthorDto>> GetAuthorById(Guid id);

@@ -7,40 +7,91 @@
              x:DataType="vm:AdminCategoryListViewModel"
              x:Class="Bookstore.Mobile.Views.AdminCategoryListPage"
              Title="{Binding Title}">
+
     <ContentPage.Resources>
         <converters:GuidNotNullBoolConverter x:Key="GuidNotNullBoolConverter"/>
     </ContentPage.Resources>
+
     <Grid RowDefinitions="Auto, Auto, *">
+        <!-- Header -->
         <Grid Grid.Row="0" Padding="15,10" ColumnDefinitions="*,Auto">
             <Label Text="Categories" Style="{StaticResource Headline}" VerticalOptions="Center"/>
-            <Button Grid.Column="1" Text="+ Add New" Command="{Binding GoToAddCategoryCommand}" Style="{StaticResource TextButton}"/>
+            <Button Grid.Column="1" 
+                    Text="+ Add New" 
+                    Command="{Binding GoToAddCategoryCommand}" 
+                    Style="{StaticResource TextButton}"/>
         </Grid>
-        <SearchBar Grid.Row="1" Placeholder="Search categories..." Text="{Binding SearchTerm}" SearchCommand="{Binding SearchCommand}" Margin="15,0"/>
 
-        <ActivityIndicator Grid.Row="1" Grid.RowSpan="2" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center"/>
-        <Label Grid.Row="2" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}" VerticalOptions="Center" HorizontalOptions="Center"/>
+        <!-- Search Bar -->
+        <SearchBar Grid.Row="1" 
+                   Placeholder="Search categories..." 
+                   Text="{Binding SearchTerm}"
+                   Margin="15,0"/>
 
-        <RefreshView Grid.Row="2" Command="{Binding LoadCategoriesCommand}" CommandParameter="true" IsRefreshing="{Binding IsBusy}" IsVisible="{Binding ShowContent}">
-            <CollectionView ItemsSource="{Binding Categories}" SelectionMode="None" Margin="10">
+        <!-- Loading Indicators -->
+        <ActivityIndicator Grid.Row="1" Grid.RowSpan="2" 
+                          IsRunning="{Binding IsBusy}" 
+                          IsVisible="{Binding IsBusy}" 
+                          VerticalOptions="Center" 
+                          HorizontalOptions="Center"/>
+
+        <Label Grid.Row="2" 
+               Text="{Binding ErrorMessage}" 
+               Style="{StaticResource ErrorLabel}" 
+               IsVisible="{Binding HasError}" 
+               VerticalOptions="Center" 
+               HorizontalOptions="Center"/>
+
+        <!-- Main Content -->
+        <RefreshView Grid.Row="2" 
+                   Command="{Binding RefreshCommand}" 
+                   IsRefreshing="{Binding IsBusy}"
+                   IsVisible="{Binding ShowContent}">
+            <CollectionView ItemsSource="{Binding Categories}" 
+                           SelectionMode="None"
+                           Margin="10"
+                           RemainingItemsThreshold="5"
+                           RemainingItemsThresholdReachedCommand="{Binding LoadMoreCategoriesCommand}">
+
                 <CollectionView.EmptyView>
-                    <Label Text="No categories found." HorizontalOptions="Center" VerticalOptions="Center" Margin="20"/>
+                    <Label Text="No categories found." 
+                          HorizontalOptions="Center" 
+                          VerticalOptions="Center" 
+                          Margin="20"/>
                 </CollectionView.EmptyView>
+
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="dto:CategoryDto">
                         <Border Style="{StaticResource CardBorder}" Padding="10,5" Margin="0,0,0,8">
                             <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="5">
+                                <!-- Category Info -->
                                 <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
                                     <Label Text="{Binding Name}" FontAttributes="Bold"/>
-                                    <Label Text="{Binding ParentCategoryName, StringFormat='Parent: {0}'}" FontSize="Micro" IsVisible="{Binding ParentCategoryId, Converter={StaticResource GuidNotNullBoolConverter}}"/>
+                                    <Label Text="{Binding ParentCategoryName, StringFormat='Parent: {0}'}" 
+                                          FontSize="Micro" 
+                                          IsVisible="{Binding ParentCategoryId, Converter={StaticResource GuidNotNullBoolConverter}}"/>
                                 </VerticalStackLayout>
-                                <Button Grid.Column="1" Text="Edit" FontSize="Micro" Padding="8,4" HeightRequest="35" Style="{StaticResource OutlineButton}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminCategoryListViewModel}}, Path=GoToEditCategoryCommand}"
-                                        CommandParameter="{Binding Id}"/>
-                                <Button Grid.Column="2" BackgroundColor="Transparent" Padding="0"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminCategoryListViewModel}}, Path=DeleteCategoryCommand}"
-                                        CommandParameter="{Binding Id}">
+
+                                <!-- Edit Button -->
+                                <Button Grid.Column="1" 
+                                       Text="Edit" 
+                                       FontSize="Micro" 
+                                       Padding="8,4" 
+                                       HeightRequest="35" 
+                                       Style="{StaticResource OutlineButton}"
+                                       Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminCategoryListViewModel}}, Path=GoToEditCategoryCommand}"
+                                       CommandParameter="{Binding Id}"/>
+
+                                <!-- Delete Button -->
+                                <Button Grid.Column="2" 
+                                       BackgroundColor="Transparent" 
+                                       Padding="0"
+                                       Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminCategoryListViewModel}}, Path=DeleteCategoryCommand}"
+                                       CommandParameter="{Binding Id}">
                                     <Button.ImageSource>
-                                        <FontImageSource Glyph="" FontFamily="MaterialSymbolsRounded" Color="{StaticResource ErrorLight}"/>
+                                        <FontImageSource Glyph="" 
+                                                      FontFamily="MaterialSymbolsRounded" 
+                                                      Color="{StaticResource ErrorLight}"/>
                                     </Button.ImageSource>
                                 </Button>
                             </Grid>

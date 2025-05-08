@@ -14,6 +14,7 @@ public partial class CartPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        _viewModel.OnAppearing();
+        if (BindingContext is CartViewModel vm)
+            vm.OnAppearing();
     }
 }

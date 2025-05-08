@@ -32,19 +32,30 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty]
         private ObservableCollection<OrderSummaryDto> _orders;
 
-        [ObservableProperty]
-        private string? _errorMessage;
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-        public bool ShowContent => !IsBusy && !HasError;
+        public override bool ShowContent => !IsBusy && !HasError;
 
         [RelayCommand(CanExecute = nameof(CanLoadMoreOrders))]
         private async Task LoadMoreOrdersAsync()
         {
             if (_isLoadingMore) return;
-
             _isLoadingMore = true;
-            _logger.LogInformation("LoadMoreOrdersCommand triggered.");
-            await LoadOrdersInternalAsync(isRefreshing: false);
+            await RunSafeAsync(async () =>
+            {
+                var response = await _orderApi.GetAllOrdersForAdmin(_currentPage, PageSize);
+                if (response.IsSuccessStatusCode && response.Content != null)
+                {
+                    foreach (var order in response.Content)
+                    {
+                        Orders.Add(order);
+                    }
+                    _currentPage++;
+                    _canLoadMore = response.Content.Count() == PageSize;
+                }
+                else
+                {
+                    ErrorMessage = response.Error?.Content ?? "Failed to load order history.";
+                }
+            }, nameof(ShowContent));
             _isLoadingMore = false;
         }
 

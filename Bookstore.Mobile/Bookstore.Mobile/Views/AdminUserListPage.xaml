@@ -36,7 +36,7 @@
         <Label Grid.Row="2" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}" VerticalOptions="Center" HorizontalOptions="Center"/>
 
         <!-- User List - Using string parameter -->
-        <RefreshView Grid.Row="2" Command="{Binding LoadUsersCommand}" CommandParameter="true" IsRefreshing="{Binding IsBusy}" IsVisible="{Binding ShowContent}">
+        <RefreshView Grid.Row="2" Command="{Binding LoadUsersCommand}" IsRefreshing="{Binding IsBusy}" IsVisible="{Binding ShowContent}">
             <CollectionView ItemsSource="{Binding Users}"
                             SelectionMode="None"
                             Margin="10"

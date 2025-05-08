@@ -25,13 +25,13 @@ namespace Bookstore.Mobile.ViewModels
             _booksApi = booksApi;
             _wishlistApi = wishlistApi;
             _cartApi = cartApi;
-            _reviewApi = reviewApi; // Gán giá trị
+            _reviewApi = reviewApi;
             _authService = authService;
             _logger = logger;
             Title = "Book Details";
             BookDetailItems = new ObservableCollection<KeyValuePair<string, string>>();
-            Reviews = new ObservableCollection<ReviewDto>(); // Khởi tạo
-            QuantityToAdd = 1; // Mặc định
+            Reviews = new ObservableCollection<ReviewDto>();
+            QuantityToAdd = 1;
         }
         private Guid _actualBookId = Guid.Empty;
         private string? _bookIdString;
@@ -43,7 +43,6 @@ namespace Bookstore.Mobile.ViewModels
                 if (_bookIdString != value)
                 {
                     _bookIdString = value;
-                    // Gọi hàm xử lý Id dạng string
                     ProcessBookId(value);
                 }
             }
@@ -55,12 +54,6 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(CanAddToCart))]
         private bool _isInWishlist;
-
-        [ObservableProperty]
-        private string? _errorMessage;
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-
-        public bool ShowContent => !IsBusy && BookDetails != null && !HasError;
 
         [ObservableProperty]
         private ObservableCollection<ReviewDto> _reviews;
@@ -83,21 +76,21 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty]
         private ObservableCollection<KeyValuePair<string, string>> _bookDetailItems;
 
+        public override bool ShowContent => !IsBusy && BookDetails != null && !HasError;
+
         [RelayCommand]
         private async Task LoadBookDetailsAsync()
         {
-            if (IsBusy || _actualBookId == Guid.Empty) return;
-            IsBusy = true;
-            ErrorMessage = null;
-            ReviewsErrorMessage = null; // Reset lỗi review
-            BookDetails = null;
-            BookDetailItems.Clear();
-            Reviews.Clear(); // Xóa review cũ
-            IsInWishlist = false;
-            QuantityToAdd = 1; // Reset số lượng về 1
-
-            try
+            await RunSafeAsync(async () =>
             {
+                if (_actualBookId == Guid.Empty) return;
+                ReviewsErrorMessage = null;
+                BookDetails = null;
+                BookDetailItems.Clear();
+                Reviews.Clear();
+                IsInWishlist = false;
+                QuantityToAdd = 1;
+
                 _logger.LogInformation("Loading book details for Id: {BookId}", _actualBookId);
                 var bookResponse = await _booksApi.GetBookById(_actualBookId);
 
@@ -121,18 +114,7 @@ namespace Bookstore.Mobile.ViewModels
                     ErrorMessage = $"Error: {errorContent}";
                     _logger.LogWarning("Failed to load book details for Id {BookId}. Status: {StatusCode}, Reason: {Reason}", _actualBookId, bookResponse.StatusCode, ErrorMessage);
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Exception while loading book details for Id: {BookId}", _actualBookId);
-                ErrorMessage = $"An unexpected error occurred: {ex.Message}";
-            }
-            finally
-            {
-                IsBusy = false;
-                OnPropertyChanged(nameof(ShowContent));
-                OnPropertyChanged(nameof(CanAddToCart));
-            }
+            }, nameof(ShowContent));
         }
 
         private async Task LoadReviewsAsync()
@@ -170,12 +152,11 @@ namespace Bookstore.Mobile.ViewModels
             }
         }
 
-
         private async Task CheckWishlistStatusAsync()
         {
             if (!_authService.IsLoggedIn || BookDetails == null)
             {
-                IsInWishlist = false; // Không đăng nhập thì không có wishlist
+                IsInWishlist = false;
                 return;
             }
             try
@@ -199,29 +180,23 @@ namespace Bookstore.Mobile.ViewModels
                 _logger.LogError(ex, "Exception while checking wishlist status for Book {BookId}", BookDetails.Id);
                 IsInWishlist = false;
             }
-            finally
-            {
-            }
         }
 
         private bool CanToggleWishlist() => BookDetails != null && IsNotBusy;
         [RelayCommand(CanExecute = nameof(CanToggleWishlist))]
         private async Task ToggleWishlistAsync()
         {
-            if (!_authService.IsLoggedIn)
+            await RunSafeAsync(async () =>
             {
-                await DisplayAlertAsync("Login Required", "Please login to manage your wishlist.", "OK");
-                await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
-                return;
-            }
+                if (!_authService.IsLoggedIn)
+                {
+                    await DisplayAlertAsync("Login Required", "Please login to manage your wishlist.", "OK");
+                    await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
+                    return;
+                }
 
-            if (BookDetails == null || IsBusy) return;
+                if (BookDetails == null) return;
 
-            IsBusy = true;
-            ErrorMessage = null;
-
-            try
-            {
                 ApiResponse<object>? response;
                 if (IsInWishlist)
                 {
@@ -246,27 +221,15 @@ namespace Bookstore.Mobile.ViewModels
                     _logger.LogWarning("Failed to toggle wishlist for Book {BookId}. Status: {StatusCode}, Reason: {Reason}", BookDetails.Id, response.StatusCode, ErrorMessage);
                     await DisplayAlertAsync("Wishlist Error", ErrorMessage);
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Exception while toggling wishlist for Book {BookId}", BookDetails.Id);
-                ErrorMessage = $"An unexpected error occurred: {ex.Message}";
-                await DisplayAlertAsync("Error", ErrorMessage);
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            }, showBusy: true);
         }
 
         [RelayCommand(CanExecute = nameof(CanAddToCart))]
         private async Task AddToCartAsync()
         {
-            if (BookDetails == null || QuantityToAdd <= 0 || IsBusy) return;
-            IsBusy = true;
-            ErrorMessage = null;
-            try
+            await RunSafeAsync(async () =>
             {
+                if (BookDetails == null || QuantityToAdd <= 0) return;
                 _logger.LogInformation("Adding {Quantity} of Book {BookId} to cart.", QuantityToAdd, _actualBookId);
                 var addItemDto = new AddCartItemDto { BookId = _actualBookId, Quantity = QuantityToAdd };
                 var response = await _cartApi.AddOrUpdateItem(addItemDto);
@@ -275,7 +238,6 @@ namespace Bookstore.Mobile.ViewModels
                 {
                     _logger.LogInformation("Book {BookId} added/updated in cart successfully.", _actualBookId);
                     await DisplayAlertAsync("Success", $"Added {QuantityToAdd} x '{BookDetails.Title}' to cart.", "OK");
-                    // QuantityToAdd = 1; // Reset lại nếu muốn
                 }
                 else
                 {
@@ -284,31 +246,24 @@ namespace Bookstore.Mobile.ViewModels
                     _logger.LogWarning("Failed to add Book {BookId} to cart. Status: {StatusCode}, Reason: {Reason}", _actualBookId, response.StatusCode, ErrorMessage);
                     await DisplayAlertAsync("Error", ErrorMessage);
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Exception while adding Book {BookId} to cart.", _actualBookId);
-                ErrorMessage = $"An unexpected error occurred: {ex.Message}";
-                await DisplayAlertAsync("Error", ErrorMessage);
-            }
-            finally { IsBusy = false; }
+            }, showBusy: true);
         }
 
         [RelayCommand]
         private async Task GoToWriteReviewAsync()
         {
-            if (BookDetails == null || !_authService.IsLoggedIn)
+            await RunSafeAsync(async () =>
             {
-                // Có thể yêu cầu đăng nhập
-                await DisplayAlertAsync("Login Required", "Please login to write a review.", "OK");
-                await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
-                return;
-            }
-            _logger.LogInformation("Navigating to Submit Review Page for Book {BookId}", _actualBookId);
-            // Điều hướng đến trang Submit Review
-            await Shell.Current.GoToAsync($"{nameof(SubmitReviewPage)}?BookId={_actualBookId}&BookTitle={Uri.EscapeDataString(BookDetails.Title)}");
+                if (BookDetails == null || !_authService.IsLoggedIn)
+                {
+                    await DisplayAlertAsync("Login Required", "Please login to write a review.", "OK");
+                    await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
+                    return;
+                }
+                _logger.LogInformation("Navigating to Submit Review Page for Book {BookId}", _actualBookId);
+                await Shell.Current.GoToAsync($"{nameof(SubmitReviewPage)}?BookId={_actualBookId}&BookTitle={Uri.EscapeDataString(BookDetails.Title)}");
+            }, showBusy: true);
         }
-
 
         private void PrepareDetailItems()
         {
@@ -317,10 +272,9 @@ namespace Bookstore.Mobile.ViewModels
             if (!string.IsNullOrWhiteSpace(BookDetails.ISBN)) BookDetailItems.Add(new KeyValuePair<string, string>("ISBN:", BookDetails.ISBN));
             if (!string.IsNullOrWhiteSpace(BookDetails.Publisher)) BookDetailItems.Add(new KeyValuePair<string, string>("Publisher:", BookDetails.Publisher));
             if (BookDetails.PublicationYear.HasValue) BookDetailItems.Add(new KeyValuePair<string, string>("Year:", BookDetails.PublicationYear.Value.ToString()));
-            if (BookDetails.Category != null) BookDetailItems.Add(new KeyValuePair<string, string>("Category:", BookDetails.Category.Name)); // Cần Include Category từ API
+            if (BookDetails.Category != null) BookDetailItems.Add(new KeyValuePair<string, string>("Category:", BookDetails.Category.Name));
         }
 
-        // Hàm xử lý chuỗi Id nhận được
         private async void ProcessBookId(string? idString)
         {
             _logger.LogInformation("Received BookId string parameter: {BookIdString}", idString);

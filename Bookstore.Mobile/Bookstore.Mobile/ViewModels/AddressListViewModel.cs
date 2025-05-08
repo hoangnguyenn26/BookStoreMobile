@@ -33,17 +33,13 @@ namespace Bookstore.Mobile.ViewModels
         private string? _errorMessage;
         public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
         public bool HasItems => Addresses.Count > 0;
-
-        public bool ShowContent => !IsBusy && !HasError;
+        public override bool ShowContent => !IsBusy && !HasError;
 
         // --- Commands ---
         [RelayCommand]
         private async Task LoadAddressesAsync()
         {
-            if (IsBusy) return;
-            IsBusy = true;
-            ErrorMessage = null;
-            try
+            await RunSafeAsync(async () =>
             {
                 _logger.LogInformation("Loading user addresses.");
                 var response = await _addressApi.GetAddresses();
@@ -63,18 +59,8 @@ namespace Bookstore.Mobile.ViewModels
                     ErrorMessage = $"Error: {errorContent}";
                     _logger.LogWarning("Failed to load addresses. Status: {StatusCode}, Reason: {Reason}", response.StatusCode, ErrorMessage);
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Exception while loading addresses.");
-                ErrorMessage = $"An unexpected error occurred: {ex.Message}";
-            }
-            finally
-            {
-                IsBusy = false;
-                OnPropertyChanged(nameof(ShowContent));
-                OnPropertyChanged(nameof(HasItems));
-            }
+            }, nameof(ShowContent));
+            OnPropertyChanged(nameof(HasItems));
         }
 
         [RelayCommand]
