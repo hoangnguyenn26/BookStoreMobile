@@ -1,12 +1,81 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
+             xmlns:microcharts="clr-namespace:Microcharts.Maui;assembly=Microcharts.Maui"
+             xmlns:dto_report="clr-namespace:Bookstore.Mobile.Models"
+             x:DataType="vm:AdminReportsViewModel"
              x:Class="Bookstore.Mobile.Views.AdminReportsPage"
-             Title="AdminReportsPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="{Binding Title}">
+
+    <RefreshView Command="{Binding RefreshAllReportsCommand}" IsRefreshing="{Binding IsBusy}">
+        <ScrollView>
+            <VerticalStackLayout Padding="15" Spacing="15">
+                <Label Text="Reports" Style="{StaticResource Headline}" Margin="0,0,0,10"/>
+
+                <Label Text="Select Date Range:" FontAttributes="Bold"/>
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="5">
+                    <Label Grid.Row="0" Grid.Column="0" Text="Start Date:"/>
+                    <DatePicker Grid.Row="1" Grid.Column="0" Date="{Binding StartDate}"/>
+                    <Label Grid.Row="0" Grid.Column="1" Text="End Date:"/>
+                    <DatePicker Grid.Row="1" Grid.Column="1" Date="{Binding EndDate}"/>
+                </Grid>
+                <Button Text="Generate Reports" Command="{Binding LoadAllReportsCommand}" IsEnabled="{Binding IsNotBusy}"/>
+
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="CenterAndExpand"/>
+                <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}"/>
+
+                <VerticalStackLayout IsVisible="{Binding ShowRevenueReport}">
+                    <Label Text="Revenue Overview" Style="{StaticResource SubHeadline}" Margin="0,20,0,5"/>
+                    <Grid ColumnDefinitions="*,*" Padding="10">
+                        <VerticalStackLayout>
+                            <Label Text="Total Orders:" Style="{StaticResource CardTitle}"/>
+                            <Label Text="{Binding RevenueReport.GrandTotalOrders}" Style="{StaticResource CardValue}" FontSize="Medium"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="Total Revenue:" Style="{StaticResource CardTitle}"/>
+                            <Label Text="{Binding RevenueReport.GrandTotalRevenue, StringFormat='{0:C}'}" Style="{StaticResource CardValue}" FontSize="Medium"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                    <Label Text="Revenue Trend" Style="{StaticResource SubHeadline}" Margin="0,10,0,5"/>
+                    <microcharts:ChartView x:Name="RevenueChartView" HeightRequest="250" Chart="{Binding RevenueChart}"/>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout IsVisible="{Binding ShowBestsellersReport}" Margin="0,20,0,0">
+                    <Label Text="Bestselling Books" Style="{StaticResource SubHeadline}" Margin="0,0,0,5"/>
+                    <Label Text="{Binding StartDate, StringFormat='From: {0:dd MMM yyyy}'}" FontSize="Micro" TextColor="{StaticResource Gray600Light}"/>
+                    <Label Text="{Binding EndDate, StringFormat='To: {0:dd MMM yyyy}'}" FontSize="Micro" TextColor="{StaticResource Gray600Light}" Margin="0,0,0,10"/>
+                    <microcharts:ChartView x:Name="BestsellersChartView" HeightRequest="300" Chart="{Binding BestsellersChart}"/>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout IsVisible="{Binding ShowLowStockReport}" Margin="0,20,0,0">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="Low Stock Items" Style="{StaticResource SubHeadline}" Margin="0,0,0,5" VerticalOptions="End"/>
+                        <HorizontalStackLayout Grid.Column="1" Spacing="5" VerticalOptions="Center">
+                            <Label Text="Threshold:" FontSize="Small" VerticalOptions="Center"/>
+                            <Entry Text="{Binding LowStockThreshold}" Keyboard="Numeric" WidthRequest="50" HorizontalTextAlignment="Center"/>
+                            <Button Text="Reload" Command="{Binding ReloadLowStockCommand}" Style="{StaticResource TextButton}" Padding="5" FontSize="Micro" IsEnabled="{Binding IsNotBusy}"/>
+                        </HorizontalStackLayout>
+                    </Grid>
+                    <CollectionView ItemsSource="{Binding LowStockBooks}" HeightRequest="300" Margin="0,5,0,0">
+                        <CollectionView.EmptyView>
+                            <Label Text="No items with low stock found." HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="dto_report:LowStockBookDto">
+                                <Grid Padding="10,5" ColumnDefinitions="*,Auto">
+                                    <VerticalStackLayout>
+                                        <Label Text="{Binding BookTitle}" FontAttributes="Bold"/>
+                                        <Label Text="{Binding AuthorName, TargetNullValue='N/A'}" FontSize="Small"/>
+                                    </VerticalStackLayout>
+                                    <Label Grid.Column="1" Text="{Binding CurrentStockQuantity, StringFormat='Stock: {0}'}" TextColor="{StaticResource ErrorLight}" VerticalOptions="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
 </ContentPage>

@@ -11,4 +11,12 @@ public partial class AdminReportsPage : ContentPage
         _viewModel = viewModel;
         BindingContext = _viewModel;
     }
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        if (BindingContext is AdminReportsViewModel vm)
+        {
+            vm.OnAppearing();
+        }
+    }
 }

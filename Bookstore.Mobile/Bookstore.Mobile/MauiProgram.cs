@@ -1,5 +1,4 @@
-﻿
-using Bookstore.Mobile.Handlers;
+﻿using Bookstore.Mobile.Handlers;
 using Bookstore.Mobile.Interfaces.Apis;
 using Bookstore.Mobile.Interfaces.Services;
 using Bookstore.Mobile.Mappings;
@@ -8,6 +7,7 @@ using Bookstore.Mobile.Services;
 using Bookstore.Mobile.ViewModels;
 using Bookstore.Mobile.Views;
 using CommunityToolkit.Maui;
+using Microcharts.Maui;
 using Microsoft.Extensions.Logging;
 using Refit;
 using System.Text.Json;
@@ -22,6 +22,7 @@ namespace Bookstore.Mobile
             builder
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()
+                .UseMicrocharts()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -221,9 +222,9 @@ namespace Bookstore.Mobile
                     .ConfigureHttpClient(c => c.BaseAddress = baseUri)
                     .AddHttpMessageHandler<AuthHeaderHandler>();
 
-            //services.AddRefitClient<IAdminReportApi>(refitSettings)
-            //        .ConfigureHttpClient(c => c.BaseAddress = baseUri)
-            //        .AddHttpMessageHandler<AuthHeaderHandler>();
+            services.AddRefitClient<IAdminReportApi>(refitSettings)
+                    .ConfigureHttpClient(c => c.BaseAddress = baseUri)
+                    .AddHttpMessageHandler<AuthHeaderHandler>();
 
             services.AddRefitClient<ISupplierApi>(refitSettings)
                     .ConfigureHttpClient(c => c.BaseAddress = baseUri)
