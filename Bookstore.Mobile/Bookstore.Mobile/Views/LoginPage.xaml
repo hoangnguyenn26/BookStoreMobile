@@ -8,56 +8,79 @@
              Shell.NavBarIsVisible="False">
     <!-- Ẩn Navigation Bar cho trang Login -->
 
-    <Grid Padding="20" RowDefinitions="Auto,*,Auto">
+    <Grid Padding="0" RowDefinitions="*,Auto">
+        <!-- Centered Card -->
+        <VerticalStackLayout Grid.Row="0" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Spacing="0">
+            <Frame BorderColor="#E0E0E0"
+                   BackgroundColor="White"
+                   CornerRadius="16"
+                   Padding="28,32"
+                   HasShadow="True"
+                   WidthRequest="340">
+                <VerticalStackLayout Spacing="20">
+                    <!-- Logo/Icon -->
+                    <Image Source="dotnet_bot.png" HeightRequest="64" WidthRequest="64" HorizontalOptions="Center" Margin="0,0,0,10"/>
 
-        <!-- Phần Header (Ví dụ) -->
-        <Label Text="Welcome Back!"
-               Style="{StaticResource Headline}"
-               HorizontalOptions="Center"
-               Margin="0,40,0,20"
-               Grid.Row="0"/>
+                    <!-- Header -->
+                    <Label Text="Welcome Back!"
+                           Style="{StaticResource Headline}"
+                           HorizontalOptions="Center"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           Margin="0,0,0,4"/>
+                    <Label Text="Login to continue" HorizontalOptions="Center" Style="{StaticResource Subheadline}" FontSize="16" TextColor="#757575"/>
 
-        <!-- Phần Form Đăng nhập -->
-        <VerticalStackLayout Spacing="15" Grid.Row="1" VerticalOptions="Center">
-            <Label Text="Login to continue" HorizontalOptions="Center" Style="{StaticResource Subheadline}"/>
+                    <!-- Error Message -->
+                    <Frame IsVisible="{Binding HasError}"
+                           BackgroundColor="#FFEBEE"
+                           BorderColor="#E57373"
+                           Padding="10"
+                           CornerRadius="8"
+                           Margin="0,0,0,0">
+                        <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
+                            <Label Text="⚠️" FontSize="18" VerticalOptions="Center"/>
+                            <Label Text="{Binding ErrorMessage}" TextColor="#D32F2F" FontSize="14" VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                    </Frame>
 
-            <Frame Style="{StaticResource EntryFrame}">
-                <!-- Ví dụ dùng Frame bọc Entry -->
-                <Entry Placeholder="Username or Email"
-                        Text="{Binding LoginIdentifier}"
-                        Keyboard="Email"
-                        ReturnType="Next"/>
+                    <!-- Login Form -->
+                    <VerticalStackLayout Spacing="14">
+                        <Frame Style="{StaticResource EntryFrame}">
+                            <Entry Placeholder="Username or Email"
+                                   Text="{Binding LoginIdentifier}"
+                                   Keyboard="Email"
+                                   ReturnType="Next"
+                                   FontSize="16"/>
+                        </Frame>
+                        <Frame Style="{StaticResource EntryFrame}">
+                            <Entry Placeholder="Password"
+                                   Text="{Binding Password}"
+                                   IsPassword="True"
+                                   ReturnType="Go"
+                                   FontSize="16"/>
+                        </Frame>
+                        <Button Text="Login"
+                                Command="{Binding LoginCommand}"
+                                IsEnabled="{Binding IsNotBusy}"
+                                BackgroundColor="{AppThemeBinding Light=#2196F3, Dark=#42A5F5}"
+                                TextColor="White"
+                                FontAttributes="Bold"
+                                CornerRadius="8"
+                                HeightRequest="48"
+                                Margin="0,10,0,0"/>
+                        <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                            IsVisible="{Binding IsBusy}"
+                                            HorizontalOptions="Center"
+                                            Color="{AppThemeBinding Light=#2196F3, Dark=#42A5F5}"/>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
             </Frame>
-
-            <Frame Style="{StaticResource EntryFrame}">
-                <Entry Placeholder="Password"
-                        Text="{Binding Password}"
-                        IsPassword="True"
-                        ReturnType="Go"/>
-            </Frame>
-
-            <Button Text="Login"
-                    Command="{Binding LoginCommand}"
-                    IsEnabled="{Binding IsNotBusy}"
-                    Margin="0,20,0,0"/>
-
-            <ActivityIndicator IsRunning="{Binding IsBusy}"
-                                IsVisible="{Binding IsBusy}"
-                                HorizontalOptions="Center"
-                                Color="{StaticResource Primary}"/>
-
-            <Label Text="{Binding ErrorMessage}"
-                    TextColor="Red"
-                    IsVisible="{Binding HasError}"
-                    HorizontalOptions="Center"
-                    Margin="0,10,0,0"/>
-
         </VerticalStackLayout>
 
-        <!-- Phần Footer (Link tới Register) -->
-        <HorizontalStackLayout Grid.Row="2" Spacing="5" HorizontalOptions="Center" Margin="0,0,0,20">
+        <!-- Footer (Register Link) -->
+        <HorizontalStackLayout Grid.Row="1" Spacing="5" HorizontalOptions="Center" Margin="0,0,0,30">
             <Label Text="Don't have an account?" VerticalOptions="Center"/>
-            <Label Text="Register" TextColor="{StaticResource Primary}" FontAttributes="Bold" VerticalOptions="Center">
+            <Label Text="Register" TextColor="{AppThemeBinding Light=#2196F3, Dark=#42A5F5}" FontAttributes="Bold" VerticalOptions="Center" TextDecorations="Underline">
                 <Label.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding GoToRegisterCommand}"/>
                 </Label.GestureRecognizers>

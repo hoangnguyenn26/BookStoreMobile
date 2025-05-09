@@ -1,12 +1,109 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
+             xmlns:dto_sr="clr-namespace:Bookstore.Mobile.Models"
+             xmlns:converters="clr-namespace:Bookstore.Mobile.Converters"
+             x:DataType="vm:StockReceiptDetailsViewModel"
              x:Class="Bookstore.Mobile.Views.StockReceiptDetailsPage"
-             Title="StockReceiptDetailsPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="{Binding Title}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="18">
+            <!-- Page Title -->
+            <Label Text="{Binding Title}" Style="{StaticResource Headline}" HorizontalOptions="Center" Margin="0,10,0,10"/>
+
+            <!-- Loading Indicator -->
+            <Frame IsVisible="{Binding IsBusy}"
+                   BackgroundColor="White"
+                   BorderColor="#E0E0E0"
+                   CornerRadius="10"
+                   Padding="20"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="10" HorizontalOptions="Center">
+                    <ActivityIndicator IsRunning="True" Color="{AppThemeBinding Light=#2196F3, Dark=#42A5F5}" HeightRequest="40" WidthRequest="40" />
+                    <Label Text="Loading..." HorizontalOptions="Center" FontAttributes="Bold" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Error Message -->
+            <Frame IsVisible="{Binding HasError}"
+                   BackgroundColor="#FFEBEE"
+                   BorderColor="#E57373"
+                   Padding="12"
+                   CornerRadius="8">
+                <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
+                    <Label Text="⚠️" FontSize="18" VerticalOptions="Center"/>
+                    <Label Text="{Binding ErrorMessage}" TextColor="#D32F2F" FontSize="14" VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+            </Frame>
+
+            <VerticalStackLayout Spacing="18" IsVisible="{Binding ShowContent}">
+                <!-- Receipt Information Card -->
+                <Frame BorderColor="#E0E0E0" BackgroundColor="White" CornerRadius="12" Padding="18" HasShadow="True">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,5">
+                            <Label Text="Receipt Information" FontAttributes="Bold" FontSize="18" TextColor="{AppThemeBinding Light=#2196F3, Dark=#42A5F5}"/>
+                            <Image Grid.Column="2" Source="receipt.png" HeightRequest="22" WidthRequest="22" VerticalOptions="Center"/>
+                        </Grid>
+                        <BoxView HeightRequest="1" BackgroundColor="#E0E0E0" HorizontalOptions="Fill"/>
+                        <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="8">
+                            <Label Grid.Row="0" Grid.Column="0" Text="Receipt ID:" FontAttributes="Bold" WidthRequest="120"/>
+                            <Label Grid.Row="0" Grid.Column="1" Text="{Binding Receipt.Id, Converter={StaticResource GuidShortenerConverter}}"/>
+
+                            <Label Grid.Row="1" Grid.Column="0" Text="Receipt Date:" FontAttributes="Bold" WidthRequest="120"/>
+                            <Label Grid.Row="1" Grid.Column="1" Text="{Binding Receipt.ReceiptDate, StringFormat='{0:dd MMM yyyy HH:mm}'}"/>
+
+                            <Label Grid.Row="2" Grid.Column="0" Text="Supplier:" FontAttributes="Bold" WidthRequest="120"/>
+                            <Label Grid.Row="2" Grid.Column="1" Text="{Binding Receipt.Supplier.Name, TargetNullValue='N/A'}"/>
+
+                            <Label Grid.Row="3" Grid.Column="0" Text="Notes:" FontAttributes="Bold" WidthRequest="120"/>
+                            <Label Grid.Row="3" Grid.Column="1" Text="{Binding Receipt.Notes, TargetNullValue='N/A'}" LineBreakMode="WordWrap"/>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Received Items Card -->
+                <Frame BorderColor="#E0E0E0" BackgroundColor="White" CornerRadius="12" Padding="18" HasShadow="True">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Received Items" FontAttributes="Bold" FontSize="18" TextColor="{AppThemeBinding Light=#4CAF50, Dark=#66BB6A}"/>
+                            <Image Grid.Column="1" Source="box.png" HeightRequest="22" WidthRequest="22" VerticalOptions="Center"/>
+                        </Grid>
+                        <BoxView HeightRequest="1" BackgroundColor="#E0E0E0" HorizontalOptions="Fill"/>
+                        <CollectionView ItemsSource="{Binding Receipt.Details}">
+                            <CollectionView.Header>
+                                <Frame BackgroundColor="#F5F5F5" BorderColor="#E0E0E0" CornerRadius="6" Padding="10,5" Margin="0,0,0,4">
+                                    <Grid ColumnDefinitions="*,50,90">
+                                        <Label Grid.Column="0" Text="Book Title" FontAttributes="Bold"/>
+                                        <Label Grid.Column="1" Text="Qty" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                                        <Label Grid.Column="2" Text="Price" FontAttributes="Bold" HorizontalTextAlignment="End"/>
+                                    </Grid>
+                                </Frame>
+                            </CollectionView.Header>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="dto_sr:StockReceiptDetailDto">
+                                    <Frame BorderColor="#E0E0E0" BackgroundColor="#FAFAFA" CornerRadius="6" Padding="10,8" Margin="0,0,0,8">
+                                        <Grid ColumnDefinitions="*,50,90">
+                                            <VerticalStackLayout Grid.Column="0">
+                                                <Label Text="{Binding BookTitle}" FontAttributes="Bold" LineBreakMode="TailTruncation"/>
+                                            </VerticalStackLayout>
+                                            <Label Grid.Column="1" Text="{Binding QuantityReceived}" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
+                                            <Label Grid.Column="2" Text="{Binding PurchasePrice, StringFormat='{0:#,##0}', TargetNullValue='N/A'}" HorizontalTextAlignment="End" VerticalOptions="Center"/>
+                                        </Grid>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                            <CollectionView.EmptyView>
+                                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10">
+                                    <Image Source="check_circle.png" HeightRequest="64" WidthRequest="64"/>
+                                    <Label Text="No items in this receipt." HorizontalOptions="Center" FontSize="16" FontAttributes="Bold"/>
+                                </VerticalStackLayout>
+                            </CollectionView.EmptyView>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Frame>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

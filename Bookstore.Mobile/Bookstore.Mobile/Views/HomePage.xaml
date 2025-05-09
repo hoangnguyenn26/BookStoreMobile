@@ -9,133 +9,200 @@
              Title="{Binding Title}">
 
     <ScrollView>
-        <VerticalStackLayout Spacing="20" Padding="15">
+        <VerticalStackLayout Spacing="20" Padding="16">
 
-            <!-- Chào mừng người dùng (Nếu đã đăng nhập) -->
-            <Label Text="{Binding WelcomeMessage}" FontSize="Medium" FontAttributes="Bold" IsVisible="{Binding IsLoggedIn}" />
+            <!-- Welcome Message (If logged in) -->
+            <Frame IsVisible="{Binding IsLoggedIn}"
+                   BorderColor="#E0E0E0"
+                   BackgroundColor="White"
+                   CornerRadius="10"
+                   Padding="15"
+                   HasShadow="True">
+                <Label Text="{Binding WelcomeMessage}" FontSize="Medium" FontAttributes="Bold" />
+            </Frame>
 
             <!-- Loading Indicator -->
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center" Margin="0,20" />
+            <Frame IsVisible="{Binding IsBusy}"
+                   BackgroundColor="White"
+                   BorderColor="#E0E0E0"
+                   CornerRadius="10"
+                   Padding="20"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="10" HorizontalOptions="Center">
+                    <ActivityIndicator IsRunning="True" Color="{AppThemeBinding Light=#2196F3, Dark=#42A5F5}" HeightRequest="40" WidthRequest="40" />
+                    <Label Text="Loading..." HorizontalOptions="Center" FontAttributes="Bold" />
+                </VerticalStackLayout>
+            </Frame>
 
             <!-- Error Message -->
-            <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}" Margin="0,10"/>
+            <Frame IsVisible="{Binding HasError}"
+                   BackgroundColor="#FFEBEE"
+                   BorderColor="#E57373"
+                   Padding="15"
+                   CornerRadius="8"
+                   Margin="0,0,0,0">
+                <StackLayout Orientation="Horizontal" Spacing="10">
+                    <Label Text="⚠️" FontSize="20" VerticalOptions="Center"/>
+                    <Label Text="{Binding ErrorMessage}" TextColor="#D32F2F" FontSize="14" VerticalOptions="Center"/>
+                </StackLayout>
+            </Frame>
 
-            <!-- Chỉ hiển thị nội dung khi không bận và không có lỗi -->
+            <!-- Main Content -->
             <VerticalStackLayout IsVisible="{Binding IsNotBusy}" Spacing="20">
 
-                <!-- Phần Sách Mới Nhất -->
-                <Label Text="Newest Arrivals" Style="{StaticResource Headline}" FontSize="Large"/>
-                <CollectionView ItemsSource="{Binding DashboardData.NewestBooks}" HeightRequest="250">
-                    <CollectionView.ItemsLayout>
-                        <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
-                    </CollectionView.ItemsLayout>
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="dto:BookSummaryDto">
-                            <Frame Style="{StaticResource CardFrame}" WidthRequest="150" Padding="0">
-                                <!-- Ví dụ Card -->
-                                <StackLayout>
-                                    <Image Source="{Binding CoverImageUrl, Converter={StaticResource ImageUrlConverter}, ConverterParameter='Thumb', TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
-                                           Aspect="AspectFill" HeightRequest="150"/>
-                                    <VerticalStackLayout Padding="10" Spacing="4">
-                                        <Label Text="{Binding Title}" FontSize="Small" FontAttributes="Bold" LineBreakMode="TailTruncation"/>
-                                        <Label Text="{Binding AuthorName}" FontSize="Micro" TextColor="{StaticResource Gray600Light}"/>
-                                        <Label Text="{Binding Price, StringFormat='{0:C}'}" FontSize="Small" FontAttributes="Bold" TextColor="{StaticResource PrimaryLight}"/>
-                                    </VerticalStackLayout>
-                                </StackLayout>
-                                <Frame.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=GoToBookDetailsCommand}"
-                                                           CommandParameter="{Binding Id}"/>
-                                </Frame.GestureRecognizers>
-                            </Frame>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                    <CollectionView.EmptyView>
-                        <Label Text="No new books found." HorizontalOptions="Center" VerticalOptions="Center" Margin="20"/>
-                    </CollectionView.EmptyView>
-                </CollectionView>
-
-                <!-- THÊM PHẦN SÁCH BÁN CHẠY NHẤT -->
-                <Label Text="Bestsellers" Style="{StaticResource Headline}" FontSize="Large" Margin="0,15,0,0"/>
-                <CollectionView ItemsSource="{Binding DashboardData.BestSellingBooks}" HeightRequest="250">
-                    <CollectionView.ItemsLayout>
-                        <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
-                    </CollectionView.ItemsLayout>
-                    <CollectionView.ItemTemplate>
-                        <!-- Sử dụng cùng DataTemplate với Sách Mới Nhất hoặc tạo riêng nếu muốn khác -->
-                        <DataTemplate x:DataType="dto:BookSummaryDto">
-                            <Frame Style="{StaticResource CardFrame}" WidthRequest="150" Padding="0">
-                                <StackLayout>
-                                    <Image Source="{Binding CoverImageUrl, Converter={StaticResource ImageUrlConverter}, ConverterParameter='Thumb', TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
-                                        Aspect="AspectFill" HeightRequest="150"/>
-                                    <VerticalStackLayout Padding="10" Spacing="4">
-                                        <Label Text="{Binding Title}" FontSize="Small" FontAttributes="Bold" LineBreakMode="TailTruncation"/>
-                                        <Label Text="{Binding AuthorName}" FontSize="Micro" TextColor="{StaticResource Gray600Light}"/>
-                                        <Label Text="{Binding Price, StringFormat='{0:C}'}" FontSize="Small" FontAttributes="Bold" TextColor="{StaticResource PrimaryLight}"/>
-                                    </VerticalStackLayout>
-                                </StackLayout>
-                                <Frame.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=GoToBookDetailsCommand}"
-                                                CommandParameter="{Binding Id}"/>
-                                </Frame.GestureRecognizers>
-                            </Frame>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                    <CollectionView.EmptyView>
-                        <Label Text="Bestseller information is not available." HorizontalOptions="Center" VerticalOptions="Center" Margin="20"/>
-                    </CollectionView.EmptyView>
-                </CollectionView>
-
-                <!-- Phần Khuyến Mãi Đang Hoạt Động -->
-                <Label Text="Active Promotions" Style="{StaticResource Headline}" FontSize="Large" Margin="0,15,0,0"/>
-                <CollectionView ItemsSource="{Binding DashboardData.ActivePromotions}">
-                    <CollectionView.ItemsLayout>
-                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
-                    </CollectionView.ItemsLayout>
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="dto:PromotionSummaryDto">
-                            <Border Style="{StaticResource InfoBorder}">
-                                <!-- Ví dụ Border -->
-                                <VerticalStackLayout Spacing="5">
-                                    <Label FontAttributes="Bold" FontSize="Medium">
-                                        <Label.FormattedText>
-                                            <FormattedString>
-                                                <Span Text="Code: "/>
-                                                <Span Text="{Binding Code}" TextColor="{StaticResource PrimaryLight}"/>
-                                            </FormattedString>
-                                        </Label.FormattedText>
-                                    </Label>
-                                    <Label Text="{Binding Description}" FontSize="Small"/>
+                <!-- Newest Arrivals Card -->
+                <Frame BorderColor="#E0E0E0" BackgroundColor="White" CornerRadius="10" Padding="15" HasShadow="True">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Newest Arrivals" Style="{StaticResource Headline}" FontAttributes="Bold" FontSize="18" TextColor="{AppThemeBinding Light=#2196F3, Dark=#42A5F5}" VerticalOptions="Center"/>
+                            <Image Grid.Column="1" Source="new_releases.png" HeightRequest="24" WidthRequest="24" VerticalOptions="Center"/>
+                        </Grid>
+                        <BoxView HeightRequest="1" BackgroundColor="#E0E0E0" HorizontalOptions="Fill"/>
+                        <CollectionView ItemsSource="{Binding DashboardData.NewestBooks}" HeightRequest="250">
+                            <CollectionView.ItemsLayout>
+                                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
+                            </CollectionView.ItemsLayout>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="dto:BookSummaryDto">
+                                    <Frame Style="{StaticResource CardFrame}" WidthRequest="150" Padding="0">
+                                        <StackLayout>
+                                            <Image Source="{Binding CoverImageUrl, Converter={StaticResource ImageUrlConverter}, ConverterParameter='Thumb', TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
+                                                   Aspect="AspectFill" HeightRequest="150"/>
+                                            <VerticalStackLayout Padding="10" Spacing="4">
+                                                <Label Text="{Binding Title}" FontSize="Small" FontAttributes="Bold" LineBreakMode="TailTruncation"/>
+                                                <Label Text="{Binding AuthorName}" FontSize="Micro" TextColor="{StaticResource Gray600Light}"/>
+                                                <Label Text="{Binding Price, StringFormat='{0:C}'}" FontSize="Small" FontAttributes="Bold" TextColor="{StaticResource PrimaryLight}"/>
+                                            </VerticalStackLayout>
+                                        </StackLayout>
+                                        <Frame.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=GoToBookDetailsCommand}"
+                                                                 CommandParameter="{Binding Id}"/>
+                                        </Frame.GestureRecognizers>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                            <CollectionView.EmptyView>
+                                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10">
+                                    <Image Source="check_circle.png" HeightRequest="64" WidthRequest="64"/>
+                                    <Label Text="No new books found." HorizontalOptions="Center" FontSize="16" FontAttributes="Bold"/>
                                 </VerticalStackLayout>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                    <CollectionView.EmptyView>
-                        <Label Text="No active promotions available." HorizontalOptions="Center" VerticalOptions="Center" Margin="20"/>
-                    </CollectionView.EmptyView>
-                </CollectionView>
+                            </CollectionView.EmptyView>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Frame>
 
-                <!-- Phần Danh Mục Nổi Bật (Tùy chọn) -->
-                <Label Text="Featured Categories" Style="{StaticResource Headline}" FontSize="Large"/>
-                <CollectionView ItemsSource="{Binding DashboardData.FeaturedCategories}" HeightRequest="100">
-                    <CollectionView.ItemsLayout>
-                        <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
-                    </CollectionView.ItemsLayout>
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="dto:CategorySummaryDto">
-                            <Button Text="{Binding Name}"
-                                      Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=GoToCategoryCommand}"
-                                      CommandParameter="{Binding Id}"
-                                      Style="{StaticResource OutlineButton}"
-                                      WidthRequest="140"/>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                    <CollectionView.EmptyView>
-                        <Label Text="No featured categories." HorizontalOptions="Center" VerticalOptions="Center" Margin="20"/>
-                    </CollectionView.EmptyView>
-                </CollectionView>
+                <!-- Bestsellers Card -->
+                <Frame BorderColor="#E0E0E0" BackgroundColor="White" CornerRadius="10" Padding="15" HasShadow="True">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Bestsellers" Style="{StaticResource Headline}" FontAttributes="Bold" FontSize="18" TextColor="{AppThemeBinding Light=#4CAF50, Dark=#66BB6A}" VerticalOptions="Center"/>
+                            <Image Grid.Column="1" Source="book_bestseller.png" HeightRequest="24" WidthRequest="24" VerticalOptions="Center"/>
+                        </Grid>
+                        <BoxView HeightRequest="1" BackgroundColor="#E0E0E0" HorizontalOptions="Fill"/>
+                        <CollectionView ItemsSource="{Binding DashboardData.BestSellingBooks}" HeightRequest="250">
+                            <CollectionView.ItemsLayout>
+                                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
+                            </CollectionView.ItemsLayout>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="dto:BookSummaryDto">
+                                    <Frame Style="{StaticResource CardFrame}" WidthRequest="150" Padding="0">
+                                        <StackLayout>
+                                            <Image Source="{Binding CoverImageUrl, Converter={StaticResource ImageUrlConverter}, ConverterParameter='Thumb', TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
+                                                Aspect="AspectFill" HeightRequest="150"/>
+                                            <VerticalStackLayout Padding="10" Spacing="4">
+                                                <Label Text="{Binding Title}" FontSize="Small" FontAttributes="Bold" LineBreakMode="TailTruncation"/>
+                                                <Label Text="{Binding AuthorName}" FontSize="Micro" TextColor="{StaticResource Gray600Light}"/>
+                                                <Label Text="{Binding Price, StringFormat='{0:C}'}" FontSize="Small" FontAttributes="Bold" TextColor="{StaticResource PrimaryLight}"/>
+                                            </VerticalStackLayout>
+                                        </StackLayout>
+                                        <Frame.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=GoToBookDetailsCommand}"
+                                                        CommandParameter="{Binding Id}"/>
+                                        </Frame.GestureRecognizers>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                            <CollectionView.EmptyView>
+                                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10">
+                                    <Image Source="check_circle.png" HeightRequest="64" WidthRequest="64"/>
+                                    <Label Text="Bestseller information is not available." HorizontalOptions="Center" FontSize="16" FontAttributes="Bold"/>
+                                </VerticalStackLayout>
+                            </CollectionView.EmptyView>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Active Promotions Card -->
+                <Frame BorderColor="#E0E0E0" BackgroundColor="White" CornerRadius="10" Padding="15" HasShadow="True">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Active Promotions" Style="{StaticResource Headline}" FontAttributes="Bold" FontSize="18" TextColor="{AppThemeBinding Light=#FF9800, Dark=#FFA726}" VerticalOptions="Center"/>
+                            <Image Grid.Column="1" Source="promo.png" HeightRequest="24" WidthRequest="24" VerticalOptions="Center"/>
+                        </Grid>
+                        <BoxView HeightRequest="1" BackgroundColor="#E0E0E0" HorizontalOptions="Fill"/>
+                        <CollectionView ItemsSource="{Binding DashboardData.ActivePromotions}">
+                            <CollectionView.ItemsLayout>
+                                <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
+                            </CollectionView.ItemsLayout>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="dto:PromotionSummaryDto">
+                                    <Frame BorderColor="#FFE0B2" BackgroundColor="#FFF8E1" CornerRadius="8" Padding="10">
+                                        <VerticalStackLayout Spacing="5">
+                                            <Label FontAttributes="Bold" FontSize="Medium">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="Code: "/>
+                                                        <Span Text="{Binding Code}" TextColor="{StaticResource PrimaryLight}"/>
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                            <Label Text="{Binding Description}" FontSize="Small"/>
+                                        </VerticalStackLayout>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                            <CollectionView.EmptyView>
+                                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10">
+                                    <Image Source="check_circle.png" HeightRequest="64" WidthRequest="64"/>
+                                    <Label Text="No active promotions available." HorizontalOptions="Center" FontSize="16" FontAttributes="Bold"/>
+                                </VerticalStackLayout>
+                            </CollectionView.EmptyView>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Featured Categories Card -->
+                <Frame BorderColor="#E0E0E0" BackgroundColor="White" CornerRadius="10" Padding="15" HasShadow="True">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Featured Categories" Style="{StaticResource Headline}" FontAttributes="Bold" FontSize="18" TextColor="{AppThemeBinding Light=#9C27B0, Dark=#BA68C8}" VerticalOptions="Center"/>
+                            <Image Grid.Column="1" Source="category.png" HeightRequest="24" WidthRequest="24" VerticalOptions="Center"/>
+                        </Grid>
+                        <BoxView HeightRequest="1" BackgroundColor="#E0E0E0" HorizontalOptions="Fill"/>
+                        <CollectionView ItemsSource="{Binding DashboardData.FeaturedCategories}" HeightRequest="100">
+                            <CollectionView.ItemsLayout>
+                                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
+                            </CollectionView.ItemsLayout>
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="dto:CategorySummaryDto">
+                                    <Button Text="{Binding Name}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=GoToCategoryCommand}"
+                                            CommandParameter="{Binding Id}"
+                                            Style="{StaticResource OutlineButton}"
+                                            WidthRequest="140"/>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                            <CollectionView.EmptyView>
+                                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10">
+                                    <Image Source="check_circle.png" HeightRequest="64" WidthRequest="64"/>
+                                    <Label Text="No featured categories." HorizontalOptions="Center" FontSize="16" FontAttributes="Bold"/>
+                                </VerticalStackLayout>
+                            </CollectionView.EmptyView>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Frame>
 
             </VerticalStackLayout>
-
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
