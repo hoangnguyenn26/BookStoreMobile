@@ -41,14 +41,14 @@
                       Route="CartPage"/>
     </FlyoutItem>
 
-    <FlyoutItem Title="My Wishlist" Icon="wishlist.png">
+    <FlyoutItem Title="My Wishlist" Icon="tune.png">
         <ShellContent Title="Wishlist"
                       ContentTemplate="{DataTemplate views:WishlistPage}"
                       Route="WishlistPage" />
     </FlyoutItem>
 
 
-    <FlyoutItem Title="Store Management" Icon="store.png"
+    <FlyoutItem Title="Store Management" Icon="dashboard.png"
                 IsVisible="{Binding IsAdminOrStaff}">
         <ShellContent Title="Dashboard"
                       Icon="dashboard.png"
@@ -71,11 +71,11 @@
                       ContentTemplate="{DataTemplate views:AdminCategoryListPage}"
                       Route="AdminCategoryListPage"/>
         <ShellContent Title="Authors"
-                      Icon="face_retouching_natural_FILL0_wght400_GRAD0_opsz24.png"
+                      Icon="person.png"
                       ContentTemplate="{DataTemplate views:AdminAuthorListPage}"
                       Route="AdminAuthorListPage"/>
         <ShellContent Title="Adjust Stock"
-              Icon="face_retouching_natural_FILL0_wght400_GRAD0_opsz24.png"
+              Icon="tune.png"
               ContentTemplate="{DataTemplate views:InventoryAdjustmentPage}"
               Route="InventoryAdjustmentPage"/>
     </FlyoutItem>
