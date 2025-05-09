@@ -129,7 +129,7 @@
     <ShellContent ContentTemplate="{DataTemplate views:AdminReportsPage}" Route="AdminReportsPage" Shell.FlyoutItemIsVisible="False"/>
     
     <ShellContent ContentTemplate="{DataTemplate views:LoginPage}" Route="LoginPage" Shell.FlyoutItemIsVisible="False" Shell.NavBarIsVisible="False"/>
-    <!--<ShellContent ContentTemplate="{DataTemplate views:AddEditPromotionPage}" Route="AddEditPromotionPage" Shell.FlyoutItemIsVisible="False"/>-->
+    <ShellContent ContentTemplate="{DataTemplate views:AddEditPromotionPage}" Route="AddEditPromotionPage" Shell.FlyoutItemIsVisible="False"/>
     <ShellContent ContentTemplate="{DataTemplate views:AdminUserDetailsPage}" Route="AdminUserDetailsPage" Shell.FlyoutItemIsVisible="False"/>
 
 </Shell>

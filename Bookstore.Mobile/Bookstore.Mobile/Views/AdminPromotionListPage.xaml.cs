@@ -11,4 +11,12 @@ public partial class AdminPromotionListPage : ContentPage
         _viewModel = viewModel;
         BindingContext = _viewModel;
     }
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        if (BindingContext is AdminPromotionListViewModel vm)
+        {
+            vm.OnAppearing();
+        }
+    }
 }
