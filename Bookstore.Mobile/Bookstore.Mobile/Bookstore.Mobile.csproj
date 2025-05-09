@@ -86,6 +86,9 @@
 	  <MauiXaml Update="Views\AddEditCategoryPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\AddEditPromotionPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\AddressListPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

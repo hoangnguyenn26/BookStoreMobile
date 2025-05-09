@@ -6,76 +6,407 @@
              xmlns:dto_report="clr-namespace:Bookstore.Mobile.Models"
              x:DataType="vm:AdminReportsViewModel"
              x:Class="Bookstore.Mobile.Views.AdminReportsPage"
-             Title="{Binding Title}">
+             Title="{Binding Title}"
+             BackgroundColor="#F8F9FA">
 
     <RefreshView Command="{Binding RefreshAllReportsCommand}" IsRefreshing="{Binding IsBusy}">
         <ScrollView>
-            <VerticalStackLayout Padding="15" Spacing="15">
-                <Label Text="Reports" Style="{StaticResource Headline}" Margin="0,0,0,10"/>
-
-                <Label Text="Select Date Range:" FontAttributes="Bold"/>
-                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="5">
-                    <Label Grid.Row="0" Grid.Column="0" Text="Start Date:"/>
-                    <DatePicker Grid.Row="1" Grid.Column="0" Date="{Binding StartDate}"/>
-                    <Label Grid.Row="0" Grid.Column="1" Text="End Date:"/>
-                    <DatePicker Grid.Row="1" Grid.Column="1" Date="{Binding EndDate}"/>
-                </Grid>
-                <Button Text="Generate Reports" Command="{Binding LoadAllReportsCommand}" IsEnabled="{Binding IsNotBusy}"/>
-
-                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="CenterAndExpand"/>
-                <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}"/>
-
-                <VerticalStackLayout IsVisible="{Binding ShowRevenueReport}">
-                    <Label Text="Revenue Overview" Style="{StaticResource SubHeadline}" Margin="0,20,0,5"/>
-                    <Grid ColumnDefinitions="*,*" Padding="10">
-                        <VerticalStackLayout>
-                            <Label Text="Total Orders:" Style="{StaticResource CardTitle}"/>
-                            <Label Text="{Binding RevenueReport.GrandTotalOrders}" Style="{StaticResource CardValue}" FontSize="Medium"/>
-                        </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="1">
-                            <Label Text="Total Revenue:" Style="{StaticResource CardTitle}"/>
-                            <Label Text="{Binding RevenueReport.GrandTotalRevenue, StringFormat='{0:C}'}" Style="{StaticResource CardValue}" FontSize="Medium"/>
-                        </VerticalStackLayout>
-                    </Grid>
-                    <Label Text="Revenue Trend" Style="{StaticResource SubHeadline}" Margin="0,10,0,5"/>
-                    <microcharts:ChartView x:Name="RevenueChartView" HeightRequest="250" Chart="{Binding RevenueChart}"/>
+            <Grid RowDefinitions="Auto,Auto,*" Padding="16" RowSpacing="16">
+                <!-- Header -->
+                <VerticalStackLayout Grid.Row="0" Spacing="5">
+                    <Label Text="Reports Dashboard" 
+                           Style="{StaticResource Headline}" 
+                           FontAttributes="Bold" 
+                           FontSize="24"
+                           HorizontalOptions="Center" 
+                           Margin="0,5,0,0"/>
+                    <BoxView HeightRequest="2" 
+                             HorizontalOptions="Center" 
+                             WidthRequest="80"
+                             Color="{AppThemeBinding Light=#3498DB, Dark=#5DADE2}"
+                             Margin="0,5,0,5"/>
                 </VerticalStackLayout>
 
-                <VerticalStackLayout IsVisible="{Binding ShowBestsellersReport}" Margin="0,20,0,0">
-                    <Label Text="Bestselling Books" Style="{StaticResource SubHeadline}" Margin="0,0,0,5"/>
-                    <Label Text="{Binding StartDate, StringFormat='From: {0:dd MMM yyyy}'}" FontSize="Micro" TextColor="{StaticResource Gray600Light}"/>
-                    <Label Text="{Binding EndDate, StringFormat='To: {0:dd MMM yyyy}'}" FontSize="Micro" TextColor="{StaticResource Gray600Light}" Margin="0,0,0,10"/>
-                    <microcharts:ChartView x:Name="BestsellersChartView" HeightRequest="300" Chart="{Binding BestsellersChart}"/>
-                </VerticalStackLayout>
+                <!-- Date Selection & Controls -->
+                <Frame Grid.Row="1" 
+                       BorderColor="#E0E0E0" 
+                       BackgroundColor="White" 
+                       CornerRadius="10" 
+                       Padding="15" 
+                       HasShadow="True">
+                    <VerticalStackLayout Spacing="15">
+                        <Label Text="Select Reporting Period" 
+                               FontAttributes="Bold" 
+                               FontSize="16"
+                               TextColor="{AppThemeBinding Light=#3498DB, Dark=#5DADE2}"/>
 
-                <VerticalStackLayout IsVisible="{Binding ShowLowStockReport}" Margin="0,20,0,0">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <Label Text="Low Stock Items" Style="{StaticResource SubHeadline}" Margin="0,0,0,5" VerticalOptions="End"/>
-                        <HorizontalStackLayout Grid.Column="1" Spacing="5" VerticalOptions="Center">
-                            <Label Text="Threshold:" FontSize="Small" VerticalOptions="Center"/>
-                            <Entry Text="{Binding LowStockThreshold}" Keyboard="Numeric" WidthRequest="50" HorizontalTextAlignment="Center"/>
-                            <Button Text="Reload" Command="{Binding ReloadLowStockCommand}" Style="{StaticResource TextButton}" Padding="5" FontSize="Micro" IsEnabled="{Binding IsNotBusy}"/>
-                        </HorizontalStackLayout>
-                    </Grid>
-                    <CollectionView ItemsSource="{Binding LowStockBooks}" HeightRequest="300" Margin="0,5,0,0">
-                        <CollectionView.EmptyView>
-                            <Label Text="No items with low stock found." HorizontalOptions="Center" VerticalOptions="Center"/>
-                        </CollectionView.EmptyView>
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="dto_report:LowStockBookDto">
-                                <Grid Padding="10,5" ColumnDefinitions="*,Auto">
-                                    <VerticalStackLayout>
-                                        <Label Text="{Binding BookTitle}" FontAttributes="Bold"/>
-                                        <Label Text="{Binding AuthorName, TargetNullValue='N/A'}" FontSize="Small"/>
-                                    </VerticalStackLayout>
-                                    <Label Grid.Column="1" Text="{Binding CurrentStockQuantity, StringFormat='Stock: {0}'}" TextColor="{StaticResource ErrorLight}" VerticalOptions="Center"/>
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="15" RowSpacing="8">
+                            <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="5">
+                                <Label Text="Start Date:" FontSize="14"/>
+                                <Frame BorderColor="#E0E0E0" 
+                                       BackgroundColor="#F5F5F5"
+                                       Padding="10,2" 
+                                       CornerRadius="6">
+                                    <DatePicker Date="{Binding StartDate}" 
+                                                Format="MMM dd, yyyy"
+                                                FontSize="14"/>
+                                </Frame>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="5">
+                                <Label Text="End Date:" FontSize="14"/>
+                                <Frame BorderColor="#E0E0E0" 
+                                       BackgroundColor="#F5F5F5"
+                                       Padding="10,2" 
+                                       CornerRadius="6">
+                                    <DatePicker Date="{Binding EndDate}" 
+                                                Format="MMM dd, yyyy"
+                                                FontSize="14"/>
+                                </Frame>
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <Button Text="Generate Reports" 
+                                Command="{Binding LoadAllReportsCommand}" 
+                                IsEnabled="{Binding IsNotBusy}"
+                                BackgroundColor="{AppThemeBinding Light=#2196F3, Dark=#42A5F5}"
+                                TextColor="White"
+                                FontAttributes="Bold"
+                                CornerRadius="8"
+                                HeightRequest="45"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Main Content -->
+                <Grid Grid.Row="2" RowDefinitions="Auto,*">
+                    <!-- Loading and Error States -->
+                    <VerticalStackLayout Grid.Row="0" 
+                                         IsVisible="{Binding IsBusy}" 
+                                         HorizontalOptions="CenterAndExpand" 
+                                         VerticalOptions="Start" 
+                                         Margin="0,20,0,0">
+                        <Frame BackgroundColor="White" 
+                               BorderColor="#E0E0E0"
+                               CornerRadius="10"
+                               Padding="20" 
+                               HasShadow="True">
+                            <VerticalStackLayout Spacing="10">
+                                <ActivityIndicator IsRunning="True" 
+                                                  Color="{AppThemeBinding Light=#2196F3, Dark=#42A5F5}"
+                                                  HeightRequest="40" 
+                                                  WidthRequest="40"/>
+                                <Label Text="Generating Reports..." 
+                                       HorizontalOptions="Center" 
+                                       FontAttributes="Bold"/>
+                                <Label Text="Please wait while we gather your data" 
+                                       HorizontalOptions="Center" 
+                                       FontSize="14"
+                                       TextColor="#757575"/>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </VerticalStackLayout>
+
+                    <!-- Error Message -->
+                    <Frame Grid.Row="0" 
+                           IsVisible="{Binding HasError}"
+                           BackgroundColor="#FFEBEE"
+                           BorderColor="#E57373"
+                           Padding="15"
+                           CornerRadius="8"
+                           Margin="0,10,0,15">
+                        <StackLayout Orientation="Horizontal" Spacing="10">
+                            <Label Text="⚠️" FontSize="20" VerticalOptions="Center"/>
+                            <Label Text="{Binding ErrorMessage}" 
+                                   TextColor="#D32F2F"
+                                   FontSize="14"
+                                   VerticalOptions="Center"/>
+                        </StackLayout>
+                    </Frame>
+
+                    <!-- Report Content -->
+                    <VerticalStackLayout Grid.Row="1" Spacing="20" IsVisible="{Binding ShowContent}">
+                        <!-- Revenue Overview Card -->
+                        <Frame IsVisible="{Binding ShowRevenueReport}" 
+                               BorderColor="#E0E0E0" 
+                               BackgroundColor="White" 
+                               CornerRadius="10" 
+                               Padding="15" 
+                               HasShadow="True">
+                            <VerticalStackLayout Spacing="15">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label Text="Revenue Overview" 
+                                           Style="{StaticResource SubHeadline}" 
+                                           FontAttributes="Bold" 
+                                           FontSize="18"
+                                           TextColor="{AppThemeBinding Light=#2196F3, Dark=#42A5F5}"
+                                           VerticalOptions="Center"/>
+                                    <Image Grid.Column="1" 
+                                           Source="chart_line.png" 
+                                           HeightRequest="24" 
+                                           WidthRequest="24" 
+                                           VerticalOptions="Center"/>
                                 </Grid>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </VerticalStackLayout>
 
-            </VerticalStackLayout>
+                                <BoxView HeightRequest="1" 
+                                         BackgroundColor="#E0E0E0" 
+                                         HorizontalOptions="Fill"/>
+
+                                <Grid ColumnDefinitions="*,*" BackgroundColor="{AppThemeBinding Light=#EBF5FB, Dark=#E3F2FD}" Padding="15,10">
+                                    <Frame Grid.Column="0" 
+                                           BorderColor="#BBDEFB" 
+                                           BackgroundColor="White" 
+                                           CornerRadius="8" 
+                                           Padding="15,10">
+                                        <VerticalStackLayout HorizontalOptions="Center">
+                                            <Label Text="Total Orders" 
+                                                   Style="{StaticResource CardTitle}" 
+                                                   FontSize="14" 
+                                                   TextColor="#757575" 
+                                                   HorizontalOptions="Center"/>
+                                            <Label Text="{Binding RevenueReport.GrandTotalOrders}" 
+                                                   Style="{StaticResource CardValue}" 
+                                                   FontSize="22" 
+                                                   FontAttributes="Bold"
+                                                   TextColor="{AppThemeBinding Light=#2196F3, Dark=#42A5F5}"
+                                                   HorizontalOptions="Center"/>
+                                        </VerticalStackLayout>
+                                    </Frame>
+
+                                    <Frame Grid.Column="1" 
+                                           BorderColor="#BBDEFB" 
+                                           BackgroundColor="White" 
+                                           CornerRadius="8" 
+                                           Padding="15,10">
+                                        <VerticalStackLayout HorizontalOptions="Center">
+                                            <Label Text="Total Revenue" 
+                                                   Style="{StaticResource CardTitle}" 
+                                                   FontSize="14" 
+                                                   TextColor="#757575"
+                                                   HorizontalOptions="Center"/>
+                                            <Label Text="{Binding RevenueReport.GrandTotalRevenue, StringFormat='{0:C}'}" 
+                                                   Style="{StaticResource CardValue}" 
+                                                   FontSize="22" 
+                                                   FontAttributes="Bold"
+                                                   TextColor="{AppThemeBinding Light=#4CAF50, Dark=#66BB6A}"
+                                                   HorizontalOptions="Center"/>
+                                        </VerticalStackLayout>
+                                    </Frame>
+                                </Grid>
+
+                                <Label Text="Daily Revenue Trend" 
+                                       FontAttributes="Bold" 
+                                       FontSize="16"
+                                       TextColor="#424242"/>
+
+                                <Frame BorderColor="#E0E0E0" 
+                                       BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#263238}" 
+                                       CornerRadius="8" 
+                                       Padding="10">
+                                    <microcharts:ChartView x:Name="RevenueChartView" 
+                                                          HeightRequest="220" 
+                                                          Chart="{Binding RevenueChart}"
+                                                          BackgroundColor="Transparent"/>
+                                </Frame>
+
+                                <Label Text="{Binding StartDate, StringFormat='Reporting Period: {0:MMM dd, yyyy}'}" 
+                                       FontSize="12" 
+                                       TextColor="#757575"/>
+                                <Label Text="{Binding EndDate, StringFormat='to {0:MMM dd, yyyy}'}" 
+                                       FontSize="12" 
+                                       TextColor="#757575"
+                                       Margin="0,-8,0,0"/>
+                            </VerticalStackLayout>
+                        </Frame>
+
+                        <!-- Bestsellers Card -->
+                        <Frame IsVisible="{Binding ShowBestsellersReport}" 
+                               BorderColor="#E0E0E0" 
+                               BackgroundColor="White" 
+                               CornerRadius="10" 
+                               Padding="15" 
+                               HasShadow="True">
+                            <VerticalStackLayout Spacing="15">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label Text="Bestselling Books" 
+                                           Style="{StaticResource SubHeadline}" 
+                                           FontAttributes="Bold" 
+                                           FontSize="18"
+                                           TextColor="{AppThemeBinding Light=#4CAF50, Dark=#66BB6A}"
+                                           VerticalOptions="Center"/>
+                                    <Image Grid.Column="1" 
+                                           Source="book_bestseller.png" 
+                                           HeightRequest="24" 
+                                           WidthRequest="24" 
+                                           VerticalOptions="Center"/>
+                                </Grid>
+
+                                <BoxView HeightRequest="1" 
+                                         BackgroundColor="#E0E0E0" 
+                                         HorizontalOptions="Fill"/>
+
+                                <Label Text="Top 7 Bestselling Books" 
+                                       FontAttributes="Bold" 
+                                       FontSize="16"
+                                       TextColor="#424242"/>
+
+                                <Frame BorderColor="#E0E0E0" 
+                                       BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#263238}" 
+                                       CornerRadius="8" 
+                                       Padding="10">
+                                    <microcharts:ChartView x:Name="BestsellersChartView" 
+                                                          HeightRequest="250" 
+                                                          Chart="{Binding BestsellersChart}"
+                                                          BackgroundColor="Transparent"/>
+                                </Frame>
+                                <Label Text="{Binding StartDate, StringFormat='Reporting Period: {0:MMM dd, yyyy}'}" 
+                                       FontSize="12" 
+                                       TextColor="#757575"/>
+                                <Label Text="{Binding EndDate, StringFormat='to {0:MMM dd, yyyy}'}" 
+                                       FontSize="12" 
+                                       TextColor="#757575"
+                                       Margin="0,-8,0,0"/>
+                            </VerticalStackLayout>
+                        </Frame>
+
+                        <!-- Low Stock Card -->
+                        <Frame IsVisible="{Binding ShowLowStockReport}" 
+                               BorderColor="#E0E0E0"
+                               BackgroundColor="White"
+                               CornerRadius="10"
+                               Padding="15"
+                               HasShadow="True"
+                               Margin="0,0,0,20">
+                            <VerticalStackLayout Spacing="15">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label Text="Low Stock Alert" 
+                                           Style="{StaticResource SubHeadline}" 
+                                           FontAttributes="Bold" 
+                                           FontSize="18"
+                                           TextColor="{AppThemeBinding Light=#FF9800, Dark=#FFA726}"
+                                           VerticalOptions="Center"/>
+                                    <Image Grid.Column="1" 
+                                           Source="inventory_alert.png" 
+                                           HeightRequest="24" 
+                                           WidthRequest="24" 
+                                           VerticalOptions="Center"/>
+                                </Grid>
+
+                                <BoxView HeightRequest="1" 
+                                         BackgroundColor="#E0E0E0" 
+                                         HorizontalOptions="Fill"/>
+
+                                <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+                                    <Label Text="Books that need restocking" 
+                                           FontAttributes="Bold" 
+                                           FontSize="16"
+                                           TextColor="#424242"/>
+
+                                    <Frame Grid.Column="1" 
+                                           BorderColor="#E0E0E0" 
+                                           BackgroundColor="#FFF3E0" 
+                                           CornerRadius="8" 
+                                           Padding="10,5">
+                                        <Grid ColumnDefinitions="Auto,Auto,Auto" ColumnSpacing="5">
+                                            <Label Text="Threshold:" 
+                                                   FontSize="14" 
+                                                   VerticalOptions="Center"/>
+                                            <Frame Grid.Column="1" 
+                                                   BorderColor="#FFE0B2" 
+                                                   BackgroundColor="White" 
+                                                   CornerRadius="4" 
+                                                   Padding="5,0" 
+                                                   WidthRequest="45">
+                                                <Entry Text="{Binding LowStockThreshold}" 
+                                                       Keyboard="Numeric" 
+                                                       HorizontalTextAlignment="Center"
+                                                       VerticalOptions="Center"
+                                                       FontSize="14"/>
+                                            </Frame>
+                                            <Button Grid.Column="2" 
+                                                    Text="Apply" 
+                                                    Command="{Binding ReloadLowStockCommand}" 
+                                                    BackgroundColor="{AppThemeBinding Light=#FF9800, Dark=#FFA726}"
+                                                    TextColor="White"
+                                                    CornerRadius="4"
+                                                    FontSize="12"
+                                                    Padding="10,5"
+                                                    IsEnabled="{Binding IsNotBusy}"/>
+                                        </Grid>
+                                    </Frame>
+                                </Grid>
+
+                                <Frame BorderColor="#FFE0B2" 
+                                       BackgroundColor="{AppThemeBinding Light=#FFF8E1, Dark=#263238}" 
+                                       CornerRadius="8" 
+                                       Padding="0" 
+                                       IsVisible="{Binding ShowLowStockReport}"
+                                       HeightRequest="250">
+                                    <CollectionView ItemsSource="{Binding LowStockBooks}">
+                                        <CollectionView.EmptyView>
+                                            <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10">
+                                                <Image Source="check_circle.png" HeightRequest="64" WidthRequest="64"/>
+                                                <Label Text="No items with low stock found" 
+                                                       HorizontalOptions="Center" 
+                                                       FontSize="16"
+                                                       FontAttributes="Bold"/>
+                                                <Label Text="All inventory levels are above threshold" 
+                                                       HorizontalOptions="Center" 
+                                                       FontSize="14"
+                                                       TextColor="#757575"/>
+                                            </VerticalStackLayout>
+                                        </CollectionView.EmptyView>
+                                        <CollectionView.ItemTemplate>
+                                            <DataTemplate x:DataType="dto_report:LowStockBookDto">
+                                                <Grid Padding="15,10" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                                    <Frame Grid.Column="0" 
+                                                           HeightRequest="36" 
+                                                           WidthRequest="36" 
+                                                           CornerRadius="18" 
+                                                           Padding="0" 
+                                                           BackgroundColor="{AppThemeBinding Light=#FFECB3, Dark=#FFC107}"
+                                                           HorizontalOptions="Center"
+                                                           VerticalOptions="Center">
+                                                        <Label Text="{Binding CurrentStockQuantity}" 
+                                                               HorizontalOptions="Center" 
+                                                               VerticalOptions="Center"
+                                                               FontAttributes="Bold"
+                                                               TextColor="{AppThemeBinding Light=#E65100, Dark=#FFFFFF}"/>
+                                                    </Frame>
+                                                    <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
+                                                        <Label Text="{Binding BookTitle}" 
+                                                               FontAttributes="Bold"
+                                                               LineBreakMode="TailTruncation"/>
+                                                        <Label Text="{Binding AuthorName, TargetNullValue='Author Unknown'}" 
+                                                               FontSize="Small"
+                                                               TextColor="#757575"
+                                                               LineBreakMode="TailTruncation"/>
+                                                    </VerticalStackLayout>
+                                                    <Frame Grid.Column="2" 
+                                                           BackgroundColor="#FFECB3" 
+                                                           CornerRadius="4" 
+                                                           Padding="8,4"
+                                                           VerticalOptions="Center">
+                                                        <Label Text="Low Stock" 
+                                                               TextColor="#E65100" 
+                                                               FontSize="12" 
+                                                               FontAttributes="Bold"/>
+                                                    </Frame>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </CollectionView.ItemTemplate>
+                                        <CollectionView.Header>
+                                            <BoxView HeightRequest="1" Color="Transparent"/>
+                                        </CollectionView.Header>
+                                        <CollectionView.Footer>
+                                            <BoxView HeightRequest="10" Color="Transparent"/>
+                                        </CollectionView.Footer>
+                                    </CollectionView>
+                                </Frame>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </VerticalStackLayout>
+                </Grid>
+            </Grid>
         </ScrollView>
     </RefreshView>
 </ContentPage>
