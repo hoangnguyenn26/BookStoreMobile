@@ -115,7 +115,9 @@ namespace Bookstore.Mobile
 
             builder.Services.AddTransient<InventoryAdjustmentViewModel>();
 
-
+            // Supplier Admin
+            builder.Services.AddTransient<AdminSupplierListViewModel>();
+            builder.Services.AddTransient<AddEditSupplierViewModel>();
 
             // Transient Views
             builder.Services.AddTransient<LoginPage>();
@@ -133,7 +135,12 @@ namespace Bookstore.Mobile
             builder.Services.AddTransient<OrderDetailsPage>();
             builder.Services.AddTransient<CheckoutPage>();
             builder.Services.AddTransient<SubmitReviewPage>();
-            // Admin/Staff Views
+
+            builder.Services.AddTransient<AdminSupplierListViewModel>();
+            builder.Services.AddTransient<AddEditSupplierViewModel>();// Admin/Staff Views
+            builder.Services.AddTransient<AdminSupplierListPage>();
+            builder.Services.AddTransient<AddEditSupplierPage>();
+            
             builder.Services.AddTransient<AdminDashboardPage>();
             builder.Services.AddTransient<AdminProductHomePage>();
 

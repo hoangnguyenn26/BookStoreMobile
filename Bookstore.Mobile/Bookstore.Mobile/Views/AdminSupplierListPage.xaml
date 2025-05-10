@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
+             xmlns:dto="clr-namespace:Bookstore.Mobile.Models"
+             x:DataType="vm:AdminSupplierListViewModel"
+             x:Class="Bookstore.Mobile.Views.AdminSupplierListPage"
+             Title="{Binding Title}">
+    <Grid RowDefinitions="Auto, *">
+        <Grid Grid.Row="0" Padding="15,10" ColumnDefinitions="*,Auto">
+            <Label Text="Manage Suppliers" Style="{StaticResource Headline}" VerticalOptions="Center"/>
+            <Button Grid.Column="1" Text="+ Add New" Command="{Binding GoToAddSupplierCommand}" Style="{StaticResource TextButton}"/>
+        </Grid>
+
+        <ActivityIndicator Grid.Row="0" Grid.RowSpan="2" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" VerticalOptions="Center" HorizontalOptions="Center"/>
+        <Label Grid.Row="1" Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}" VerticalOptions="Center" HorizontalOptions="Center"/>
+
+        <RefreshView Grid.Row="1" Command="{Binding LoadSuppliersCommand}" CommandParameter="true" IsRefreshing="{Binding IsBusy}" IsVisible="{Binding ShowContent}">
+            <CollectionView ItemsSource="{Binding Suppliers}" SelectionMode="None" Margin="10">
+                <CollectionView.EmptyView>
+                    <Label Text="No suppliers found." HorizontalOptions="Center" VerticalOptions="Center" Margin="20"/>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="dto:SupplierDto">
+                        <Border Style="{StaticResource CardBorder}" Padding="10,5" Margin="0,0,0,8">
+                            <Grid ColumnDefinitions="*, Auto, Auto" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="5">
+                                <Label Grid.Row="0" Grid.Column="0" Text="{Binding Name}" FontAttributes="Bold" FontSize="Medium"/>
+                                <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" HorizontalTextAlignment="End">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Contact: " FontSize="Micro"/>
+                                            <Span Text="{Binding ContactPerson}" FontAttributes="Bold" FontSize="Micro"/>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+
+                                <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Text="{Binding Email}" FontSize="Small" LineBreakMode="TailTruncation"/>
+                                <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" FontSize="Micro">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Phone: "/>
+                                            <Span Text="{Binding Phone}"/>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" FontSize="Micro" TextColor="{StaticResource Gray600Light}">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Address: "/>
+                                            <Span Text="{Binding Address}"/>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <HorizontalStackLayout Grid.Row="0" Grid.RowSpan="4" Grid.Column="2" VerticalOptions="Center" HorizontalOptions="End" Spacing="0">
+                                    <Button Text="Edit" FontSize="Micro" Padding="8,4" HeightRequest="35" Style="{StaticResource OutlineButton}" Margin="0,0,5,0"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminSupplierListViewModel}}, Path=GoToEditSupplierCommand}"
+                                            CommandParameter="{Binding Id}"/>
+                                    <Button BackgroundColor="Transparent" Padding="0" HeightRequest="35" WidthRequest="35"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminSupplierListViewModel}}, Path=DeleteSupplierCommand}"
+                                            CommandParameter="{Binding Id}">
+                                        <Button.ImageSource>
+                                            <FontImageSource Glyph="" FontFamily="MaterialSymbolsRounded" Color="{StaticResource ErrorLight}"/>
+                                        </Button.ImageSource>
+                                    </Button>
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+</ContentPage> 

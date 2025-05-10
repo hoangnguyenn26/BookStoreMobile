@@ -107,5 +107,10 @@ namespace Bookstore.Mobile.ViewModels
         }
 
         public void OnAppearing() => LoadOrdersCommand.Execute(false);
+
+        partial void OnSelectedStatusFilterChanged(string value)
+        {
+            LoadOrdersCommand.Execute(false);
+        }
     }
 }

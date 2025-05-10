@@ -78,6 +78,10 @@
               Icon="tune.png"
               ContentTemplate="{DataTemplate views:InventoryAdjustmentPage}"
               Route="InventoryAdjustmentPage"/>
+        <ShellContent Title="Suppliers"
+                      Icon="local_shipping.png"
+                      ContentTemplate="{DataTemplate views:AdminSupplierListPage}"
+                      Route="AdminSupplierListPage"/>
     </FlyoutItem>
 
     <FlyoutItem Title="System Admin" Icon="admin_panel_settings.png"
@@ -131,5 +135,6 @@
     <ShellContent ContentTemplate="{DataTemplate views:LoginPage}" Route="LoginPage" Shell.FlyoutItemIsVisible="False" Shell.NavBarIsVisible="False"/>
     <ShellContent ContentTemplate="{DataTemplate views:AddEditPromotionPage}" Route="AddEditPromotionPage" Shell.FlyoutItemIsVisible="False"/>
     <ShellContent ContentTemplate="{DataTemplate views:AdminUserDetailsPage}" Route="AdminUserDetailsPage" Shell.FlyoutItemIsVisible="False"/>
+    <ShellContent Title="Edit Supplier" ContentTemplate="{DataTemplate views:AddEditSupplierPage}" Route="AddEditSupplierPage" IsVisible="False" />
 
 </Shell>
