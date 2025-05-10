@@ -115,6 +115,9 @@ namespace Bookstore.Mobile.ViewModels
                     _logger.LogWarning("Failed to load book details for Id {BookId}. Status: {StatusCode}, Reason: {Reason}", _actualBookId, bookResponse.StatusCode, ErrorMessage);
                 }
             }, nameof(ShowContent));
+            OnPropertyChanged(nameof(CanAddToCart));
+            (AddToCartCommand as Command)?.ChangeCanExecute();
+            (ToggleWishlistCommand as Command)?.ChangeCanExecute();
         }
 
         private async Task LoadReviewsAsync()

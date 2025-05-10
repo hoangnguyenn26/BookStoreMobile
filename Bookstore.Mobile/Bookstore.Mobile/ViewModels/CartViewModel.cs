@@ -207,7 +207,7 @@ namespace Bookstore.Mobile.ViewModels
         [RelayCommand]
         private async Task GoShoppingAsync()
         {
-            _logger.LogInformation("Navigating back to shop (e.g., Home or Categories).");
+            _logger.LogInformation("Navigating to Home Page from empty Cart.");
             await Shell.Current.GoToAsync($"//{nameof(HomePage)}");
         }
 

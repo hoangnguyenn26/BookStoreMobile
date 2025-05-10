@@ -23,12 +23,18 @@
                     Command="{Binding LoadCartCommand}"
                     IsRefreshing="{Binding IsBusy}">
             <CollectionView ItemsSource="{Binding CartItems}"
-                         IsVisible="{Binding ShowContent, Mode=TwoWay}"
-                         Margin="10">
+                            Margin="10">
+
                 <CollectionView.EmptyView>
-                    <StackLayout Padding="50" HorizontalOptions="Center" VerticalOptions="Center">
+                    <StackLayout Padding="50" HorizontalOptions="Center" VerticalOptions="Center" Spacing="10">
+                        <Image Source="empty_wishlist.png" HeightRequest="100" Aspect="AspectFit" HorizontalOptions="Center"/>
                         <Label Text="Your cart is empty." FontSize="Large" HorizontalOptions="Center"/>
-                        <Button Text="Go Shopping" Command="{Binding GoShoppingCommand}" HorizontalOptions="Center" Margin="0,20,0,0"/>
+                        <Label Text="Add some books you love!" FontSize="Small" HorizontalOptions="Center" TextColor="{StaticResource Gray600Light}"/>
+                        <Button Text="Discover Books" 
+                        Command="{Binding GoShoppingCommand}" 
+                        HorizontalOptions="Center" 
+                        Margin="0,20,0,0" 
+                        Style="{StaticResource OutlineButton}"/>     
                     </StackLayout>
                 </CollectionView.EmptyView>
 

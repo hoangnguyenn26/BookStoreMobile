@@ -15,8 +15,13 @@ namespace Bookstore.Mobile.ViewModels
 
         private int _currentPage = 1;
         private const int PageSize = 15;
+
+        [ObservableProperty]
         private bool _isLoadingMore = false;
+
+        [ObservableProperty]
         private bool _canLoadMore = true;
+
         private bool _hasLoaded = false;
 
         public StockReceiptListViewModel(IStockReceiptApi receiptApi, ILogger<StockReceiptListViewModel> logger)
@@ -29,6 +34,12 @@ namespace Bookstore.Mobile.ViewModels
 
         [ObservableProperty]
         private ObservableCollection<StockReceiptDto> _receipts;
+
+        [ObservableProperty]
+        private bool _isRefreshing;
+
+        [ObservableProperty]
+        private StockReceiptDto? _selectedReceipt;
 
         [RelayCommand]
         private async Task LoadReceiptsAsync(object forceRefreshObj = null)
@@ -53,9 +64,10 @@ namespace Bookstore.Mobile.ViewModels
             if (forceRefresh)
             {
                 _currentPage = 1;
-                _canLoadMore = true;
+                CanLoadMore = true;
             }
 
+            IsRefreshing = true;
             await RunSafeAsync(async () =>
             {
                 var response = await _receiptApi.GetAllReceipts(_currentPage, PageSize);
@@ -67,23 +79,24 @@ namespace Bookstore.Mobile.ViewModels
                     foreach (var receipt in response.Content)
                         Receipts.Add(receipt);
 
-                    _canLoadMore = response.Content.Count() == PageSize;
+                    CanLoadMore = response.Content.Count() == PageSize;
                 }
                 else
                 {
-                    ErrorMessage = response.Error?.Content ?? "Failed to load receipts.";
+                    ErrorMessage = response.Error?.Content ?? "Failed to load receipts. Please check your connection and try again.";
                     if (forceRefresh) Receipts.Clear();
                 }
-            }, showBusy: !_isLoadingMore);
+            }, showBusy: !IsLoadingMore);
+            IsRefreshing = false;
         }
 
         [RelayCommand]
         private async Task LoadMoreReceiptsAsync()
         {
-            if (_isLoadingMore || !_canLoadMore || IsBusy)
+            if (IsLoadingMore || !CanLoadMore || IsBusy)
                 return;
 
-            _isLoadingMore = true;
+            IsLoadingMore = true;
             _currentPage++;
 
             try
@@ -92,21 +105,38 @@ namespace Bookstore.Mobile.ViewModels
             }
             finally
             {
-                _isLoadingMore = false;
+                IsLoadingMore = false;
             }
         }
 
         [RelayCommand]
         private async Task GoToCreateReceiptAsync()
         {
-            await Shell.Current.GoToAsync(nameof(CreateStockReceiptPage));
+            try
+            {
+                await Shell.Current.GoToAsync(nameof(CreateStockReceiptPage));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error navigating to Create Receipt page");
+                await DisplayAlertAsync("Navigation Error", "Unable to navigate to the Create Receipt page. Please try again.");
+            }
         }
 
         [RelayCommand]
         private async Task GoToReceiptDetailsAsync(StockReceiptDto? selectedReceipt)
         {
             if (selectedReceipt == null) return;
-            await Shell.Current.GoToAsync($"{nameof(StockReceiptDetailsPage)}?ReceiptId={selectedReceipt.Id}");
+
+            try
+            {
+                await Shell.Current.GoToAsync($"{nameof(StockReceiptDetailsPage)}?ReceiptId={selectedReceipt.Id}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error navigating to Receipt details page for receipt {selectedReceipt.Id}");
+                await DisplayAlertAsync("Navigation Error", "Unable to view receipt details. Please try again.");
+            }
         }
 
         public void OnAppearing()
