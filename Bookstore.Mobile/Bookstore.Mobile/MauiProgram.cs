@@ -69,108 +69,29 @@ namespace Bookstore.Mobile
             // ----- Register AutoMapper -----
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
-            // ----- Register ViewModels & Views (Transient) -----
-            builder.Services.AddTransient<LoginViewModel>();
-            builder.Services.AddTransient<RegisterViewModel>();
-            builder.Services.AddTransient<HomeViewModel>();
-            builder.Services.AddTransient<CategoriesViewModel>();
-            builder.Services.AddTransient<BooksViewModel>();
-            builder.Services.AddTransient<BookDetailsViewModel>();
-            builder.Services.AddTransient<WishlistViewModel>();
-            builder.Services.AddTransient<CartViewModel>();
-            builder.Services.AddTransient<ProfileViewModel>();
-            builder.Services.AddTransient<AddressListViewModel>();
-            builder.Services.AddTransient<AddEditAddressViewModel>();
-            builder.Services.AddTransient<OrderHistoryViewModel>();
-            builder.Services.AddTransient<OrderDetailsViewModel>();
-            builder.Services.AddTransient<CheckoutViewModel>();
-            builder.Services.AddTransient<SubmitReviewViewModel>();
-            // Admin/Staff ViewModels
-            builder.Services.AddTransient<AdminDashboardViewModel>();
-            builder.Services.AddTransient<AdminProductHomeViewModel>();
-
-            builder.Services.AddTransient<AdminOrderListViewModel>();
-            builder.Services.AddTransient<AdminOrderDetailsViewModel>();
-
-            builder.Services.AddTransient<AdminCategoryListViewModel>();
-            builder.Services.AddTransient<AddEditCategoryViewModel>();
-
-            builder.Services.AddTransient<AdminAuthorListViewModel>();
-            builder.Services.AddTransient<AddEditAuthorViewModel>();
-
-            builder.Services.AddTransient<AdminBookListViewModel>();
-            builder.Services.AddTransient<AddEditBookViewModel>();
-
-            builder.Services.AddTransient<AdminUserListViewModel>();
-            builder.Services.AddTransient<AdminUserDetailsViewModel>();
-
-            builder.Services.AddTransient<AdminPromotionListViewModel>();
-            builder.Services.AddTransient<AddEditPromotionViewModel>();
-
-            builder.Services.AddTransient<AdminReportsViewModel>();
-
-            builder.Services.AddTransient<StockReceiptListViewModel>();
-            builder.Services.AddTransient<CreateStockReceiptViewModel>();
-            builder.Services.AddTransient<StockReceiptDetailsViewModel>();
-
-            builder.Services.AddTransient<InventoryAdjustmentViewModel>();
-
-            // Supplier Admin
-            builder.Services.AddTransient<AdminSupplierListViewModel>();
-            builder.Services.AddTransient<AddEditSupplierViewModel>();
-
-            // Transient Views
-            builder.Services.AddTransient<LoginPage>();
-            builder.Services.AddTransient<RegisterPage>();
-            builder.Services.AddTransient<HomePage>();
-            builder.Services.AddTransient<CategoriesPage>();
-            builder.Services.AddTransient<BooksPage>();
-            builder.Services.AddTransient<BookDetailsPage>();
-            builder.Services.AddTransient<WishlistPage>();
-            builder.Services.AddTransient<CartPage>();
-            builder.Services.AddTransient<ProfilePage>();
-            builder.Services.AddTransient<AddressListPage>();
-            builder.Services.AddTransient<AddEditAddressPage>();
-            builder.Services.AddTransient<OrderHistoryPage>();
-            builder.Services.AddTransient<OrderDetailsPage>();
-            builder.Services.AddTransient<CheckoutPage>();
-            builder.Services.AddTransient<SubmitReviewPage>();
-
-            builder.Services.AddTransient<AdminSupplierListViewModel>();
-            builder.Services.AddTransient<AddEditSupplierViewModel>();// Admin/Staff Views
-            builder.Services.AddTransient<AdminSupplierListPage>();
-            builder.Services.AddTransient<AddEditSupplierPage>();
-            
-            builder.Services.AddTransient<AdminDashboardPage>();
-            builder.Services.AddTransient<AdminProductHomePage>();
-
-            builder.Services.AddTransient<AdminOrderListPage>();
-            builder.Services.AddTransient<AdminOrderDetailsPage>();
-
-            builder.Services.AddTransient<AdminCategoryListPage>();
-            builder.Services.AddTransient<AddEditCategoryPage>();
-
-            builder.Services.AddTransient<AdminAuthorListPage>();
-            builder.Services.AddTransient<AddEditAuthorPage>();
-
-            builder.Services.AddTransient<AdminBookListPage>();
-            builder.Services.AddTransient<AddEditBookPage>();
-
-            builder.Services.AddTransient<AdminUserListPage>();
-            builder.Services.AddTransient<AdminUserDetailsPage>();
-
-            builder.Services.AddTransient<AdminPromotionListPage>();
-            builder.Services.AddTransient<AddEditPromotionPage>();
-
-            builder.Services.AddTransient<AdminReportsPage>();
-
-            builder.Services.AddTransient<StockReceiptListPage>();
-            builder.Services.AddTransient<CreateStockReceiptPage>();
-            builder.Services.AddTransient<StockReceiptDetailsPage>();
-
-            builder.Services.AddTransient<InventoryAdjustmentPage>();
+            // ----- Auto-register ViewModels & Views (Transient) -----
+            RegisterViewModelsAndViews(builder.Services);
 
             return builder.Build();
+        }
+
+        // Auto-register all ViewModels and Views as transient
+        private static void RegisterViewModelsAndViews(IServiceCollection services)
+        {
+            var assembly = typeof(MauiProgram).Assembly;
+            var types = assembly.GetTypes();
+
+            // Register ViewModels
+            foreach (var type in types.Where(t => t.IsClass && !t.IsAbstract && t.Name.EndsWith("ViewModel")))
+            {
+                services.AddTransient(type);
+            }
+
+            // Register Views (Pages)
+            foreach (var type in types.Where(t => t.IsClass && !t.IsAbstract && t.Name.EndsWith("Page")))
+            {
+                services.AddTransient(type);
+            }
         }
 
         // Helper đăng ký Refit client
