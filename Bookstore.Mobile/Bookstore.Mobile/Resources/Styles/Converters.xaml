@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                    xmlns:converters="clr-namespace:Bookstore.Mobile.Converters">
+    <!-- Bool to Wishlist Icon -->
+    <converters:BoolToWishlistIconConverter x:Key="BoolToWishlistIconConverter" />
+    <!-- Enum to ItemsSource -->
+    <converters:EnumToItemsSourceConverter x:Key="EnumToItemsSourceConverter" />
+    <!-- Bool to Status Color -->
+    <converters:BoolToStatusColorConverter x:Key="BoolToStatusColorConverter" />
+    <!-- Bool to Status Text -->
+    <converters:BoolToStatusTextConverter x:Key="BoolToStatusTextConverter" />
+    <!-- Object Not Null to Bool -->
+    <converters:ObjectNotNullBoolConverter x:Key="ObjectNotNullBoolConverter" />
+    <!-- List to String -->
+    <converters:ListToStringConverter x:Key="ListToStringConverter" />
+    <!-- Guid Not Null to Bool -->
+    <converters:GuidNotNullBoolConverter x:Key="GuidNotNullBoolConverter" />
+    <!-- Order Status to String -->
+    <converters:OrderStatusToStringConverter x:Key="OrderStatusToStringConverter" />
+    <!-- Rating to Star Icon -->
+    <converters:RatingToStarIconConverter x:Key="RatingToStarIconConverter" />
+    <!-- Stock to Color -->
+    <converters:StockToColorConverter x:Key="StockToColorConverter" />
+    <!-- String Not Null Or Empty to Bool -->
+    <converters:StringNotNullOrEmptyBoolConverter x:Key="StringNotNullOrEmptyBoolConverter" />
+    <!-- Order Status to Color -->
+    <converters:OrderStatusToColorConverter x:Key="OrderStatusToColorConverter" />
+    <!-- Guid Shortener -->
+    <converters:GuidShortenerConverter x:Key="GuidShortenerConverter" />
+    <!-- Image URL Converter -->
+    <converters:ImageUrlConverter x:Key="ImageUrlConverter" />
+    <!-- Inverse Bool Converter -->
+    <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+    <!-- Bool to Color -->
+    <converters:BoolToColorConverter x:Key="BoolToColorConverter" />
+    <!-- Bool to String -->
+    <converters:BoolToStringConverter x:Key="BoolToStringConverter" />
+    <!-- Bool to Message -->
+    <converters:BoolToMessageConverter x:Key="BoolToMessageConverter" />
+</ResourceDictionary> 
