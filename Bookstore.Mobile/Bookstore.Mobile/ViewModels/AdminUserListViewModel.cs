@@ -44,8 +44,6 @@ namespace Bookstore.Mobile.ViewModels
 
         public bool HasFiltersApplied => SelectedRoleFilter != "All" || SelectedStatusFilter != "All";
 
-        public override bool ShowContent => !IsBusy && !HasError;
-
         public AdminUserListViewModel(
             IAdminUserApi userApi,
             ILogger<AdminUserListViewModel> logger)
@@ -132,7 +130,7 @@ namespace Bookstore.Mobile.ViewModels
                     else
                     {
                         ErrorMessage = response.Error?.Content ?? "Failed to load users.";
-                        _logger.LogError("Failed to load users. Status: {StatusCode}, Error: {Error}", 
+                        _logger.LogError("Failed to load users. Status: {StatusCode}, Error: {Error}",
                             response.StatusCode, response.Error?.Content);
                     }
                 }

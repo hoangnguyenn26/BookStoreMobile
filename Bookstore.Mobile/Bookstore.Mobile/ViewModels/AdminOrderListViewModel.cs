@@ -41,9 +41,6 @@ namespace Bookstore.Mobile.ViewModels
         [NotifyCanExecuteChangedFor(nameof(LoadOrdersCommand))]
         private string _selectedStatusFilter = "All";
 
-        public bool ShowContent => !IsBusy && !HasError;
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-
         [RelayCommand]
         private async Task LoadOrders(bool isRefreshing = false)
         {

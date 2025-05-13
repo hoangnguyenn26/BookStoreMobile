@@ -55,9 +55,6 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty]
         private bool _isUploadingImage;
 
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-        public bool ShowFormContent => !IsBusy && !HasError && _isDataLoaded;
-
         // Property nhận giá trị string từ QueryProperty
         public string? BookIdString
         {
@@ -78,7 +75,7 @@ namespace Bookstore.Mobile.ViewModels
             IsBusy = true; // Báo hiệu đang xử lý Id và load data
             ErrorMessage = null;
             _isDataLoaded = false;
-            OnPropertyChanged(nameof(ShowFormContent));
+            OnPropertyChanged(nameof(ShowContent));
 
             if (Guid.TryParse(idString, out Guid parsedId) && parsedId != Guid.Empty)
             {
@@ -96,7 +93,7 @@ namespace Bookstore.Mobile.ViewModels
                 _isDataLoaded = true; // Đánh dấu đã sẵn sàng (vì không cần load sách cũ)
             }
             IsBusy = false;
-            OnPropertyChanged(nameof(ShowFormContent));
+            OnPropertyChanged(nameof(ShowContent));
         }
 
         private void ResetForm()

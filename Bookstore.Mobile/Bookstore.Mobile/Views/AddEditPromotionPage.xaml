@@ -54,7 +54,7 @@
             </Frame>
 
             <!-- Main Form Content -->
-            <VerticalStackLayout Grid.Row="1" IsVisible="{Binding ShowFormContent}" Spacing="16">
+            <VerticalStackLayout Grid.Row="1" IsVisible="{Binding ShowContent}" Spacing="16">
                 <!-- Basic Information Card -->
                 <Frame BackgroundColor="White" 
                        BorderColor="#E0E0E0" 

@@ -39,12 +39,10 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty] private ObservableCollection<InventoryReason> _adjustmentReasons;
         [ObservableProperty][NotifyCanExecuteChangedFor(nameof(AdjustStockCommand))] private InventoryReason? _selectedReason;
         [ObservableProperty] private string? _notes;
-        [ObservableProperty] private string? _errorMessage;
 
         public bool ShowSearchResults => BookSearchResults.Count > 0;
         public bool IsBookSelected => SelectedBookSearchResult != null;
         public string SelectedBookDisplay => SelectedBookSearchResult != null ? $"{SelectedBookSearchResult.Title} (Stock: {SelectedBookSearchResult.StockQuantity})" : string.Empty;
-        public override bool ShowContent => !IsBusy && !HasError;
         public bool CanAdjustStock =>
             SelectedBookSearchResult != null &&
             int.TryParse(ChangeQuantity, out int qty) && qty != 0 &&

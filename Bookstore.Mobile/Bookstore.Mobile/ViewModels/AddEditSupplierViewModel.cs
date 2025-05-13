@@ -4,7 +4,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using Refit;
-using System.ComponentModel.DataAnnotations;
 
 namespace Bookstore.Mobile.ViewModels
 {
@@ -29,9 +28,6 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty] private string? _email;
         [ObservableProperty] private string? _phone;
         [ObservableProperty] private string? _address;
-        [ObservableProperty] private string? _errorMessage;
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-        public bool ShowFormContent => !IsBusy && !HasError;
 
         public string? SupplierIdString
         {
@@ -66,7 +62,7 @@ namespace Bookstore.Mobile.ViewModels
             finally
             {
                 IsBusy = false;
-                OnPropertyChanged(nameof(ShowFormContent));
+                OnPropertyChanged(nameof(ShowContent));
                 OnPropertyChanged(nameof(HasError));
             }
         }
@@ -105,7 +101,7 @@ namespace Bookstore.Mobile.ViewModels
             }
             finally
             {
-                OnPropertyChanged(nameof(ShowFormContent));
+                OnPropertyChanged(nameof(ShowContent));
             }
         }
 
@@ -160,4 +156,4 @@ namespace Bookstore.Mobile.ViewModels
             finally { IsBusy = false; }
         }
     }
-} 
+}

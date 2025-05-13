@@ -39,9 +39,6 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty] private bool _isUserActive;
 
         public override bool ShowContent => !IsBusy && UserDetails != null && !HasError;
-
-        [ObservableProperty] private string? _errorMessage;
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
         public string UserFullName => $"{UserDetails?.FirstName} {UserDetails?.LastName}".Trim();
 
         [ObservableProperty]

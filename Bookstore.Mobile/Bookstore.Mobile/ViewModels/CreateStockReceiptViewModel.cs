@@ -74,12 +74,9 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty][NotifyCanExecuteChangedFor(nameof(AddDetailCommand))] private string? _newDetailQuantity;
         [ObservableProperty] private string? _newDetailPrice;
         [ObservableProperty][NotifyCanExecuteChangedFor(nameof(SaveReceiptCommand))] private ObservableCollection<CreateStockReceiptDetailViewModelDto> _receiptDetails;
-        [ObservableProperty] private string? _errorMessage;
         [ObservableProperty] private bool _isSearchingBooks; // Cờ riêng cho tìm kiếm sách
 
         public bool ShowSearchResults => BookSearchResults.Count > 0 && !string.IsNullOrWhiteSpace(BookSearchTerm);
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-        public bool ShowFormContent => !IsBusy && !HasError;
         public bool CanAddDetail => SelectedBookSearchResult != null && int.TryParse(NewDetailQuantity, out int qty) && qty > 0 && IsNotBusy;
         public bool CanSaveReceipt => ReceiptDetails.Count > 0 && IsNotBusy;
 

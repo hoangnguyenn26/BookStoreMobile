@@ -28,7 +28,6 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty][NotifyCanExecuteChangedFor(nameof(SaveAuthorCommand))] private string? _name;
         [ObservableProperty] private string? _biography;
 
-        public override bool ShowContent => !IsBusy && !HasError;
         public bool CanSaveAuthorPublic => CanSaveAuthor();
 
         public string? AuthorIdString

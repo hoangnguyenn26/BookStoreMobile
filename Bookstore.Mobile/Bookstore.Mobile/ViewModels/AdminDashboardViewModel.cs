@@ -23,11 +23,6 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty]
         private AdminDashboardSummaryDto _summary;
 
-        [ObservableProperty]
-        private string? _errorMessage;
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-        public bool ShowContent => !IsBusy && !HasError;
-
         [RelayCommand]
         private async Task LoadSummaryAsync()
         {

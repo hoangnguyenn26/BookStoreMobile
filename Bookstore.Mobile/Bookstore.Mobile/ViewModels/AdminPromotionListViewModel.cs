@@ -22,9 +22,6 @@ namespace Bookstore.Mobile.ViewModels
         }
 
         [ObservableProperty] private ObservableCollection<PromotionDto> _promotions;
-        [ObservableProperty] private string? _errorMessage;
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-        public bool ShowContent => !IsBusy && !HasError;
 
         [RelayCommand]
         private async Task LoadPromotionsAsync(object? parameter)

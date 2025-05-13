@@ -63,12 +63,6 @@ namespace Bookstore.Mobile.ViewModels
         private bool _isLoadingReviews;
 
         [ObservableProperty]
-        private string? _reviewsErrorMessage;
-
-        public bool HasReviewsError => !string.IsNullOrEmpty(ReviewsErrorMessage);
-        public bool ShowReviewsContent => !IsLoadingReviews && !HasReviewsError;
-
-        [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(AddToCartCommand))]
         [NotifyPropertyChangedFor(nameof(CanIncrement))]
         [NotifyPropertyChangedFor(nameof(CanDecrement))]
@@ -98,7 +92,6 @@ namespace Bookstore.Mobile.ViewModels
             {
                 IsBusy = true;
                 ErrorMessage = null;
-                ReviewsErrorMessage = null;
                 BookDetails = null;
                 BookDetailItems.Clear();
                 Reviews.Clear();
@@ -151,7 +144,6 @@ namespace Bookstore.Mobile.ViewModels
         {
             if (BookDetails == null) return;
             IsLoadingReviews = true;
-            ReviewsErrorMessage = null;
             Reviews.Clear();
             try
             {
@@ -166,19 +158,19 @@ namespace Bookstore.Mobile.ViewModels
                 else
                 {
                     string errorContent = reviewResponse.Error?.Content ?? reviewResponse.ReasonPhrase ?? "Failed to load reviews.";
-                    ReviewsErrorMessage = $"Error loading reviews: {errorContent}";
+                    ErrorMessage = $"Error loading reviews: {errorContent}";
                     _logger.LogWarning("Failed to load reviews for Book {BookId}. Status: {StatusCode}", _actualBookId, reviewResponse.StatusCode);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Exception while loading reviews for Book {BookId}", _actualBookId);
-                ReviewsErrorMessage = "An error occurred while loading reviews.";
+                ErrorMessage = "An error occurred while loading reviews.";
             }
             finally
             {
                 IsLoadingReviews = false;
-                OnPropertyChanged(nameof(ShowReviewsContent));
+                OnPropertyChanged(nameof(ShowContent));
             }
         }
 

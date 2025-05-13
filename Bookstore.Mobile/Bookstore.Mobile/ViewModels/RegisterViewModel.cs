@@ -91,7 +91,7 @@ namespace Bookstore.Mobile.ViewModels
         {
             if (IsBusy) return;
             _logger.LogInformation("Navigating back to Login Page");
-            await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
+            await Shell.Current.GoToAsync(nameof(LoginPage));
         }
     }
 }

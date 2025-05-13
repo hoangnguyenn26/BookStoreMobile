@@ -35,7 +35,7 @@
                                 <Image Grid.Column="0" Source="{Binding CoverImageUrl, TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}" Aspect="AspectFit" WidthRequest="50" HeightRequest="70"/>
                                 <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
                                     <Label Text="{Binding Title}" FontAttributes="Bold" LineBreakMode="TailTruncation"/>
-                                    <Label Text="{Binding AuthorName, TargetNullValue='N/A'}" FontSize="Micro"/>
+                                    <Label Text="{Binding Author.Name, TargetNullValue='N/A'}" FontSize="Micro"/>
                                     <Label Text="{Binding Price, StringFormat='{0:C}'}" FontSize="Small"/>
                                     <Label Text="{Binding StockQuantity, StringFormat='Stock: {0}'}" FontSize="Micro"/>
                                 </VerticalStackLayout>

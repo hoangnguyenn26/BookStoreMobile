@@ -14,7 +14,7 @@
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="CenterAndExpand"/>
             <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}"/>
 
-            <VerticalStackLayout Spacing="10" IsVisible="{Binding ShowFormContent}">
+            <VerticalStackLayout Spacing="10" IsVisible="{Binding ShowContent}">
                 <Frame Style="{StaticResource EntryFrame}">
                     <Entry Placeholder="Author Name *" Text="{Binding Name}" ReturnType="Next"/>
                 </Frame>

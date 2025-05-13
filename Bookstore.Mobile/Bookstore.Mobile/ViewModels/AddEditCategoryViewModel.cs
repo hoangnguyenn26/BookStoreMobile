@@ -31,10 +31,6 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty] private CategoryDto? _selectedParentCategory;
         [ObservableProperty] private ObservableCollection<CategoryDto> _parentCategories;
 
-        [ObservableProperty] private string? _errorMessage;
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-        public bool ShowFormContent => !IsBusy && !HasError;
-
         public bool CanSaveCategoryPublic => CanSaveCategory();
         public string? CategoryIdString
         {
@@ -78,7 +74,7 @@ namespace Bookstore.Mobile.ViewModels
             finally
             {
                 IsBusy = false;
-                OnPropertyChanged(nameof(ShowFormContent));
+                OnPropertyChanged(nameof(ShowContent));
                 OnPropertyChanged(nameof(HasError));
             }
         }
@@ -121,7 +117,7 @@ namespace Bookstore.Mobile.ViewModels
             }
             finally
             {
-                OnPropertyChanged(nameof(ShowFormContent));
+                OnPropertyChanged(nameof(ShowContent));
             }
         }
 
@@ -151,7 +147,7 @@ namespace Bookstore.Mobile.ViewModels
                 {
                     ErrorMessage = "Failed to load parent categories.";
                 }
-            }, nameof(ShowFormContent));
+            }, nameof(ShowContent));
         }
 
         private bool CanSaveCategory() => !string.IsNullOrWhiteSpace(Name) && IsNotBusy;

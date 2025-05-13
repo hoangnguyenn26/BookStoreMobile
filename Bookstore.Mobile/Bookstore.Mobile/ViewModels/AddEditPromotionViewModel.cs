@@ -52,9 +52,6 @@ namespace Bookstore.Mobile.ViewModels
 
         [ObservableProperty][NotifyCanExecuteChangedFor(nameof(SavePromotionCommand))] private string? _maxUsage;
         [ObservableProperty] private bool _isActive = true;
-        [ObservableProperty] private string? _errorMessage;
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-        public bool ShowFormContent => !IsBusy && !HasError;
 
         public string? PromotionIdString
         {
@@ -92,7 +89,7 @@ namespace Bookstore.Mobile.ViewModels
             finally
             {
                 IsBusy = false;
-                OnPropertyChanged(nameof(ShowFormContent));
+                OnPropertyChanged(nameof(ShowContent));
             }
         }
 

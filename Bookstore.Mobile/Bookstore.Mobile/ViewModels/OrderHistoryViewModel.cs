@@ -32,8 +32,6 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty]
         private ObservableCollection<OrderSummaryDto> _orders;
 
-        public override bool ShowContent => !IsBusy && !HasError;
-
         [RelayCommand(CanExecute = nameof(CanLoadMoreOrders))]
         private async Task LoadMoreOrdersAsync()
         {

@@ -56,12 +56,7 @@ namespace Bookstore.Mobile.ViewModels
         }
         [ObservableProperty]
         private string? _searchTerm;
-        [ObservableProperty]
-        private string? _errorMessage;
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
 
-        // --- Xử lý khi CategoryId thay đổi ---
-        // Source Generator sẽ gọi hàm này khi _categoryId thay đổi
         partial void OnCategoryIdChanged(Guid? value)
         {
             _logger.LogInformation("CategoryId received: {CategoryId}", value ?? Guid.Empty);

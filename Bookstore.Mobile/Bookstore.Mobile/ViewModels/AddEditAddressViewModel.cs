@@ -29,9 +29,6 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty][NotifyCanExecuteChangedFor(nameof(SaveAddressCommand))] private string? _district;
         [ObservableProperty][NotifyCanExecuteChangedFor(nameof(SaveAddressCommand))] private string? _city;
         [ObservableProperty] private bool _isDefault;
-        [ObservableProperty] private string? _errorMessage;
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-        public bool ShowContent => !IsBusy && !HasError;
 
         // Property nhận giá trị string từ QueryProperty
         public string? AddressIdString

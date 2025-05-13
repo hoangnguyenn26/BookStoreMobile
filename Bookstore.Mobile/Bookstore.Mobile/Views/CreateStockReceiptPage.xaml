@@ -87,7 +87,7 @@
                                         <ViewCell>
                                             <Grid Padding="10" ColumnDefinitions="*,Auto">
                                                 <Label Grid.Column="0" Text="{Binding Title}"/>
-                                                <Label Grid.Column="1" Text="{Binding AuthorName}" FontAttributes="Italic"/>
+                                                <Label Grid.Column="1" Text="{Binding Author.Name}" FontAttributes="Italic"/>
                                             </Grid>
                                         </ViewCell>
                                     </DataTemplate>

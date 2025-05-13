@@ -320,7 +320,7 @@
 
                             <!-- Reviews Content -->
                             <CollectionView ItemsSource="{Binding Reviews, Mode=OneWay}" 
-                                            IsVisible="{Binding ShowReviewsContent}"
+                                            IsVisible="{Binding ShowContent}"
                                             SelectionMode="None">
                                 <CollectionView.EmptyView>
                                     <Grid HeightRequest="100">

@@ -40,10 +40,6 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty]
         private string? _comment;
 
-        [ObservableProperty]
-        private string? _errorMessage;
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-
         public List<int> RatingOptions { get; } = new List<int> { 1, 2, 3, 4, 5 };
 
         public int CurrentRating => SelectedRating;

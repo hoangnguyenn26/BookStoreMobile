@@ -28,12 +28,8 @@ namespace Bookstore.Mobile.ViewModels
 
         [ObservableProperty]
         private ObservableCollection<AddressDto> _addresses;
-
-        [ObservableProperty]
-        private string? _errorMessage;
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
         public bool HasItems => Addresses.Count > 0;
-        public override bool ShowContent => !IsBusy && !HasError;
+
 
         // --- Commands ---
         [RelayCommand]

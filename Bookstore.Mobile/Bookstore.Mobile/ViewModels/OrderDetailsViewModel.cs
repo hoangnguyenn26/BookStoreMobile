@@ -26,9 +26,6 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty]
         private OrderDto? _orderDetails;
 
-        [ObservableProperty]
-        private string? _errorMessage;
-
         public string? OrderIdString
         {
             get => _orderIdString;
@@ -41,8 +38,6 @@ namespace Bookstore.Mobile.ViewModels
                 }
             }
         }
-
-        public override bool ShowContent => !IsBusy && OrderDetails != null && !HasError;
         public bool HasShippingAddress => OrderDetails?.ShippingAddress != null;
         public decimal OrderSubtotal => OrderDetails?.OrderDetails?.Sum(d => d.UnitPrice * d.Quantity) ?? 0;
         public bool CanCancelOrder => OrderDetails?.Status == OrderStatus.Pending && IsNotBusy;

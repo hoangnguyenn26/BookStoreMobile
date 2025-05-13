@@ -15,7 +15,7 @@
             <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}"/>
 
             <!-- Form Inputs - Chỉ hiện khi không Busy và không lỗi load ban đầu -->
-            <VerticalStackLayout Spacing="10" IsVisible="{Binding ShowFormContent}">
+            <VerticalStackLayout Spacing="10" IsVisible="{Binding ShowContent}">
 
                 <!-- Ảnh bìa -->
                 <Label Text="Cover Image" FontAttributes="Bold"/>

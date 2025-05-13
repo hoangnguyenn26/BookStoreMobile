@@ -22,9 +22,6 @@ namespace Bookstore.Mobile.ViewModels
         }
 
         [ObservableProperty] private ObservableCollection<SupplierDto> _suppliers;
-        [ObservableProperty] private string? _errorMessage;
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-        public bool ShowContent => !IsBusy && !HasError;
 
         [RelayCommand]
         private async Task LoadSuppliersAsync(object? parameter)
@@ -90,4 +87,4 @@ namespace Bookstore.Mobile.ViewModels
         }
         public bool IsRefreshNeeded { get; set; } = true;
     }
-} 
+}

@@ -17,7 +17,7 @@ namespace Bookstore.Mobile.ViewModels
         private string? _errorMessage;
 
         public bool IsNotBusy => !IsBusy;
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
+        public virtual bool HasError => !string.IsNullOrEmpty(ErrorMessage);
         public virtual bool ShowContent => !IsBusy && !HasError;
 
         //Hàm xử lý lỗi chung

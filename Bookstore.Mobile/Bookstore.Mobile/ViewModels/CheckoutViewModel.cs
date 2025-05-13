@@ -56,10 +56,6 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty] private decimal _shippingFee = 0;
         [ObservableProperty] private decimal _discount = 0;
         [ObservableProperty] private decimal _grandTotal;
-
-        [ObservableProperty] private string? _errorMessage;
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-
         // Cờ trạng thái loading riêng
         [ObservableProperty] private bool _isLoadingAddresses;
         [ObservableProperty] private bool _isLoadingCart;

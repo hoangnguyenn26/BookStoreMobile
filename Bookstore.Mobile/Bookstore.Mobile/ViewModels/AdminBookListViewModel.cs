@@ -41,8 +41,6 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty] private CategoryDto? _selectedCategoryFilter;
         [ObservableProperty] private AuthorDto? _selectedAuthorFilter;
 
-        public override bool ShowContent => !IsBusy && !HasError;
-
         partial void OnSelectedCategoryFilterChanged(CategoryDto? value) => LoadBooksCommand.Execute(true);
         partial void OnSelectedAuthorFilterChanged(AuthorDto? value) => LoadBooksCommand.Execute(true);
 

@@ -29,9 +29,6 @@ namespace Bookstore.Mobile.ViewModels
         }
 
         [ObservableProperty] private StockReceiptDto? _receipt;
-        [ObservableProperty] private string? _errorMessage;
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-        public bool ShowContent => !IsBusy && Receipt != null && !HasError;
 
         private async void ProcessReceiptId(string? idString)
         {
