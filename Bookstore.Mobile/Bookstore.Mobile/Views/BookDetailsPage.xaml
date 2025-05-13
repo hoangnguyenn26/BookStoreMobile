@@ -13,10 +13,7 @@
              BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}">
 
     <ContentPage.Resources>
-        <converters:StockToColorConverter x:Key="StockToColorConverter"/>
-        <converters:BoolToWishlistIconConverter x:Key="BoolToWishlistIconConverter"/>
-        <converters:StringNotNullOrEmptyBoolConverter x:Key="StringNotNullOrEmptyBoolConverter"/>
-        <converters:InverseBoolConverter x:Key="InverseBoolConverter"/>
+        
     </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto,*">

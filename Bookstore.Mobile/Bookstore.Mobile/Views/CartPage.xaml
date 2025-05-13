@@ -3,13 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
              xmlns:dto_cart="clr-namespace:Bookstore.Mobile.Models"
-             xmlns:converters="clr-namespace:Bookstore.Mobile.Converters"
              x:DataType="vm:CartViewModel"
              x:Class="Bookstore.Mobile.Views.CartPage"
              Title="{Binding Title}">
 
     <ContentPage.Resources>
-        <converters:ImageUrlConverter x:Key="ImageUrlConverter"/>
+        
     </ContentPage.Resources>
 
     <Grid RowDefinitions="*, Auto">

@@ -82,11 +82,6 @@
                 <Setter Property="FontSize" Value="16"/>
                 <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
             </Style>
-
-            <!-- Converters -->
-            <converters:GuidShortenerConverter x:Key="GuidShortenerConverter"/>
-            <converters:ObjectNotNullBoolConverter x:Key="ObjectNotNullBoolConverter"/>
-            <converters:StringNotNullOrEmptyBoolConverter x:Key="StringNotNullOrEmptyBoolConverter"/>
         </ResourceDictionary>
     </ContentPage.Resources>
 

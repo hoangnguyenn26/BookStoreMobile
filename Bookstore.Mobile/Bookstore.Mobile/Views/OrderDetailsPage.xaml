@@ -11,9 +11,7 @@
     <!-- Ví dụ: "Order #ABCD123" -->
 
     <ContentPage.Resources>
-        <converters:OrderStatusToStringConverter x:Key="OrderStatusToStringConverter"/>
-        <converters:OrderStatusToColorConverter x:Key="OrderStatusToColorConverter"/>
-        <converters:GuidShortenerConverter x:Key="GuidShortenerConverter"/>
+        
     </ContentPage.Resources>
 
     <ScrollView>

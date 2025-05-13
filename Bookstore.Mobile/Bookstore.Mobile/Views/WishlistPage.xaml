@@ -3,14 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
              xmlns:dto_wl="clr-namespace:Bookstore.Mobile.Models"
-             xmlns:converters="clr-namespace:Bookstore.Mobile.Converters"
              x:DataType="vm:WishlistViewModel"
              x:Class="Bookstore.Mobile.Views.WishlistPage"
              Title="{Binding Title}">
 
     <ContentPage.Resources>
-        <converters:StringNotNullOrEmptyBoolConverter x:Key="StringNotNullOrEmptyBoolConverter"/>
-        <converters:StockToColorConverter x:Key="StockToColorConverter"/>
+        
     </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto, *">
