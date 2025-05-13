@@ -74,108 +74,112 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="Views\AddEditAddressPage.xaml">
+	  <MauiXaml Update="Views\UserAccount\AddEditAddressPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\AddEditAuthorPage.xaml">
+	  <MauiXaml Update="Views\Admin\Products\AddEditAuthorPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\AddEditBookPage.xaml">
+	  <MauiXaml Update="Views\Admin\Products\AddEditBookPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\AddEditCategoryPage.xaml">
+	  <MauiXaml Update="Views\Admin\Products\AddEditCategoryPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\AddEditPromotionPage.xaml">
+	  <MauiXaml Update="Views\Admin\Promotions\AddEditPromotionPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\AddressListPage.xaml">
+	  <MauiXaml Update="Views\UserAccount\AddressListPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\AdminAuthorListPage.xaml">
+	  <MauiXaml Update="Views\Admin\Products\AdminAuthorListPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\AdminBookListPage.xaml">
+	  <MauiXaml Update="Views\Admin\Products\AdminBookListPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\AdminCategoryListPage.xaml">
+	  <MauiXaml Update="Views\Admin\Products\AdminCategoryListPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\AdminDashboardPage.xaml">
+	  <MauiXaml Update="Views\Admin\Dashboard\AdminDashboardPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\AdminOrderDetailsPage.xaml">
+	  <MauiXaml Update="Views\Admin\Orders\AdminOrderDetailsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\AdminOrderListPage.xaml">
+	  <MauiXaml Update="Views\Admin\Orders\AdminOrderListPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\AdminProductHomePage.xaml">
+	  <MauiXaml Update="Views\Admin\Products\AdminProductHomePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\AdminPromotionListPage.xaml">
+	  <MauiXaml Update="Views\Admin\Promotions\AdminPromotionListPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\AdminReportsPage.xaml">
+	  <MauiXaml Update="Views\Admin\Reports\AdminReportsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\AdminUserDetailsPage.xaml">
+	  <MauiXaml Update="Views\Admin\Users\AdminUserDetailsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\AdminUserListPage.xaml">
+	  <MauiXaml Update="Views\Admin\Users\AdminUserListPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\BookDetailsPage.xaml">
+	  <MauiXaml Update="Views\Catalog\BookDetailsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\BooksPage.xaml">
+	  <MauiXaml Update="Views\Catalog\BooksPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\CartPage.xaml">
+	  <MauiXaml Update="Views\Shopping\CartPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\CategoriesPage.xaml">
+	  <MauiXaml Update="Views\Catalog\CategoriesPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\CheckoutPage.xaml">
+	  <MauiXaml Update="Views\Shopping\CheckoutPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\CreateStockReceiptPage.xaml">
+	  <MauiXaml Update="Views\Admin\Inventory\CreateStockReceiptPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\HomePage.xaml">
+	  <MauiXaml Update="Views\Home\HomePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\InventoryAdjustmentPage.xaml">
+	  <MauiXaml Update="Views\Admin\Inventory\InventoryAdjustmentPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\LoginPage.xaml">
+	  <MauiXaml Update="Views\Auth\LoginPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\OrderDetailsPage.xaml">
+	  <MauiXaml Update="Views\UserAccount\OrderDetailsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\OrderHistoryPage.xaml">
+	  <MauiXaml Update="Views\UserAccount\OrderHistoryPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\ProfilePage.xaml">
+	  <MauiXaml Update="Views\UserAccount\ProfilePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\RegisterPage.xaml">
+	  <MauiXaml Update="Views\Auth\RegisterPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\StockReceiptDetailsPage.xaml">
+	  <MauiXaml Update="Views\Admin\Inventory\StockReceiptDetailsPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\StockReceiptListPage.xaml">
+	  <MauiXaml Update="Views\Admin\Inventory\StockReceiptListPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\SubmitReviewPage.xaml">
+	  <MauiXaml Update="Views\Shopping\SubmitReviewPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\WishlistPage.xaml">
+	  <MauiXaml Update="Views\Shopping\WishlistPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Views\Components\" />
 	</ItemGroup>
 
 </Project>

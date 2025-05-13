@@ -213,7 +213,16 @@ namespace Bookstore.Mobile.ViewModels
                 {
                     var createdOrder = response.Content;
                     _logger.LogInformation("Order {OrderId} placed successfully via API. Navigating to Order History.", createdOrder.Id);
-                    await Toast.Make("Order placed successfully!").Show();
+                    #if ANDROID || IOS
+                    try
+                    {
+                        await Toast.Make("Order placed successfully!").Show();
+                    }
+                    catch (Exception toastEx)
+                    {
+                        _logger.LogWarning(toastEx, "Failed to show Toast notification.");
+                    }
+                    #endif
                     await Shell.Current.GoToAsync($"//{nameof(OrderHistoryPage)}");
                 }
                 else
