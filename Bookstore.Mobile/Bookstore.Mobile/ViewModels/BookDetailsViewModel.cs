@@ -53,6 +53,7 @@ namespace Bookstore.Mobile.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(CanAddToCart))]
+        [NotifyPropertyChangedFor(nameof(CanToggleWishlist))]
         private bool _isInWishlist;
 
         [ObservableProperty]
@@ -69,21 +70,34 @@ namespace Bookstore.Mobile.ViewModels
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(AddToCartCommand))]
+        [NotifyPropertyChangedFor(nameof(CanIncrement))]
+        [NotifyPropertyChangedFor(nameof(CanDecrement))]
+        [NotifyCanExecuteChangedFor(nameof(IncrementQuantityCommand))]
+        [NotifyCanExecuteChangedFor(nameof(DecrementQuantityCommand))]
         private int _quantityToAdd = 1;
 
         public bool CanAddToCart => BookDetails != null && BookDetails.StockQuantity > 0 && QuantityToAdd > 0 && QuantityToAdd <= BookDetails.StockQuantity && IsNotBusy;
 
+        public bool CanToggleWishlist => BookDetails != null && IsNotBusy && _authService.IsLoggedIn;
+
         [ObservableProperty]
         private ObservableCollection<KeyValuePair<string, string>> _bookDetailItems;
+
+        public bool CanIncrement => BookDetails != null && QuantityToAdd < BookDetails.StockQuantity && IsNotBusy;
+
+        public bool CanDecrement => QuantityToAdd > 1 && IsNotBusy;
 
         public override bool ShowContent => !IsBusy && BookDetails != null && !HasError;
 
         [RelayCommand]
         private async Task LoadBookDetailsAsync()
         {
-            await RunSafeAsync(async () =>
+            if (_actualBookId == Guid.Empty) return;
+
+            try
             {
-                if (_actualBookId == Guid.Empty) return;
+                IsBusy = true;
+                ErrorMessage = null;
                 ReviewsErrorMessage = null;
                 BookDetails = null;
                 BookDetailItems.Clear();
@@ -114,10 +128,23 @@ namespace Bookstore.Mobile.ViewModels
                     ErrorMessage = $"Error: {errorContent}";
                     _logger.LogWarning("Failed to load book details for Id {BookId}. Status: {StatusCode}, Reason: {Reason}", _actualBookId, bookResponse.StatusCode, ErrorMessage);
                 }
-            }, nameof(ShowContent));
-            OnPropertyChanged(nameof(CanAddToCart));
-            (AddToCartCommand as Command)?.ChangeCanExecute();
-            (ToggleWishlistCommand as Command)?.ChangeCanExecute();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception while loading book details for Id {BookId}", _actualBookId);
+                ErrorMessage = $"Error: {ex.Message}";
+            }
+            finally
+            {
+                IsBusy = false;
+                OnPropertyChanged(nameof(IsNotBusy));
+                OnPropertyChanged(nameof(HasError));
+                OnPropertyChanged(nameof(ShowContent));
+                OnPropertyChanged(nameof(CanAddToCart));
+                OnPropertyChanged(nameof(CanToggleWishlist));
+                (AddToCartCommand as Command)?.ChangeCanExecute();
+                (ToggleWishlistCommand as Command)?.ChangeCanExecute();
+            }
         }
 
         private async Task LoadReviewsAsync()
@@ -185,20 +212,22 @@ namespace Bookstore.Mobile.ViewModels
             }
         }
 
-        private bool CanToggleWishlist() => BookDetails != null && IsNotBusy;
         [RelayCommand(CanExecute = nameof(CanToggleWishlist))]
         private async Task ToggleWishlistAsync()
         {
-            await RunSafeAsync(async () =>
+            if (!_authService.IsLoggedIn)
             {
-                if (!_authService.IsLoggedIn)
-                {
-                    await DisplayAlertAsync("Login Required", "Please login to manage your wishlist.", "OK");
-                    await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
-                    return;
-                }
+                await DisplayAlertAsync("Login Required", "Please login to manage your wishlist.", "OK");
+                await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
+                return;
+            }
 
-                if (BookDetails == null) return;
+            if (BookDetails == null) return;
+
+            try
+            {
+                IsBusy = true;
+                ErrorMessage = null;
 
                 ApiResponse<object>? response;
                 if (IsInWishlist)
@@ -224,15 +253,36 @@ namespace Bookstore.Mobile.ViewModels
                     _logger.LogWarning("Failed to toggle wishlist for Book {BookId}. Status: {StatusCode}, Reason: {Reason}", BookDetails.Id, response.StatusCode, ErrorMessage);
                     await DisplayAlertAsync("Wishlist Error", ErrorMessage);
                 }
-            }, showBusy: true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception while toggling wishlist for Book {BookId}", BookDetails?.Id);
+                ErrorMessage = $"Error: {ex.Message}";
+                await DisplayAlertAsync("Wishlist Error", ErrorMessage);
+            }
+            finally
+            {
+                IsBusy = false;
+                OnPropertyChanged(nameof(IsNotBusy));
+                OnPropertyChanged(nameof(HasError));
+                OnPropertyChanged(nameof(ShowContent));
+                OnPropertyChanged(nameof(CanToggleWishlist));
+                OnPropertyChanged(nameof(CanAddToCart));
+                (ToggleWishlistCommand as Command)?.ChangeCanExecute();
+                (AddToCartCommand as Command)?.ChangeCanExecute();
+            }
         }
 
         [RelayCommand(CanExecute = nameof(CanAddToCart))]
         private async Task AddToCartAsync()
         {
-            await RunSafeAsync(async () =>
+            if (BookDetails == null || QuantityToAdd <= 0) return;
+
+            try
             {
-                if (BookDetails == null || QuantityToAdd <= 0) return;
+                IsBusy = true;
+                ErrorMessage = null;
+
                 _logger.LogInformation("Adding {Quantity} of Book {BookId} to cart.", QuantityToAdd, _actualBookId);
                 var addItemDto = new AddCartItemDto { BookId = _actualBookId, Quantity = QuantityToAdd };
                 var response = await _cartApi.AddOrUpdateItem(addItemDto);
@@ -249,23 +299,62 @@ namespace Bookstore.Mobile.ViewModels
                     _logger.LogWarning("Failed to add Book {BookId} to cart. Status: {StatusCode}, Reason: {Reason}", _actualBookId, response.StatusCode, ErrorMessage);
                     await DisplayAlertAsync("Error", ErrorMessage);
                 }
-            }, showBusy: true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception while adding Book {BookId} to cart", _actualBookId);
+                ErrorMessage = $"Error: {ex.Message}";
+                await DisplayAlertAsync("Error", ErrorMessage);
+            }
+            finally
+            {
+                IsBusy = false;
+                OnPropertyChanged(nameof(IsNotBusy));
+                OnPropertyChanged(nameof(HasError));
+                OnPropertyChanged(nameof(ShowContent));
+                OnPropertyChanged(nameof(CanAddToCart));
+                OnPropertyChanged(nameof(CanToggleWishlist));
+                (AddToCartCommand as Command)?.ChangeCanExecute();
+                (ToggleWishlistCommand as Command)?.ChangeCanExecute();
+            }
         }
 
         [RelayCommand]
         private async Task GoToWriteReviewAsync()
         {
-            await RunSafeAsync(async () =>
+            if (BookDetails == null) return;
+
+            try
             {
-                if (BookDetails == null || !_authService.IsLoggedIn)
+                IsBusy = true;
+
+                if (!_authService.IsLoggedIn)
                 {
                     await DisplayAlertAsync("Login Required", "Please login to write a review.", "OK");
                     await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
                     return;
                 }
+
                 _logger.LogInformation("Navigating to Submit Review Page for Book {BookId}", _actualBookId);
                 await Shell.Current.GoToAsync($"{nameof(SubmitReviewPage)}?BookId={_actualBookId}&BookTitle={Uri.EscapeDataString(BookDetails.Title)}");
-            }, showBusy: true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception while navigating to review page for Book {BookId}", _actualBookId);
+                ErrorMessage = $"Error: {ex.Message}";
+                await DisplayAlertAsync("Error", ErrorMessage);
+            }
+            finally
+            {
+                IsBusy = false;
+                OnPropertyChanged(nameof(IsNotBusy));
+                OnPropertyChanged(nameof(HasError));
+                OnPropertyChanged(nameof(ShowContent));
+                OnPropertyChanged(nameof(CanAddToCart));
+                OnPropertyChanged(nameof(CanToggleWishlist));
+                (AddToCartCommand as Command)?.ChangeCanExecute();
+                (ToggleWishlistCommand as Command)?.ChangeCanExecute();
+            }
         }
 
         private void PrepareDetailItems()
@@ -296,6 +385,23 @@ namespace Bookstore.Mobile.ViewModels
                 Reviews.Clear();
                 BookDetailItems.Clear();
             }
+        }
+        [RelayCommand(CanExecute = nameof(CanIncrement))]
+        private void IncrementQuantity()
+        {
+            if (BookDetails == null || QuantityToAdd >= BookDetails.StockQuantity) return;
+
+            QuantityToAdd++;
+            _logger.LogDebug("Incremented quantity to {QuantityToAdd}", QuantityToAdd);
+        }
+
+        [RelayCommand(CanExecute = nameof(CanDecrement))]
+        private void DecrementQuantity()
+        {
+            if (QuantityToAdd <= 1) return;
+
+            QuantityToAdd--;
+            _logger.LogDebug("Decremented quantity to {QuantityToAdd}", QuantityToAdd);
         }
     }
 }

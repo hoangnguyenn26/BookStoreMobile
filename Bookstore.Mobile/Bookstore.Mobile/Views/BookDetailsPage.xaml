@@ -4,121 +4,385 @@
              xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
              xmlns:dto="clr-namespace:Bookstore.Mobile.Models"
              xmlns:converters="clr-namespace:Bookstore.Mobile.Converters"
+             xmlns:diag="clr-namespace:System.Diagnostics;assembly=System.Runtime"
+             xmlns:sys="clr-namespace:System;assembly=netstandard"
+             xmlns:collections="clr-namespace:System.Collections.Generic;assembly=netstandard"
              x:DataType="vm:BookDetailsViewModel"
              x:Class="Bookstore.Mobile.Views.BookDetailsPage"
-             Title="{Binding Title}">
-    <!-- Title có thể là tên sách -->
+             Title="{Binding Title, Mode=OneWay}"
+             BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}">
 
     <ContentPage.Resources>
         <converters:StockToColorConverter x:Key="StockToColorConverter"/>
         <converters:BoolToWishlistIconConverter x:Key="BoolToWishlistIconConverter"/>
         <converters:StringNotNullOrEmptyBoolConverter x:Key="StringNotNullOrEmptyBoolConverter"/>
         <converters:InverseBoolConverter x:Key="InverseBoolConverter"/>
-        <!-- Thêm nếu cần -->
     </ContentPage.Resources>
 
-    <ScrollView>
-        <VerticalStackLayout Spacing="15" Padding="15">
-
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="CenterAndExpand" Margin="0,20"/>
-            <Label Text="{Binding ErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasError}" Margin="0,10"/>
-
-            <VerticalStackLayout IsVisible="{Binding ShowContent}" Spacing="15">
-
-                <Image Source="{Binding BookDetails.CoverImageUrl, TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
-                       Aspect="AspectFit" HeightRequest="300" Margin="0,0,0,15"/>
-
-                <Label Text="{Binding BookDetails.Title}" Style="{StaticResource Headline}" FontSize="Title" LineBreakMode="WordWrap"/>
-
-                <Label FontSize="Medium" FontAttributes="Italic" TextColor="{StaticResource Gray600Light}">
-                    <Label.FormattedText>
-                        <FormattedString>
-                            <Span Text="by "/>
-                            <Span Text="{Binding BookDetails.Author.Name, TargetNullValue='Unknown Author'}"/>
-                        </FormattedString>
-                    </Label.FormattedText>
-                </Label>
-
-                <HorizontalStackLayout Spacing="10" Margin="0,10">
-                    <Label Text="{Binding BookDetails.Price, StringFormat='{0:C}'}" FontSize="Large" FontAttributes="Bold" TextColor="{StaticResource PrimaryLight}" VerticalOptions="Center"/>
-                    <Label Text="{Binding BookDetails.StockQuantity, StringFormat='({0} in stock)'}" FontSize="Small" TextColor="{Binding BookDetails.StockQuantity, Converter={StaticResource StockToColorConverter}}" VerticalOptions="Center"/>
-                </HorizontalStackLayout>
-
-                <!-- Số lượng và Nút Hành động -->
-                <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto" ColumnSpacing="10" RowSpacing="10" Margin="0,10">
-                    <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Spacing="10" VerticalOptions="Center">
-                        <Label Text="Quantity:" VerticalOptions="Center"/>
-                        <Stepper Value="{Binding QuantityToAdd}" Minimum="1" Maximum="{Binding BookDetails.StockQuantity}" Increment="1" IsEnabled="{Binding CanAddToCart}" VerticalOptions="Center"/>
-                        <Label Text="{Binding QuantityToAdd}" VerticalOptions="Center" FontSize="Medium" FontAttributes="Bold" Margin="5,0"/>
-                    </HorizontalStackLayout>
-
-                    <Button Grid.Row="1" Grid.Column="0" Text="Add to Cart"
-                            Command="{Binding AddToCartCommand}"
-                            IsEnabled="{Binding CanAddToCart, FallbackValue=False}"/>
-
-                    <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
-                            Command="{Binding ToggleWishlistCommand}"
-                            IsEnabled="{Binding CanToggleWishlist}"
-                            BackgroundColor="{StaticResource Transparent}"
-                            BorderColor="{StaticResource PrimaryLight}"
-                            BorderWidth="1"
-                            Padding="10" VerticalOptions="Center">
-                        <Button.ImageSource>
-                            <FontImageSource Glyph="{Binding IsInWishlist, Converter={StaticResource BoolToWishlistIconConverter}}"
-                                              FontFamily="MaterialSymbolsRounded"
-                                              Color="{StaticResource PrimaryLight}"/>
-                        </Button.ImageSource>
-                    </Button>
-                </Grid>
-
-                <Label Text="Description" FontAttributes="Bold" FontSize="Medium" Margin="0,15,0,5"/>
-                <Label Text="{Binding BookDetails.Description}" LineBreakMode="WordWrap" FontSize="Body"/>
-
-                <Label Text="Details" FontAttributes="Bold" FontSize="Medium" Margin="0,15,0,5"/>
-                <VerticalStackLayout BindableLayout.ItemsSource="{Binding BookDetailItems}" Spacing="5">
-                    <BindableLayout.ItemTemplate>
-                        <DataTemplate>
-                            <HorizontalStackLayout Spacing="5">
-                                <Label Text="{Binding Key}" FontAttributes="Bold" WidthRequest="120"/>
-                                <Label Text="{Binding Value}" LineBreakMode="TailTruncation"/>
-                            </HorizontalStackLayout>
-                        </DataTemplate>
-                    </BindableLayout.ItemTemplate>
-                </VerticalStackLayout>
-
-                <!-- Phần Reviews -->
-                <Label Text="Customer Reviews" FontAttributes="Bold" FontSize="Medium" Margin="0,20,0,5"/>
-                <ActivityIndicator IsRunning="{Binding IsLoadingReviews}" IsVisible="{Binding IsLoadingReviews}" HorizontalOptions="Center"/>
-                <Label Text="{Binding ReviewsErrorMessage}" Style="{StaticResource ErrorLabel}" IsVisible="{Binding HasReviewsError}"/>
-
-                <CollectionView ItemsSource="{Binding Reviews}" IsVisible="{Binding ShowReviewsContent}">
-                    <CollectionView.EmptyView>
-                        <Label Text="No reviews yet for this book." Margin="0,10"/>
-                    </CollectionView.EmptyView>
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="dto:ReviewDto">
-                            <Border Style="{StaticResource CardBorder}" Padding="10" Margin="0,0,0,10">
-                                <VerticalStackLayout Spacing="5">
-                                    <HorizontalStackLayout Spacing="2">
-                                        <Label Text="Rating:" FontAttributes="Bold"/>
-                                        <Label Text="{Binding Rating}" FontAttributes="Bold" TextColor="{StaticResource AccentLight}"/>
-                                        <Label Text="/ 5"/>
-                                    </HorizontalStackLayout>
-                                    <Label Text="{Binding Comment}" IsVisible="{Binding Comment, Converter={StaticResource StringNotNullOrEmptyBoolConverter}}"/>
-                                    <HorizontalStackLayout Spacing="5" Margin="0,5,0,0">
-                                        <Label Text="{Binding UserName}" FontSize="Small" FontAttributes="Bold"/>
-                                        <Label Text="-" FontSize="Small"/>
-                                        <Label Text="{Binding CreatedAtUtc, StringFormat='{0:dd MMM yyyy}'}" FontSize="Small" TextColor="{StaticResource Gray600Light}"/>
-                                    </HorizontalStackLayout>
-                                </VerticalStackLayout>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-                <Button Text="Write a Review" Command="{Binding GoToWriteReviewCommand}" Margin="0,10,0,0" HorizontalOptions="Start" Style="{StaticResource TextButton}"/>
-
-
-            </VerticalStackLayout>
+    <Grid RowDefinitions="Auto,*">
+        <!-- Loading Indicator và Error Message -->
+        <VerticalStackLayout Grid.Row="0" Grid.RowSpan="2" 
+                             IsVisible="{Binding IsBusy}" 
+                             VerticalOptions="Center" 
+                             HorizontalOptions="Center">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" 
+                               HeightRequest="50" 
+                               WidthRequest="50"
+                               Color="{StaticResource Primary}"/>
+            <Label Text="Loading book details..." 
+                   Margin="0,15,0,0" 
+                   HorizontalOptions="Center"
+                   TextColor="{StaticResource Gray600Light}"/>
         </VerticalStackLayout>
-    </ScrollView>
+
+        <Label Grid.Row="0" Grid.RowSpan="2"
+               Text="{Binding ErrorMessage}" 
+               Style="{StaticResource ErrorLabel}" 
+               IsVisible="{Binding HasError}" 
+               VerticalOptions="Center"
+               HorizontalOptions="Center"
+               Padding="20"/>
+
+        <!-- Main Content -->
+        <ScrollView Grid.Row="1" IsVisible="{Binding ShowContent}">
+            <Grid RowDefinitions="Auto,*" Padding="0">
+                <!-- Book Cover Hero Section -->
+                <Frame Grid.Row="0" 
+                       Padding="0" 
+                       HasShadow="False" 
+                       HeightRequest="280"
+                       CornerRadius="0" 
+                       IsClippedToBounds="True">
+                    <Grid>
+                        <!-- Blurred Background Image -->
+                        <Image Source="{Binding BookDetails.CoverImageUrl, Mode=OneWay, 
+                                TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
+                               Aspect="AspectFill" 
+                               Opacity="0.3">
+                        </Image>
+
+                        <!-- Clear Cover Image -->
+                        <Image Source="{Binding BookDetails.CoverImageUrl, Mode=OneWay, 
+                                TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
+                               Aspect="AspectFit" 
+                               HeightRequest="240"
+                               Margin="0,0,0,0"/>
+
+                        <!-- Wishlist Button (Floating) -->
+                        <Button Command="{Binding ToggleWishlistCommand}"
+                                IsEnabled="{Binding CanToggleWishlist, Mode=OneWay}"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}"
+                                WidthRequest="50"
+                                HeightRequest="50"
+                                CornerRadius="25"
+                                Padding="0"
+                                VerticalOptions="Start"
+                                HorizontalOptions="End"
+                                Margin="0,10,10,0">
+                            <Button.Shadow>
+                                <Shadow Brush="{StaticResource Black}"
+                                        Offset="2,2"
+                                        Radius="4"
+                                        Opacity="0.2" />
+                            </Button.Shadow>
+                            <Button.ImageSource>
+                                <FontImageSource Glyph="{Binding IsInWishlist, Converter={StaticResource BoolToWishlistIconConverter}, Mode=OneWay}"
+                                                  FontFamily="MaterialSymbolsRounded"
+                                                  Size="24"
+                                                  Color="{StaticResource PrimaryLight}"/>
+                            </Button.ImageSource>
+                        </Button>
+                    </Grid>
+                </Frame>
+
+                <!-- Book Details Section -->
+                <VerticalStackLayout Grid.Row="1" Spacing="0" Padding="0">
+                    <!-- Book Info Card -->
+                    <Border Stroke="{StaticResource Transparent}"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 12,12,12,12"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}"
+                            Margin="15,0,15,15"
+                            Padding="20"
+                            Shadow="{Shadow Brush={StaticResource Black}, Offset='0,4', Radius=8, Opacity=0.1}">
+                        <VerticalStackLayout Spacing="15">
+                            <!-- Title and Author -->
+                            <VerticalStackLayout Spacing="5">
+                                <Label Text="{Binding BookDetails.Title, Mode=OneWay}" 
+                                       FontSize="24" 
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"
+                                       LineBreakMode="WordWrap"/>
+
+                                <HorizontalStackLayout Spacing="5">
+                                    <Label Text="by" 
+                                           FontSize="Medium" 
+                                           TextColor="{StaticResource Gray600Light}"/>
+                                    <Label Text="{Binding BookDetails.Author.Name, Mode=OneWay, 
+                                           TargetNullValue='Unknown Author', FallbackValue='Unknown Author'}"
+                                           FontSize="Medium"
+                                           FontAttributes="Italic"
+                                           TextColor="{StaticResource Gray600Light}"/>
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+
+                            <!-- Price & Stock -->
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="15">
+                                <Border Grid.Column="0"
+                                        Stroke="{StaticResource PrimaryLight}"
+                                        StrokeThickness="1"
+                                        StrokeShape="RoundRectangle 8,8,8,8"
+                                        BackgroundColor="{StaticResource Transparent}"
+                                        Padding="15,8">
+                                    <Label Text="{Binding BookDetails.Price, Mode=OneWay, StringFormat='{0:C}'}" 
+                                           FontSize="Large" 
+                                           FontAttributes="Bold" 
+                                           TextColor="{StaticResource PrimaryLight}"
+                                           HorizontalOptions="Center"/>
+                                </Border>
+
+                                <Border Grid.Column="1"
+                                        StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 8,8,8,8"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray700}}"
+                                        Padding="15,8">
+                                    <HorizontalStackLayout HorizontalOptions="Center" Spacing="5">
+                                        <Label Text="Stock:" VerticalOptions="Center"/>
+                                        <Label Text="{Binding BookDetails.StockQuantity, Mode=OneWay}" 
+                                               FontAttributes="Bold"
+                                               TextColor="{Binding BookDetails.StockQuantity, Converter={StaticResource StockToColorConverter}, Mode=OneWay}" 
+                                               VerticalOptions="Center"/>
+                                        <Label Text="copies" VerticalOptions="Center"/>
+                                    </HorizontalStackLayout>
+                                </Border>
+                            </Grid>
+
+                            <!-- Add to Cart Section -->
+                            <Border BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray700}}"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 8,8,8,8"
+                                    Padding="15,10">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="15">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                        <Label Text="Quantity" FontSize="Small" TextColor="{StaticResource Gray600Light}"/>
+                                        <Frame BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}"
+                                               BorderColor="{StaticResource Transparent}"
+                                               CornerRadius="6"
+                                               Padding="5"
+                                               HasShadow="False">
+                                            <HorizontalStackLayout Spacing="10">
+                                                <Button Text="-" 
+                                                        Command="{Binding DecrementQuantityCommand}"
+                                                        WidthRequest="40"
+                                                        HeightRequest="40"
+                                                        CornerRadius="20"
+                                                        Padding="0"
+                                                        BorderWidth="0"
+                                                        BackgroundColor="{StaticResource Transparent}"
+                                                        TextColor="{StaticResource PrimaryLight}"
+                                                        FontSize="20"
+                                                        IsEnabled="{Binding CanDecrement, Mode=OneWay}"/>
+
+                                                <Label Text="{Binding QuantityToAdd, Mode=OneWay}" 
+                                                       VerticalOptions="Center" 
+                                                       HorizontalOptions="Center"
+                                                       WidthRequest="30"
+                                                       HorizontalTextAlignment="Center"
+                                                       FontSize="Medium" 
+                                                       FontAttributes="Bold"/>
+
+                                                <Button Text="+" 
+                                                        Command="{Binding IncrementQuantityCommand}"
+                                                        WidthRequest="40"
+                                                        HeightRequest="40"
+                                                        CornerRadius="20"
+                                                        Padding="0"
+                                                        BorderWidth="0"
+                                                        BackgroundColor="{StaticResource Transparent}"
+                                                        TextColor="{StaticResource PrimaryLight}"
+                                                        FontSize="20"
+                                                        IsEnabled="{Binding CanIncrement, Mode=OneWay}"/>
+                                            </HorizontalStackLayout>
+                                        </Frame>
+                                    </VerticalStackLayout>
+
+                                    <Button Grid.Column="1"
+                                            Text="Add to Cart"
+                                            Command="{Binding AddToCartCommand}"
+                                            IsEnabled="{Binding CanAddToCart, Mode=OneWay, FallbackValue=False}"
+                                            BackgroundColor="{StaticResource Primary}"
+                                            TextColor="{StaticResource White}"
+                                            FontAttributes="Bold"
+                                            CornerRadius="8"
+                                            HeightRequest="50"
+                                            VerticalOptions="End"/>
+                                </Grid>
+                            </Border>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Description Section -->
+                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}"
+                            Stroke="{StaticResource Transparent}"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 12,12,12,12"
+                            Margin="15,0,15,15"
+                            Padding="20"
+                            Shadow="{Shadow Brush={StaticResource Black}, Offset='0,4', Radius=8, Opacity=0.1}">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="Description" 
+                                   FontAttributes="Bold" 
+                                   FontSize="Medium"
+                                   TextColor="{StaticResource Primary}"/>
+
+                            <Label Text="{Binding BookDetails.Description, Mode=OneWay}" 
+                                   LineBreakMode="WordWrap" 
+                                   FontSize="Body"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Details Section -->
+                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}"
+                            Stroke="{StaticResource Transparent}"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 12,12,12,12"
+                            Margin="15,0,15,15"
+                            Padding="20"
+                            Shadow="{Shadow Brush={StaticResource Black}, Offset='0,4', Radius=8, Opacity=0.1}">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="Details" 
+                                   FontAttributes="Bold" 
+                                   FontSize="Medium"
+                                   TextColor="{StaticResource Primary}"/>
+
+                            <CollectionView ItemsSource="{Binding BookDetailItems, Mode=OneWay}" 
+                                            SelectionMode="None"
+                                            ItemsLayout="VerticalList">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="collections:KeyValuePair(x:String,x:String)">
+                                        <Grid ColumnDefinitions="120,*" 
+                                              Padding="0,8">
+                                            <Label Grid.Column="0" 
+                                                    Text="{Binding Key, Mode=OneWay}" 
+                                                    FontAttributes="Bold" 
+                                                    TextColor="{StaticResource Gray600Light}"/>
+                                            <Label Grid.Column="1" 
+                                                    Text="{Binding Value, Mode=OneWay}" 
+                                                    LineBreakMode="WordWrap"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Reviews Section -->
+                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}"
+                            Stroke="{StaticResource Transparent}"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 12,12,12,12"
+                            Margin="15,0,15,15"
+                            Padding="20"
+                            Shadow="{Shadow Brush={StaticResource Black}, Offset='0,4', Radius=8, Opacity=0.1}">
+                        <VerticalStackLayout Spacing="15">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Grid.Column="0"
+                                       Text="Customer Reviews" 
+                                       FontAttributes="Bold" 
+                                       FontSize="Medium"
+                                       TextColor="{StaticResource Primary}"
+                                       VerticalOptions="Center"/>
+
+                                <Button Grid.Column="1"
+                                        Text="Write a Review" 
+                                        Command="{Binding GoToWriteReviewCommand}"
+                                        TextColor="{StaticResource Primary}"
+                                        BackgroundColor="Transparent"
+                                        FontSize="Small"
+                                        CornerRadius="15"
+                                        BorderColor="{StaticResource Primary}"
+                                        BorderWidth="1"
+                                        VerticalOptions="Center"/>
+                            </Grid>
+
+                            <!-- Loading Indicator cho Reviews -->
+                            <ActivityIndicator IsRunning="{Binding IsLoadingReviews}" 
+                                               IsVisible="{Binding IsLoadingReviews}" 
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center"
+                                               HeightRequest="30"
+                                               WidthRequest="30"/>
+
+                            <!-- Error Message cho Reviews -->
+                            <Label Text="{Binding ReviewsErrorMessage}" 
+                                   Style="{StaticResource ErrorLabel}" 
+                                   IsVisible="{Binding HasReviewsError}"/>
+
+                            <!-- Reviews Content -->
+                            <CollectionView ItemsSource="{Binding Reviews, Mode=OneWay}" 
+                                            IsVisible="{Binding ShowReviewsContent}"
+                                            SelectionMode="None">
+                                <CollectionView.EmptyView>
+                                    <Grid HeightRequest="100">
+                                        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10">
+                                            <Image Source="review_empty" HeightRequest="40" IsVisible="False"/>
+                                            <Label Text="No reviews yet for this book." 
+                                                   HorizontalOptions="Center"
+                                                   TextColor="{StaticResource Gray600Light}"/>
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </CollectionView.EmptyView>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="dto:ReviewDto">
+                                        <Border StrokeThickness="0"
+                                                StrokeShape="RoundRectangle 8,8,8,8"
+                                                BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray700}}"
+                                                Padding="15" 
+                                                Margin="0,0,0,10">
+                                            <VerticalStackLayout Spacing="8">
+                                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                                    <Frame Grid.Column="0"
+                                                           BackgroundColor="{StaticResource PrimaryLight}"
+                                                           CornerRadius="15"
+                                                           Padding="10,5"
+                                                           HasShadow="False">
+                                                        <HorizontalStackLayout Spacing="3">
+                                                            <Label Text="{Binding Rating, Mode=OneWay}" 
+                                                                   FontAttributes="Bold" 
+                                                                   TextColor="{StaticResource White}"/>
+                                                            <Label Text="★" 
+                                                                   FontAttributes="Bold" 
+                                                                   TextColor="{StaticResource White}"/>
+                                                        </HorizontalStackLayout>
+                                                    </Frame>
+
+                                                    <Label Grid.Column="2"
+                                                           Text="{Binding CreatedAtUtc, Mode=OneWay, StringFormat='{0:dd MMM yyyy}'}" 
+                                                           FontSize="Small" 
+                                                           TextColor="{StaticResource Gray600Light}"
+                                                           VerticalOptions="Center"/>
+                                                </Grid>
+
+                                                <Label Text="{Binding Comment, Mode=OneWay}" 
+                                                       LineBreakMode="WordWrap"
+                                                       IsVisible="{Binding Comment, Converter={StaticResource StringNotNullOrEmptyBoolConverter}, Mode=OneWay}"/>
+
+                                                <Label Text="{Binding UserName, Mode=OneWay}" 
+                                                       FontSize="Small" 
+                                                       FontAttributes="Bold"
+                                                       HorizontalOptions="End"/>
+                                            </VerticalStackLayout>
+                                        </Border>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Spacing at bottom -->
+                    <BoxView HeightRequest="20" Color="Transparent"/>
+                </VerticalStackLayout>
+            </Grid>
+        </ScrollView>
+    </Grid>
 </ContentPage>
