@@ -7,6 +7,8 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using Refit;
 using System.Collections.ObjectModel;
+using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
 
 namespace Bookstore.Mobile.ViewModels
 {
@@ -222,6 +224,7 @@ namespace Bookstore.Mobile.ViewModels
                 ErrorMessage = null;
 
                 ApiResponse<object>? response;
+                bool wasInWishlist = IsInWishlist;
                 if (IsInWishlist)
                 {
                     _logger.LogInformation("Removing book {BookId} from wishlist.", BookDetails.Id);
@@ -237,6 +240,8 @@ namespace Bookstore.Mobile.ViewModels
                 {
                     IsInWishlist = !IsInWishlist;
                     _logger.LogInformation("Wishlist status toggled successfully for Book {BookId}. New status: {IsInWishlist}", BookDetails.Id, IsInWishlist);
+                    string message = IsInWishlist ? "Added to your wishlist!" : "Removed from your wishlist.";
+                    await Shell.Current.DisplaySnackbar(message, duration: TimeSpan.FromSeconds(2));
                 }
                 else
                 {

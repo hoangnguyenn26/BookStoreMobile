@@ -5,7 +5,6 @@ using Bookstore.Mobile.Mappings;
 using Bookstore.Mobile.Models;
 using Bookstore.Mobile.Services;
 using Bookstore.Mobile.ViewModels;
-using Bookstore.Mobile.Views;
 using CommunityToolkit.Maui;
 using Microcharts.Maui;
 using Microsoft.Extensions.Logging;
@@ -21,7 +20,7 @@ namespace Bookstore.Mobile
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
-                .UseMauiCommunityToolkit()
+                .UseMauiCommunityToolkit(options => options.SetShouldEnableSnackbarOnWindows(true))
                 .UseMicrocharts()
                 .ConfigureFonts(fonts =>
                 {

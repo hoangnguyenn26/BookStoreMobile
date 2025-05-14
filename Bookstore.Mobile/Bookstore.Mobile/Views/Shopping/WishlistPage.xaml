@@ -60,7 +60,7 @@
                             </SwipeView.RightItems>
 
                             <Border Style="{StaticResource CardBorder}" Padding="10" Margin="0,0,0,10">
-                                <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
+                                <Grid ColumnDefinitions="Auto, *, Auto, Auto" ColumnSpacing="10">
                                     <!-- Book cover -->
                                     <Image Grid.Column="0"
                                            Source="{Binding Book.CoverImageUrl, TargetNullValue='dotnet_bot.png', FallbackValue='dotnet_bot.png'}"
@@ -77,17 +77,23 @@
                                                TextColor="{Binding Book.StockQuantity, Converter={StaticResource StockToColorConverter}}"/>
                                     </VerticalStackLayout>
 
-                                    <!-- Details button -->
-                                    <Button Grid.Column="2" 
-                                           BackgroundColor="Transparent" 
-                                           Padding="5" 
-                                           VerticalOptions="Center" 
-                                           HorizontalOptions="End"
-                                           Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WishlistViewModel}}, Path=GoToBookDetailsCommand}"
-                                           CommandParameter="{Binding Book.Id}">
-                                        <Button.ImageSource>
-                                            <FontImageSource Glyph="➔" FontFamily="MaterialSymbolsRounded" Color="{StaticResource PrimaryLight}" Size="28"/>
-                                        </Button.ImageSource>
+                                    <!-- Unwishlist button -->
+                                    <Button Grid.Column="2"
+                                            Text="Bỏ yêu thích"
+                                            Style="{StaticResource OutlineButton}"
+                                            Padding="5,0"
+                                            VerticalOptions="Center"
+                                            HorizontalOptions="End"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WishlistViewModel}}, Path=RemoveFromWishlistCommand}"
+                                            CommandParameter="{Binding Book.Id}"/>
+
+                                    <!-- Details button, cải thiện cho Windows -->
+                                    <Button Grid.Column="3"
+                                            Padding="5,0"
+                                            VerticalOptions="Center"
+                                            HorizontalOptions="End"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:WishlistViewModel}}, Path=GoToBookDetailsCommand}"
+                                            CommandParameter="{Binding Book.Id}">
                                     </Button>
                                 </Grid>
                             </Border>

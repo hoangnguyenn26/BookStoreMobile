@@ -163,10 +163,8 @@ namespace Bookstore.Mobile.ViewModels
         [RelayCommand]
         private void SelectAddress(SelectableAddressDto? selected)
         {
-            if (selected == null || selected == SelectedAddress) return;
-
+            if (selected == null) return;
             _logger.LogInformation("Address selected: {AddressId}", selected.Address.Id);
-
             // Bỏ chọn cái cũ (nếu có)
             if (SelectedAddress != null)
             {

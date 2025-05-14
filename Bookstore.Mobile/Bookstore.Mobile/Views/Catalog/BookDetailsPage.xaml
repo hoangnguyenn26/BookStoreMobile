@@ -13,7 +13,10 @@
              BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}">
 
     <ContentPage.Resources>
-        
+        <ResourceDictionary>
+            <converters:BoolToWishlistIconConverter x:Key="BoolToWishlistIconConverter"/>
+            <converters:BoolToWishlistColorConverter x:Key="BoolToWishlistColorConverter"/>
+        </ResourceDictionary>
     </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto,*">
@@ -66,7 +69,8 @@
                                Margin="0,0,0,0"/>
 
                         <!-- Wishlist Button (Floating) -->
-                        <Button Command="{Binding ToggleWishlistCommand}"
+                        <Button x:Name="WishlistButton"
+                                Command="{Binding ToggleWishlistCommand}"
                                 IsEnabled="{Binding CanToggleWishlist, Mode=OneWay}"
                                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}"
                                 WidthRequest="50"
@@ -86,7 +90,7 @@
                                 <FontImageSource Glyph="{Binding IsInWishlist, Converter={StaticResource BoolToWishlistIconConverter}, Mode=OneWay}"
                                                   FontFamily="MaterialSymbolsRounded"
                                                   Size="24"
-                                                  Color="{StaticResource PrimaryLight}"/>
+                                                  Color="{Binding IsInWishlist, Converter={StaticResource BoolToWishlistColorConverter}, Mode=OneWay}"/>
                             </Button.ImageSource>
                         </Button>
                     </Grid>
