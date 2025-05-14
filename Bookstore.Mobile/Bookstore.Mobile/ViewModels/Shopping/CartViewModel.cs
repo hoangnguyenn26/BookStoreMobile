@@ -57,7 +57,7 @@ namespace Bookstore.Mobile.ViewModels
                 // Not using the property but directly checking
                 bool hasAnyItems = CartItems?.Count > 0;
                 // Only update if different to avoid unnecessary UI updates
-                if (hasAnyItems != _hasItems)
+                if (hasAnyItems != HasItems)
                 {
                     HasItems = hasAnyItems;
                 }

@@ -58,7 +58,7 @@ namespace Bookstore.Mobile.ViewModels
                 }
 
                 OrderStatus? status = null;
-                if (_selectedStatusFilter != "All" && Enum.TryParse<OrderStatus>(_selectedStatusFilter, out var parsedStatus))
+                if (SelectedStatusFilter != "All" && Enum.TryParse<OrderStatus>(SelectedStatusFilter, out var parsedStatus))
                 {
                     status = parsedStatus;
                 }

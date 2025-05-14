@@ -4,7 +4,7 @@ namespace Bookstore.Mobile.Converters
 {
     public class EnumToItemsSourceConverter : IValueConverter
     {
-        public Type EnumType { get; set; }
+        public required Type EnumType { get; set; }
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

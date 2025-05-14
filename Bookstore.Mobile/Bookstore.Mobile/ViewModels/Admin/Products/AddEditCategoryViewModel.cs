@@ -138,9 +138,9 @@ namespace Bookstore.Mobile.ViewModels
                             ParentCategories.Add(cat);
                         }
                     }
-                    if (_actualCategoryId != Guid.Empty && _selectedParentCategory != null)
+                    if (_actualCategoryId != Guid.Empty && SelectedParentCategory != null)
                     {
-                        SelectedParentCategory = ParentCategories.FirstOrDefault(c => c.Id == _selectedParentCategory.Id);
+                        SelectedParentCategory = ParentCategories.FirstOrDefault(c => c.Id == SelectedParentCategory.Id);
                     }
                 }
                 else
@@ -184,7 +184,10 @@ namespace Bookstore.Mobile.ViewModels
                 }
                 else { await DisplayAlertAsync("Save Failed", ErrorMessage ?? "Could not save."); }
             }
-            catch (Exception ex) { /* Log, DisplayAlert */ }
+            catch (Exception ex)
+            {
+                _logger.LogInformation("An Error happend when excecute SaveCategoryAsync: {ex}", ex);
+            }
             finally { IsBusy = false; }
         }
     }

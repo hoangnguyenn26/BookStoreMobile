@@ -66,7 +66,7 @@ namespace Bookstore.Mobile.ViewModels
         // Thuộc tính tính toán
         public bool HasAddresses => Addresses.Count > 0;
         public bool NoAddressesFound => !IsLoadingAddresses && !HasAddresses;
-        public bool ShowContent => !IsLoadingAddresses && !IsLoadingCart && !HasError;
+        public override bool ShowContent => !IsLoadingAddresses && !IsLoadingCart && !HasError;
         public bool CanPlaceOrder => SelectedAddress != null && Subtotal > 0 && IsNotBusy; // Điều kiện để đặt hàng
 
         // --- Commands ---
@@ -213,7 +213,7 @@ namespace Bookstore.Mobile.ViewModels
                 {
                     var createdOrder = response.Content;
                     _logger.LogInformation("Order {OrderId} placed successfully via API. Navigating to Order History.", createdOrder.Id);
-                    #if ANDROID || IOS
+#if ANDROID || IOS
                     try
                     {
                         await Toast.Make("Order placed successfully!").Show();
@@ -222,7 +222,7 @@ namespace Bookstore.Mobile.ViewModels
                     {
                         _logger.LogWarning(toastEx, "Failed to show Toast notification.");
                     }
-                    #endif
+#endif
                     await Shell.Current.GoToAsync($"//{nameof(OrderHistoryPage)}");
                 }
                 else

@@ -74,7 +74,7 @@ namespace Bookstore.Mobile.ViewModels
                 if (response.IsSuccessStatusCode && response.Content != null)
                 {
                     UserDetails = response.Content;
-                    _isUserActive = UserDetails.IsActive;
+                    IsUserActive = UserDetails.IsActive;
                 }
                 else
                 {

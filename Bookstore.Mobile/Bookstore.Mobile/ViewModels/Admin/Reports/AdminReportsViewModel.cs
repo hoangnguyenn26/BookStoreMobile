@@ -14,10 +14,6 @@ namespace Bookstore.Mobile.ViewModels
         private readonly IAdminReportApi _reportApi;
         private readonly ILogger<AdminReportsViewModel> _logger;
 
-        private int _revenueCurrentPage = 1;
-        private bool _revenueCanLoadMore = true;
-        private bool _revenueIsLoadingMore = false;
-
         public AdminReportsViewModel(IAdminReportApi reportApi, ILogger<AdminReportsViewModel> logger)
         {
             _reportApi = reportApi ?? throw new ArgumentNullException(nameof(reportApi));
