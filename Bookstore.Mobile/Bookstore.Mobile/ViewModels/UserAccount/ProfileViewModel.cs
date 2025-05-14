@@ -63,8 +63,7 @@ namespace Bookstore.Mobile.ViewModels
             {
                 await _authService.LogoutAsync();
                 _logger.LogInformation("User logged out successfully.");
-
-                await Shell.Current.GoToAsync(nameof(LoginPage));
+                await Shell.Current.GoToAsync("//LoginPage");
             }
             catch (Exception ex)
             {

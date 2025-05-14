@@ -79,7 +79,7 @@ namespace Bookstore.Mobile.ViewModels
             await RunSafeAsync(async () =>
             {
                 _logger.LogInformation("Loading books (Page: {Page})", _currentPage);
-                var response = await _booksApi.GetBooks(null, null, null, _currentPage, PageSize);
+                var response = await _booksApi.GetBooks(CategoryId, null, null, _currentPage, PageSize);
                 if (response.IsSuccessStatusCode && response.Content != null)
                 {
                     if (response.Content.Any())
