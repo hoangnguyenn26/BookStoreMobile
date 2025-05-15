@@ -27,8 +27,8 @@
                            HorizontalOptions="Center"
                            FontSize="24"
                            FontAttributes="Bold"
-                           Margin="0,0,0,4"/>
-                    <Label Text="Login to continue" HorizontalOptions="Center" Style="{StaticResource SubHeadline}" FontSize="16" TextColor="#757575"/>
+                           Margin="0,0,0,4" FontFamily="InterRegular"/>
+                    <Label Text="Login to continue" HorizontalOptions="Center" Style="{StaticResource SubHeadline}" FontSize="16" TextColor="#757575" FontFamily="InterRegular"/>
 
                     <!-- Error Message -->
                     <Frame IsVisible="{Binding HasError}"

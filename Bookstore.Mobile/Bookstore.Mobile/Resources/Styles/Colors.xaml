@@ -4,91 +4,101 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
-    <!-- ===================================================================== -->
-    <!-- =                            LIGHT THEME                            = -->
-    <!-- ===================================================================== -->
+    <!-- ===================== PROFESSIONAL MODERN COLOR PALETTE ===================== -->
+    <!-- ============================= LIGHT THEME ================================ -->
 
-    <Color x:Key="PrimaryLight">#2196F3</Color>
-    <Color x:Key="PrimaryVariantLight">#1976D2</Color>
+    <!-- Primary Indigo -->
+    <Color x:Key="PrimaryLight">#3F51B5</Color>
+    <Color x:Key="PrimaryVariantLight">#303F9F</Color>
+    <Color x:Key="PrimaryLightHover">#5C6BC0</Color>
+    <Color x:Key="PrimaryLightPressed">#283593</Color>
     <Color x:Key="OnPrimaryLight">#FFFFFF</Color>
 
-    <!-- Màu Phụ / Nền -->
-    <Color x:Key="SecondaryLight">#BBDEFB</Color>
-    <Color x:Key="OnSecondaryLight">#0D47A1</Color>
-    <Color x:Key="BackgroundLight">#F5F5F5</Color>
-    <Color x:Key="OnBackgroundLight">#212121</Color>
-    <!-- Chữ đậm trên nền Background -->
+    <!-- Accent/Secondary Amber -->
+    <Color x:Key="AccentLight">#FFC107</Color>
+    <Color x:Key="AccentLightHover">#FFD54F</Color>
+    <Color x:Key="AccentLightPressed">#FFA000</Color>
+    <Color x:Key="OnAccentLight">#23272F</Color>
+
+    <!-- Background & Surface -->
+    <Color x:Key="BackgroundLight">#F5F6FA</Color>
+    <Color x:Key="OnBackgroundLight">#23272F</Color>
     <Color x:Key="SurfaceLight">#FFFFFF</Color>
-    <Color x:Key="OnSurfaceLight">#212121</Color>
-    <Color x:Key="SurfaceVariantLight">#E0E0E0</Color>
+    <Color x:Key="OnSurfaceLight">#23272F</Color>
+    <Color x:Key="SurfaceVariantLight">#E0E3EB</Color>
 
-    <!-- Màu Nhấn (Accent - ví dụ: Cam) -->
-    <Color x:Key="AccentLight">#FF9800</Color>
-    <Color x:Key="OnAccentLight">#FFFFFF</Color>
+    <!-- Info/Blue -->
+    <Color x:Key="InfoLight">#38BDF8</Color>
+    <Color x:Key="OnInfoLight">#FFFFFF</Color>
 
-    <!-- Màu Trạng thái -->
-    <Color x:Key="ErrorLight">#D32F2F</Color>
-    <Color x:Key="OnErrorLight">#FFFFFF</Color>
-    <Color x:Key="SuccessLight">#388E3C</Color>
+    <!-- Success/Emerald -->
+    <Color x:Key="SuccessLight">#10B981</Color>
     <Color x:Key="OnSuccessLight">#FFFFFF</Color>
-    <Color x:Key="WarningLight">#FFA000</Color>
-    <Color x:Key="OnWarningLight">#212121</Color>
 
-    <!-- Dải màu Xám (Light) -->
-    <Color x:Key="Gray100Light">#F5F5F5</Color>
-    <Color x:Key="Gray200Light">#EEEEEE</Color>
-    <Color x:Key="Gray300Light">#E0E0E0</Color>
-    <Color x:Key="Gray400Light">#BDBDBD</Color>
-    <Color x:Key="Gray500Light">#9E9E9E</Color>
-    <Color x:Key="Gray600Light">#757575</Color>
+    <!-- Warning/Orange -->
+    <Color x:Key="WarningLight">#F59E42</Color>
+    <Color x:Key="OnWarningLight">#23272F</Color>
 
+    <!-- Error/Red -->
+    <Color x:Key="ErrorLight">#EF4444</Color>
+    <Color x:Key="OnErrorLight">#FFFFFF</Color>
 
-    <!-- ===================================================================== -->
-    <!-- =                             DARK THEME                            = -->
-    <!-- ===================================================================== -->
+    <!-- Gray Scale (Light) -->
+    <Color x:Key="Gray50Light">#F8FAFC</Color>
+    <Color x:Key="Gray100Light">#F5F6FA</Color>
+    <Color x:Key="Gray200Light">#E5E7EB</Color>
+    <Color x:Key="Gray300Light">#D1D5DB</Color>
+    <Color x:Key="Gray400Light">#9CA3AF</Color>
+    <Color x:Key="Gray500Light">#6B7280</Color>
+    <Color x:Key="Gray600Light">#4B5563</Color>
+    <Color x:Key="Gray700Light">#374151</Color>
+    <Color x:Key="Gray800Light">#23272F</Color>
 
-    <!-- Màu Chính (Blue nhạt hơn) -->
-    <Color x:Key="PrimaryDark">#90CAF9</Color>
-    <Color x:Key="PrimaryVariantDark">#64B5F6</Color>
-    <Color x:Key="OnPrimaryDark">#121212</Color>
-
-    <!-- Màu Phụ / Nền -->
-    <Color x:Key="SecondaryDark">#1E88E5</Color>
-    <Color x:Key="OnSecondaryDark">#FFFFFF</Color>
-
-    <Color x:Key="BackgroundDark">#121212</Color>
-    <Color x:Key="OnBackgroundDark">#E0E0E0</Color>
-    <Color x:Key="SurfaceDark">#1E1E1E</Color>
-    <Color x:Key="OnSurfaceDark">#E0E0E0</Color>
-    <Color x:Key="SurfaceVariantDark">#424242</Color>
-
-    <Color x:Key="AccentDark">#FFB74D</Color>
-    <Color x:Key="OnAccentDark">#121212</Color>
-
-    <!-- Màu Trạng thái -->
-    <Color x:Key="ErrorDark">#EF5350</Color>
-    <Color x:Key="OnErrorDark">#121212</Color>
-    <Color x:Key="SuccessDark">#66BB6A</Color>
-    <Color x:Key="OnSuccessDark">#121212</Color>
-    <Color x:Key="WarningDark">#FFCA28</Color>
-    <Color x:Key="OnWarningDark">#121212</Color>
-
-    <!-- Dải màu Xám (Dark) -->
-    <Color x:Key="Gray100Dark">#BDBDBD</Color>
-    <Color x:Key="Gray200Dark">#9E9E9E</Color>
-    <Color x:Key="Gray300Dark">#757575</Color>
-    <Color x:Key="Gray400Dark">#616161</Color>
-    <Color x:Key="Gray500Dark">#424242</Color>
-    <Color x:Key="Gray600Dark">#303030</Color>
-
-
-    <!-- ===================================================================== -->
-    <!-- =                       MÀU TRUNG GIAN (TIỆN ÍCH)                    = -->
-    <!-- ===================================================================== -->
+    <!-- Utility -->
     <Color x:Key="White">#FFFFFF</Color>
     <Color x:Key="Black">#000000</Color>
     <Color x:Key="Transparent">Transparent</Color>
 
-    <Color x:Key="Primary">#2196F3</Color>
+    <!-- ============================= DARK THEME ================================ -->
+
+    <Color x:Key="PrimaryDark">#7986CB</Color>
+    <Color x:Key="PrimaryVariantDark">#5C6BC0</Color>
+    <Color x:Key="PrimaryDarkHover">#9FA8DA</Color>
+    <Color x:Key="PrimaryDarkPressed">#3949AB</Color>
+    <Color x:Key="OnPrimaryDark">#FFFFFF</Color>
+
+    <Color x:Key="AccentDark">#FFD54F</Color>
+    <Color x:Key="AccentDarkHover">#FFE082</Color>
+    <Color x:Key="AccentDarkPressed">#FFA000</Color>
+    <Color x:Key="OnAccentDark">#23272F</Color>
+
+    <Color x:Key="BackgroundDark">#181A20</Color>
+    <Color x:Key="OnBackgroundDark">#F5F6FA</Color>
+    <Color x:Key="SurfaceDark">#23272F</Color>
+    <Color x:Key="OnSurfaceDark">#F5F6FA</Color>
+    <Color x:Key="SurfaceVariantDark">#2D3142</Color>
+
+    <Color x:Key="InfoDark">#38BDF8</Color>
+    <Color x:Key="OnInfoDark">#23272F</Color>
+
+    <Color x:Key="SuccessDark">#10B981</Color>
+    <Color x:Key="OnSuccessDark">#23272F</Color>
+
+    <Color x:Key="WarningDark">#F59E42</Color>
+    <Color x:Key="OnWarningDark">#23272F</Color>
+
+    <Color x:Key="ErrorDark">#EF4444</Color>
+    <Color x:Key="OnErrorDark">#FFFFFF</Color>
+
+    <!-- Gray Scale (Dark) -->
+    <Color x:Key="Gray50Dark">#23272F</Color>
+    <Color x:Key="Gray100Dark">#2D3142</Color>
+    <Color x:Key="Gray200Dark">#374151</Color>
+    <Color x:Key="Gray300Dark">#4B5563</Color>
+    <Color x:Key="Gray400Dark">#6B7280</Color>
+    <Color x:Key="Gray500Dark">#9CA3AF</Color>
+    <Color x:Key="Gray600Dark">#D1D5DB</Color>
+    <Color x:Key="Gray700Dark">#F5F6FA</Color>
+    <Color x:Key="Gray800Dark">#FFFFFF</Color>
 
 </ResourceDictionary>

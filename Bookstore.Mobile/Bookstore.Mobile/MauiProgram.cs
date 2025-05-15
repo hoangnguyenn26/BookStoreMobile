@@ -27,6 +27,8 @@ namespace Bookstore.Mobile
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                     fonts.AddFont("MaterialSymbolsRounded.ttf", "MaterialSymbolsRounded");
+                    fonts.AddFont("Inter-Bold.otf", "InterBold");
+                    fonts.AddFont("Inter-Regular.otf", "InterRegular");
                 });
 
             // ----- Đăng ký Dependency Injection -----

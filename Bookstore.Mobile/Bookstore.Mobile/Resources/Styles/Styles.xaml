@@ -19,8 +19,9 @@
     <Style x:Key="BaseLabelStyle" TargetType="Label">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnBackgroundLight}, Dark={StaticResource OnBackgroundDark}}" />
         <Setter Property="BackgroundColor" Value="{StaticResource Transparent}" />
-        <Setter Property="FontFamily" Value="OpenSansRegular" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontFamily" Value="InterRegular" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="LineHeight" Value="1.2" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -41,13 +42,13 @@
     <Style x:Key="BaseButtonStyle" TargetType="Button">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnPrimaryLight}, Dark={StaticResource OnPrimaryDark}}" />
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
-        <Setter Property="FontFamily" Value="OpenSansSemibold"/>
+        <Setter Property="FontFamily" Value="InterBold"/>
         <Setter Property="FontSize" Value="16"/>
         <Setter Property="BorderWidth" Value="0"/>
-        <Setter Property="CornerRadius" Value="8"/>
-        <Setter Property="Padding" Value="14,10"/>
-        <Setter Property="MinimumHeightRequest" Value="44"/>
-        <Setter Property="MinimumWidthRequest" Value="44"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="Padding" Value="18,12"/>
+        <Setter Property="MinimumHeightRequest" Value="48"/>
+        <Setter Property="MinimumWidthRequest" Value="48"/>
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -58,7 +59,16 @@
                             <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray300Light}, Dark={StaticResource Gray600Dark}}" />
                         </VisualState.Setters>
                     </VisualState>
-                    <VisualState x:Name="PointerOver" />
+                    <VisualState x:Name="PointerOver">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource PrimaryLightHover}, Dark={StaticResource PrimaryDarkHover}}" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Pressed">
+                        <VisualState.Setters>
+                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource PrimaryLightPressed}, Dark={StaticResource PrimaryDarkPressed}}" />
+                        </VisualState.Setters>
+                    </VisualState>
                 </VisualStateGroup>
             </VisualStateGroupList>
         </Setter>
@@ -70,9 +80,11 @@
     <Style x:Key="BaseEntryStyle" TargetType="Entry">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource OnSurfaceLight}, Dark={StaticResource OnSurfaceDark}}" />
         <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource Gray500Light}, Dark={StaticResource Gray300Dark}}" />
+        <Setter Property="FontFamily" Value="InterRegular"/>
         <Setter Property="FontSize" Value="16" />
-        <Setter Property="HeightRequest" Value="44" />
+        <Setter Property="HeightRequest" Value="48" />
         <Setter Property="BackgroundColor" Value="{StaticResource Transparent}" />
+        <Setter Property="Margin" Value="0,6"/>
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -126,8 +138,8 @@
         <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource Gray500Light}, Dark={StaticResource Gray300Dark}}" />
         <Setter Property="CancelButtonColor" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
         <Setter Property="BackgroundColor" Value="{StaticResource Transparent}" />
-        <Setter Property="FontFamily" Value="OpenSansRegular" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontFamily" Value="InterRegular" />
+        <Setter Property="FontSize" Value="15" />
         <Setter Property="MinimumHeightRequest" Value="44"/>
         <Setter Property="MinimumWidthRequest" Value="44"/>
     </Style>
@@ -154,17 +166,17 @@
     <!-- Style riêng cho Headline Label (Kế thừa BaseLabelStyle) -->
     <Style x:Key="Headline" TargetType="Label" BasedOn="{StaticResource BaseLabelStyle}">
         <Setter Property="FontSize" Value="24" />
-        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontFamily" Value="InterBold" />
+        <Setter Property="FontAttributes" Value="Bold" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
-        <!-- Ghi đè TextColor -->
     </Style>
 
     <!-- Style riêng cho SubHeadline Label (Kế thừa BaseLabelStyle) -->
     <Style x:Key="SubHeadline" TargetType="Label" BasedOn="{StaticResource BaseLabelStyle}">
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray600Light}, Dark={StaticResource Gray300Dark}}" />
-        <!-- Ghi đè TextColor -->
         <Setter Property="FontSize" Value="18" />
-        <Setter Property="FontFamily" Value="OpenSansSemibold"/>
+        <Setter Property="FontFamily" Value="InterRegular"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray600Light}, Dark={StaticResource Gray300Dark}}" />
         <Setter Property="HorizontalOptions" Value="Center" />
         <Setter Property="HorizontalTextAlignment" Value="Center" />
     </Style>
@@ -221,6 +233,20 @@
         <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"/>
     </Style>
+
+    <!-- Body (Nội dung chính) -->
+    <Style x:Key="Body" TargetType="Label" BasedOn="{StaticResource BaseLabelStyle}">
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="FontFamily" Value="InterRegular"/>
+    </Style>
+
+    <!-- Caption (Chú thích nhỏ) -->
+    <Style x:Key="Caption" TargetType="Label" BasedOn="{StaticResource BaseLabelStyle}">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontFamily" Value="InterRegular"/>
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray500Light}, Dark={StaticResource Gray400Dark}}"/>
+    </Style>
+
     <!-- Thêm các style có key khác nếu bạn cần -->
 
 </ResourceDictionary>
