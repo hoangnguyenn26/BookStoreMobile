@@ -151,13 +151,13 @@ namespace Bookstore.Mobile.ViewModels
         private bool CanExecuteLoadMore() => CanLoadMore && !IsBusy;
 
         [RelayCommand]
-        private async Task GoToUserDetails(Guid? userId)
+        private async Task GoToUserDetails(UserDto user)
         {
-            if (!userId.HasValue || userId.Value == Guid.Empty) return;
+            if (user == null || user.Id == Guid.Empty) return;
 
             await RunSafeAsync(async () =>
             {
-                await Shell.Current.GoToAsync($"{nameof(AdminUserDetailsPage)}?UserId={userId.Value}");
+                await Shell.Current.GoToAsync($"{nameof(AdminUserDetailsPage)}?UserId={user.Id}");
             }, showBusy: false);
         }
 

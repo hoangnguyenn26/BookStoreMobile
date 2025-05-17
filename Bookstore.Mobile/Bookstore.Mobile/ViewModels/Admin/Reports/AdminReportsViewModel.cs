@@ -41,18 +41,33 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty] private int _lowStockThreshold = 5;
 
         [RelayCommand]
-        private async Task LoadAllReportsAsync(bool isRefreshing = false)
+        private async Task LoadAllReportsAsync()
         {
-            await RunSafeAsync(async () =>
+            if (IsBusy) return;
+
+            try
             {
+                IsBusy = true;
                 ShowRevenueReport = false;
                 ShowBestsellersReport = false;
-                ShowLowStockReport = false;
+                RevenueChart = null;
+                BestsellersChart = null;
+                LowStockBooks.Clear();
                 var revenueTask = LoadRevenueReportInternalAsync();
                 var bestsellersTask = LoadBestsellersReportInternalAsync();
                 var lowStockTask = LoadLowStockReportInternalAsync();
+
                 await Task.WhenAll(revenueTask, bestsellersTask, lowStockTask);
-            }, showBusy: true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Refresh failed");
+                ErrorMessage = "Failed to refresh reports: " + ex.Message;
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
 
@@ -180,7 +195,6 @@ namespace Bookstore.Mobile.ViewModels
             OnPropertyChanged(nameof(BestsellersChart)); // Notify UI
         }
 
-
         private async Task LoadLowStockReportInternalAsync()
         {
             try
@@ -188,25 +202,16 @@ namespace Bookstore.Mobile.ViewModels
                 _logger.LogInformation("Loading low stock report with threshold {Threshold}", LowStockThreshold);
                 var response = await _reportApi.GetLowStockReport(LowStockThreshold);
 
-                if (response.IsSuccessStatusCode && response.Content != null)
+                MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    MainThread.BeginInvokeOnMainThread(() =>
+                    LowStockBooks.Clear();
+                    if (response.IsSuccessStatusCode && response.Content != null)
                     {
-                        LowStockBooks.Clear();
                         foreach (var book in response.Content) LowStockBooks.Add(book);
-                        ShowLowStockReport = LowStockBooks.Any();
-                        _logger.LogInformation("Low stock report loaded successfully. Found {Count} items.", LowStockBooks.Count);
-                    });
-                }
-                else
-                {
-                    string errorContent = response.Error?.Content ?? response.ReasonPhrase ?? "Failed";
-                    MainThread.BeginInvokeOnMainThread(() =>
-                    {
-                        ErrorMessage = (ErrorMessage ?? "") + $"\nLow Stock Error: {errorContent}";
-                    });
-                    _logger.LogWarning("Failed to load low stock. Status: {StatusCode}", response.StatusCode);
-                }
+                    }
+                    ShowLowStockReport = true;
+                    _logger.LogInformation("Low stock report loaded successfully. Found {Count} items.", LowStockBooks.Count);
+                });
             }
             catch (Exception ex)
             {
@@ -219,7 +224,7 @@ namespace Bookstore.Mobile.ViewModels
         }
 
         [RelayCommand]
-        private async Task RefreshAllReports() => await LoadAllReportsAsync(true);
+        private async Task RefreshAllReports() => await LoadAllReportsAsync();
 
         [RelayCommand]
         private async Task ReloadLowStock() => await LoadLowStockReportInternalAsync(); // Command for reload button

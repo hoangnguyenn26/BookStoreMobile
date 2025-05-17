@@ -5,7 +5,7 @@
              x:DataType="vm:AddEditSupplierViewModel"
              x:Class="Bookstore.Mobile.Views.AddEditSupplierPage"
              Title="{Binding Title}"
-             BackgroundColor="#F8F9FA">
+             BackgroundColor="{StaticResource BackgroundLight}">
 
     <ScrollView>
         <Grid RowDefinitions="Auto,*" Padding="20">
@@ -19,7 +19,7 @@
                 <BoxView HeightRequest="2" 
                          HorizontalOptions="Center" 
                          WidthRequest="60"
-                         Color="{AppThemeBinding Light=#3498DB, Dark=#5DADE2}"
+                         Color="{AppThemeBinding Light={StaticResource InfoLight}, Dark={StaticResource InfoDark}}"
                          Margin="0,5,0,10"/>
             </VerticalStackLayout>
 
@@ -27,7 +27,7 @@
             <VerticalStackLayout Grid.Row="1" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding IsBusy}">
                 <ActivityIndicator IsRunning="{Binding IsBusy}" 
                                    IsVisible="True"
-                                   Color="{AppThemeBinding Light=#3498DB, Dark=#5DADE2}"
+                                   Color="{AppThemeBinding Light={StaticResource InfoLight}, Dark={StaticResource InfoDark}}"
                                    HeightRequest="50" 
                                    WidthRequest="50"/>
                 <Label Text="Loading..." 
@@ -38,15 +38,15 @@
             <!-- Error Message -->
             <Frame Grid.Row="1" 
                    IsVisible="{Binding HasError}"
-                   BackgroundColor="#FFEBEE"
-                   BorderColor="#E57373"
+                   BackgroundColor="{StaticResource ErrorLight}"
+                   BorderColor="{StaticResource ErrorLight}"
                    Padding="15"
                    CornerRadius="8"
                    Margin="0,10,0,15">
                 <StackLayout Orientation="Horizontal" Spacing="10">
                     <Label Text="⚠️" FontSize="20" VerticalOptions="Center"/>
                     <Label Text="{Binding ErrorMessage}" 
-                           TextColor="#D32F2F"
+                           TextColor="{StaticResource ErrorLight}"
                            FontSize="14"
                            VerticalOptions="Center"/>
                 </StackLayout>
@@ -55,8 +55,8 @@
             <!-- Main Form Content -->
             <VerticalStackLayout Grid.Row="1" IsVisible="{Binding ShowContent}" Spacing="16">
                 <!-- Supplier Information Card -->
-                <Frame BackgroundColor="White" 
-                       BorderColor="#E0E0E0" 
+                <Frame BackgroundColor="{StaticResource SurfaceLight}" 
+                       BorderColor="{StaticResource Gray300Light}" 
                        CornerRadius="10" 
                        Padding="15" 
                        HasShadow="True">
@@ -64,64 +64,64 @@
                         <Label Text="Supplier Information" 
                                FontAttributes="Bold" 
                                FontSize="16"
-                               TextColor="{AppThemeBinding Light=#3498DB, Dark=#5DADE2}"/>
+                               TextColor="{AppThemeBinding Light={StaticResource InfoLight}, Dark={StaticResource InfoDark}}"/>
 
                         <Frame Style="{StaticResource EntryFrame}" 
-                               BorderColor="#E0E0E0" 
-                               BackgroundColor="#F5F5F5"
+                               BorderColor="{StaticResource Gray300Light}" 
+                               BackgroundColor="{StaticResource Gray100Light}"
                                Padding="10,2" 
                                CornerRadius="6">
                             <Entry Placeholder="Supplier Name *" 
                                    Text="{Binding Name}" 
                                    ReturnType="Next"
-                                   PlaceholderColor="#BDBDBD"/>
+                                   PlaceholderColor="{StaticResource Gray400Light}"/>
                         </Frame>
 
                         <Frame Style="{StaticResource EntryFrame}" 
-                               BorderColor="#E0E0E0" 
-                               BackgroundColor="#F5F5F5"
+                               BorderColor="{StaticResource Gray300Light}" 
+                               BackgroundColor="{StaticResource Gray100Light}"
                                Padding="10,2" 
                                CornerRadius="6">
                             <Entry Placeholder="Contact Person" 
                                    Text="{Binding ContactPerson}" 
                                    ReturnType="Next"
-                                   PlaceholderColor="#BDBDBD"/>
+                                   PlaceholderColor="{StaticResource Gray400Light}"/>
                         </Frame>
 
                         <Frame Style="{StaticResource EntryFrame}" 
-                               BorderColor="#E0E0E0" 
-                               BackgroundColor="#F5F5F5"
+                               BorderColor="{StaticResource Gray300Light}" 
+                               BackgroundColor="{StaticResource Gray100Light}"
                                Padding="10,2" 
                                CornerRadius="6">
                             <Entry Placeholder="Email" 
                                    Text="{Binding Email}" 
                                    Keyboard="Email"
                                    ReturnType="Next"
-                                   PlaceholderColor="#BDBDBD"/>
+                                   PlaceholderColor="{StaticResource Gray400Light}"/>
                         </Frame>
 
                         <Frame Style="{StaticResource EntryFrame}" 
-                               BorderColor="#E0E0E0" 
-                               BackgroundColor="#F5F5F5"
+                               BorderColor="{StaticResource Gray300Light}" 
+                               BackgroundColor="{StaticResource Gray100Light}"
                                Padding="10,2" 
                                CornerRadius="6">
                             <Entry Placeholder="Phone" 
                                    Text="{Binding Phone}" 
                                    Keyboard="Telephone"
                                    ReturnType="Next"
-                                   PlaceholderColor="#BDBDBD"/>
+                                   PlaceholderColor="{StaticResource Gray400Light}"/>
                         </Frame>
 
                         <Frame Style="{StaticResource EntryFrame}" 
                                HeightRequest="90" 
-                               BorderColor="#E0E0E0" 
-                               BackgroundColor="#F5F5F5"
+                               BorderColor="{StaticResource Gray300Light}" 
+                               BackgroundColor="{StaticResource Gray100Light}"
                                Padding="10,2" 
                                CornerRadius="6">
                             <Editor Placeholder="Address (Optional)" 
                                     Text="{Binding Address}" 
                                     AutoSize="TextChanges"
-                                    PlaceholderColor="#BDBDBD"/>
+                                    PlaceholderColor="{StaticResource Gray400Light}"/>
                         </Frame>
                     </VerticalStackLayout>
                 </Frame>

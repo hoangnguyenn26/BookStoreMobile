@@ -7,16 +7,7 @@
        x:DataType="vm:AppShellViewModel"
        x:Class="Bookstore.Mobile.AppShell"
        Shell.FlyoutBehavior="Flyout">
-
-    <Shell.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Resources/Styles/Colors.xaml" />
-                <ResourceDictionary Source="/Resources/Styles/Styles.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Shell.Resources>
-
+    
     <Shell.FlyoutHeader>
         <VerticalStackLayout Padding="10" BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}">
             <Label Text="Bookstore App" TextColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource White}}" FontSize="Large" FontAttributes="Bold" HorizontalOptions="Center" />

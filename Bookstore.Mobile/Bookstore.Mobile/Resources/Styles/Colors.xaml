@@ -53,6 +53,7 @@
     <Color x:Key="Gray600Light">#4B5563</Color>
     <Color x:Key="Gray700Light">#374151</Color>
     <Color x:Key="Gray800Light">#23272F</Color>
+    <Color x:Key="Gray900Light">#111827</Color>
 
     <!-- Utility -->
     <Color x:Key="White">#FFFFFF</Color>
@@ -100,5 +101,10 @@
     <Color x:Key="Gray600Dark">#D1D5DB</Color>
     <Color x:Key="Gray700Dark">#F5F6FA</Color>
     <Color x:Key="Gray800Dark">#FFFFFF</Color>
+    <Color x:Key="Gray900Dark">#F5F6FA</Color>
+
+    <!-- Promotion Card Colors (nếu cần) -->
+    <Color x:Key="PromotionBorderLight">#FFE0B2</Color>
+    <Color x:Key="PromotionBackgroundLight">#FFF8E1</Color>
 
 </ResourceDictionary>

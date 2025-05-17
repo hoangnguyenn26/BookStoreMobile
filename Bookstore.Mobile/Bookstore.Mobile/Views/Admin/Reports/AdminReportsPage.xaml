@@ -7,9 +7,9 @@
              x:DataType="vm:AdminReportsViewModel"
              x:Class="Bookstore.Mobile.Views.AdminReportsPage"
              Title="{Binding Title}"
-             BackgroundColor="#F8F9FA">
+             BackgroundColor="{StaticResource BackgroundLight}">
 
-    <RefreshView Command="{Binding RefreshAllReportsCommand}" IsRefreshing="{Binding IsBusy}">
+    <RefreshView Command="{Binding RefreshAllReportsCommand}" IsRefreshing="{Binding IsBusy}" RefreshColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}">
         <ScrollView>
             <Grid RowDefinitions="Auto,Auto,*" Padding="16" RowSpacing="16">
                 <!-- Header -->
@@ -23,14 +23,14 @@
                     <BoxView HeightRequest="2" 
                              HorizontalOptions="Center" 
                              WidthRequest="80"
-                             Color="{AppThemeBinding Light=#3498DB, Dark=#5DADE2}"
+                             Color="{AppThemeBinding Light={StaticResource InfoLight}, Dark={StaticResource InfoDark}}"
                              Margin="0,5,0,5"/>
                 </VerticalStackLayout>
 
                 <!-- Date Selection & Controls -->
                 <Frame Grid.Row="1" 
-                       BorderColor="#E0E0E0" 
-                       BackgroundColor="White" 
+                       BorderColor="{StaticResource Gray300Light}" 
+                       BackgroundColor="{StaticResource SurfaceLight}" 
                        CornerRadius="10" 
                        Padding="15" 
                        HasShadow="True">
@@ -38,13 +38,13 @@
                         <Label Text="Select Reporting Period" 
                                FontAttributes="Bold" 
                                FontSize="16"
-                               TextColor="{AppThemeBinding Light=#3498DB, Dark=#5DADE2}"/>
+                               TextColor="{AppThemeBinding Light={StaticResource InfoLight}, Dark={StaticResource InfoDark}}"/>
 
                         <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="15" RowSpacing="8">
                             <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="5">
                                 <Label Text="Start Date:" FontSize="14"/>
-                                <Frame BorderColor="#E0E0E0" 
-                                       BackgroundColor="#F5F5F5"
+                                <Frame BorderColor="{StaticResource Gray300Light}" 
+                                       BackgroundColor="{StaticResource Gray100Light}"
                                        Padding="10,2" 
                                        CornerRadius="6">
                                     <DatePicker Date="{Binding StartDate}" 
@@ -55,8 +55,8 @@
 
                             <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="5">
                                 <Label Text="End Date:" FontSize="14"/>
-                                <Frame BorderColor="#E0E0E0" 
-                                       BackgroundColor="#F5F5F5"
+                                <Frame BorderColor="{StaticResource Gray300Light}" 
+                                       BackgroundColor="{StaticResource Gray100Light}"
                                        Padding="10,2" 
                                        CornerRadius="6">
                                     <DatePicker Date="{Binding EndDate}" 
@@ -68,9 +68,8 @@
 
                         <Button Text="Generate Reports" 
                                 Command="{Binding LoadAllReportsCommand}" 
-                                IsEnabled="{Binding IsNotBusy}"
-                                BackgroundColor="{AppThemeBinding Light=#2196F3, Dark=#42A5F5}"
-                                TextColor="White"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
+                                TextColor="{StaticResource White}"
                                 FontAttributes="Bold"
                                 CornerRadius="8"
                                 HeightRequest="45"/>
@@ -85,14 +84,14 @@
                                          HorizontalOptions="CenterAndExpand" 
                                          VerticalOptions="Start" 
                                          Margin="0,20,0,0">
-                        <Frame BackgroundColor="White" 
-                               BorderColor="#E0E0E0"
+                        <Frame BackgroundColor="{StaticResource SurfaceLight}" 
+                               BorderColor="{StaticResource Gray300Light}"
                                CornerRadius="10"
                                Padding="20" 
                                HasShadow="True">
                             <VerticalStackLayout Spacing="10">
                                 <ActivityIndicator IsRunning="True" 
-                                                  Color="{AppThemeBinding Light=#2196F3, Dark=#42A5F5}"
+                                                  Color="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
                                                   HeightRequest="40" 
                                                   WidthRequest="40"/>
                                 <Label Text="Generating Reports..." 
@@ -101,7 +100,7 @@
                                 <Label Text="Please wait while we gather your data" 
                                        HorizontalOptions="Center" 
                                        FontSize="14"
-                                       TextColor="#757575"/>
+                                       TextColor="{StaticResource Gray500Light}"/>
                             </VerticalStackLayout>
                         </Frame>
                     </VerticalStackLayout>
@@ -109,15 +108,15 @@
                     <!-- Error Message -->
                     <Frame Grid.Row="0" 
                            IsVisible="{Binding HasError}"
-                           BackgroundColor="#FFEBEE"
-                           BorderColor="#E57373"
+                           BackgroundColor="{StaticResource ErrorLight}"
+                           BorderColor="{StaticResource ErrorLight}"
                            Padding="15"
                            CornerRadius="8"
                            Margin="0,10,0,15">
                         <StackLayout Orientation="Horizontal" Spacing="10">
                             <Label Text="⚠️" FontSize="20" VerticalOptions="Center"/>
                             <Label Text="{Binding ErrorMessage}" 
-                                   TextColor="#D32F2F"
+                                   TextColor="{StaticResource White}"
                                    FontSize="14"
                                    VerticalOptions="Center"/>
                         </StackLayout>
@@ -127,8 +126,8 @@
                     <VerticalStackLayout Grid.Row="1" Spacing="20" IsVisible="{Binding ShowContent}">
                         <!-- Revenue Overview Card -->
                         <Frame IsVisible="{Binding ShowRevenueReport}" 
-                               BorderColor="#E0E0E0" 
-                               BackgroundColor="White" 
+                               BorderColor="{StaticResource Gray300Light}" 
+                               BackgroundColor="{StaticResource SurfaceLight}" 
                                CornerRadius="10" 
                                Padding="15" 
                                HasShadow="True">
@@ -138,7 +137,7 @@
                                            Style="{StaticResource SubHeadline}" 
                                            FontAttributes="Bold" 
                                            FontSize="18"
-                                           TextColor="{AppThemeBinding Light=#2196F3, Dark=#42A5F5}"
+                                           TextColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
                                            VerticalOptions="Center"/>
                                     <Image Grid.Column="1" 
                                            Source="chart_line.png" 
@@ -148,46 +147,46 @@
                                 </Grid>
 
                                 <BoxView HeightRequest="1" 
-                                         BackgroundColor="#E0E0E0" 
+                                         BackgroundColor="{StaticResource Gray300Light}" 
                                          HorizontalOptions="Fill"/>
 
-                                <Grid ColumnDefinitions="*,*" BackgroundColor="{AppThemeBinding Light=#EBF5FB, Dark=#E3F2FD}" Padding="15,10">
+                                <Grid ColumnDefinitions="*,*" BackgroundColor="{AppThemeBinding Light={StaticResource InfoLight}, Dark={StaticResource InfoDark}}" Padding="15,10">
                                     <Frame Grid.Column="0" 
-                                           BorderColor="#BBDEFB" 
-                                           BackgroundColor="White" 
+                                           BorderColor="{StaticResource InfoLight}" 
+                                           BackgroundColor="{StaticResource SurfaceLight}" 
                                            CornerRadius="8" 
                                            Padding="15,10">
                                         <VerticalStackLayout HorizontalOptions="Center">
                                             <Label Text="Total Orders" 
                                                    Style="{StaticResource CardTitle}" 
                                                    FontSize="14" 
-                                                   TextColor="#757575" 
+                                                   TextColor="{StaticResource Gray500Light}" 
                                                    HorizontalOptions="Center"/>
                                             <Label Text="{Binding RevenueReport.GrandTotalOrders}" 
                                                    Style="{StaticResource CardValue}" 
                                                    FontSize="22" 
                                                    FontAttributes="Bold"
-                                                   TextColor="{AppThemeBinding Light=#2196F3, Dark=#42A5F5}"
+                                                   TextColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
                                                    HorizontalOptions="Center"/>
                                         </VerticalStackLayout>
                                     </Frame>
 
                                     <Frame Grid.Column="1" 
-                                           BorderColor="#BBDEFB" 
-                                           BackgroundColor="White" 
+                                           BorderColor="{StaticResource InfoLight}" 
+                                           BackgroundColor="{StaticResource SurfaceLight}" 
                                            CornerRadius="8" 
                                            Padding="15,10">
                                         <VerticalStackLayout HorizontalOptions="Center">
                                             <Label Text="Total Revenue" 
                                                    Style="{StaticResource CardTitle}" 
                                                    FontSize="14" 
-                                                   TextColor="#757575"
+                                                   TextColor="{StaticResource Gray500Light}"
                                                    HorizontalOptions="Center"/>
                                             <Label Text="{Binding RevenueReport.GrandTotalRevenue, StringFormat='{0:C}'}" 
                                                    Style="{StaticResource CardValue}" 
                                                    FontSize="22" 
                                                    FontAttributes="Bold"
-                                                   TextColor="{AppThemeBinding Light=#4CAF50, Dark=#66BB6A}"
+                                                   TextColor="{AppThemeBinding Light={StaticResource SuccessLight}, Dark={StaticResource SuccessDark}}"
                                                    HorizontalOptions="Center"/>
                                         </VerticalStackLayout>
                                     </Frame>
@@ -196,7 +195,7 @@
                                 <Label Text="Daily Revenue Trend" 
                                        FontAttributes="Bold" 
                                        FontSize="16"
-                                       TextColor="#424242"/>
+                                       TextColor="{StaticResource Gray700Light}"/>
 
                                 <Frame BorderColor="#E0E0E0" 
                                        BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#263238}" 
@@ -268,8 +267,8 @@
                             </VerticalStackLayout>
                         </Frame>
 
-                        <!-- Low Stock Card -->
-                        <Frame IsVisible="{Binding ShowLowStockReport}" 
+                        <!-- Low Stock Card - Always Visible -->
+                        <Frame IsVisible="True" 
                                BorderColor="#E0E0E0"
                                BackgroundColor="White"
                                CornerRadius="10"
@@ -314,8 +313,8 @@
                                                    BorderColor="#FFE0B2" 
                                                    BackgroundColor="White" 
                                                    CornerRadius="4" 
-                                                   Padding="5,0" 
-                                                   WidthRequest="45">
+                                                   Padding="15,0" 
+                                                   WidthRequest="100">
                                                 <Entry Text="{Binding LowStockThreshold}" 
                                                        Keyboard="Numeric" 
                                                        HorizontalTextAlignment="Center"
@@ -339,7 +338,6 @@
                                        BackgroundColor="{AppThemeBinding Light=#FFF8E1, Dark=#263238}" 
                                        CornerRadius="8" 
                                        Padding="0" 
-                                       IsVisible="{Binding ShowLowStockReport}"
                                        HeightRequest="250">
                                     <CollectionView ItemsSource="{Binding LowStockBooks}">
                                         <CollectionView.EmptyView>

@@ -13,8 +13,8 @@
 
             <!-- Welcome Message (If logged in) -->
             <Frame IsVisible="{Binding IsLoggedIn}"
-                   BorderColor="#E0E0E0"
-                   BackgroundColor="White"
+                   BorderColor="{StaticResource Gray300Light}"
+                   BackgroundColor="{StaticResource SurfaceLight}"
                    CornerRadius="10"
                    Padding="15"
                    HasShadow="True">
@@ -23,27 +23,27 @@
 
             <!-- Loading Indicator -->
             <Frame IsVisible="{Binding IsBusy}"
-                   BackgroundColor="White"
-                   BorderColor="#E0E0E0"
+                   BackgroundColor="{StaticResource SurfaceLight}"
+                   BorderColor="{StaticResource Gray300Light}"
                    CornerRadius="10"
                    Padding="20"
                    HasShadow="True">
                 <VerticalStackLayout Spacing="10" HorizontalOptions="Center">
-                    <ActivityIndicator IsRunning="True" Color="{AppThemeBinding Light=#2196F3, Dark=#42A5F5}" HeightRequest="40" WidthRequest="40" />
+                    <ActivityIndicator IsRunning="True" Color="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" HeightRequest="40" WidthRequest="40" />
                     <Label Text="Loading..." HorizontalOptions="Center" FontAttributes="Bold" />
                 </VerticalStackLayout>
             </Frame>
 
             <!-- Error Message -->
             <Frame IsVisible="{Binding HasError}"
-                   BackgroundColor="#FFEBEE"
-                   BorderColor="#E57373"
+                   BackgroundColor="{StaticResource ErrorLight}"
+                   BorderColor="{StaticResource ErrorLight}"
                    Padding="15"
                    CornerRadius="8"
                    Margin="0,0,0,0">
                 <StackLayout Orientation="Horizontal" Spacing="10">
                     <Label Text="⚠️" FontSize="20" VerticalOptions="Center"/>
-                    <Label Text="{Binding ErrorMessage}" TextColor="#D32F2F" FontSize="14" VerticalOptions="Center"/>
+                    <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource ErrorLight}" FontSize="14" VerticalOptions="Center"/>
                 </StackLayout>
             </Frame>
 
@@ -51,13 +51,13 @@
             <VerticalStackLayout IsVisible="{Binding IsNotBusy}" Spacing="20">
 
                 <!-- Newest Arrivals Card -->
-                <Frame BorderColor="#E0E0E0" BackgroundColor="White" CornerRadius="10" Padding="15" HasShadow="True">
+                <Frame BorderColor="{StaticResource Gray300Light}" BackgroundColor="{StaticResource SurfaceLight}" CornerRadius="10" Padding="15" HasShadow="True">
                     <VerticalStackLayout Spacing="10">
                         <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="Newest Arrivals" Style="{StaticResource Headline}" FontAttributes="Bold" FontSize="18" TextColor="{AppThemeBinding Light=#2196F3, Dark=#42A5F5}" VerticalOptions="Center"/>
+                            <Label Text="Newest Arrivals" Style="{StaticResource Headline}" FontAttributes="Bold" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" VerticalOptions="Center"/>
                             <Image Grid.Column="1" Source="new_releases.png" HeightRequest="24" WidthRequest="24" VerticalOptions="Center"/>
                         </Grid>
-                        <BoxView HeightRequest="1" BackgroundColor="#E0E0E0" HorizontalOptions="Fill"/>
+                        <BoxView HeightRequest="1" BackgroundColor="{StaticResource Gray300Light}" HorizontalOptions="Fill"/>
                         <CollectionView ItemsSource="{Binding DashboardData.NewestBooks}" HeightRequest="250">
                             <CollectionView.ItemsLayout>
                                 <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
@@ -92,13 +92,13 @@
                 </Frame>
 
                 <!-- Bestsellers Card -->
-                <Frame BorderColor="#E0E0E0" BackgroundColor="White" CornerRadius="10" Padding="15" HasShadow="True">
+                <Frame BorderColor="{StaticResource Gray300Light}" BackgroundColor="{StaticResource SurfaceLight}" CornerRadius="10" Padding="15" HasShadow="True">
                     <VerticalStackLayout Spacing="10">
                         <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="Bestsellers" Style="{StaticResource Headline}" FontAttributes="Bold" FontSize="18" TextColor="{AppThemeBinding Light=#4CAF50, Dark=#66BB6A}" VerticalOptions="Center"/>
+                            <Label Text="Bestsellers" Style="{StaticResource Headline}" FontAttributes="Bold" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource SuccessLight}, Dark={StaticResource SuccessDark}}" VerticalOptions="Center"/>
                             <Image Grid.Column="1" Source="book_bestseller.png" HeightRequest="24" WidthRequest="24" VerticalOptions="Center"/>
                         </Grid>
-                        <BoxView HeightRequest="1" BackgroundColor="#E0E0E0" HorizontalOptions="Fill"/>
+                        <BoxView HeightRequest="1" BackgroundColor="{StaticResource Gray300Light}" HorizontalOptions="Fill"/>
                         <CollectionView ItemsSource="{Binding DashboardData.BestSellingBooks}" HeightRequest="250">
                             <CollectionView.ItemsLayout>
                                 <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
@@ -133,20 +133,20 @@
                 </Frame>
 
                 <!-- Active Promotions Card -->
-                <Frame BorderColor="#E0E0E0" BackgroundColor="White" CornerRadius="10" Padding="15" HasShadow="True">
+                <Frame BorderColor="{StaticResource Gray300Light}" BackgroundColor="{StaticResource SurfaceLight}" CornerRadius="10" Padding="15" HasShadow="True">
                     <VerticalStackLayout Spacing="10">
                         <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="Active Promotions" Style="{StaticResource Headline}" FontAttributes="Bold" FontSize="18" TextColor="{AppThemeBinding Light=#FF9800, Dark=#FFA726}" VerticalOptions="Center"/>
+                            <Label Text="Active Promotions" Style="{StaticResource Headline}" FontAttributes="Bold" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource WarningLight}, Dark={StaticResource WarningDark}}" VerticalOptions="Center"/>
                             <Image Grid.Column="1" Source="promo.png" HeightRequest="24" WidthRequest="24" VerticalOptions="Center"/>
                         </Grid>
-                        <BoxView HeightRequest="1" BackgroundColor="#E0E0E0" HorizontalOptions="Fill"/>
+                        <BoxView HeightRequest="1" BackgroundColor="{StaticResource Gray300Light}" HorizontalOptions="Fill"/>
                         <CollectionView ItemsSource="{Binding DashboardData.ActivePromotions}">
                             <CollectionView.ItemsLayout>
                                 <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
                             </CollectionView.ItemsLayout>
                             <CollectionView.ItemTemplate>
                                 <DataTemplate x:DataType="dto:PromotionSummaryDto">
-                                    <Frame BorderColor="#FFE0B2" BackgroundColor="#FFF8E1" CornerRadius="8" Padding="10">
+                                    <Frame BorderColor="{StaticResource PromotionBorderLight}" BackgroundColor="{StaticResource PromotionBackgroundLight}" CornerRadius="8" Padding="10">
                                         <VerticalStackLayout Spacing="5">
                                             <Label FontAttributes="Bold" FontSize="Medium">
                                                 <Label.FormattedText>
@@ -172,13 +172,13 @@
                 </Frame>
 
                 <!-- Featured Categories Card -->
-                <Frame BorderColor="#E0E0E0" BackgroundColor="White" CornerRadius="10" Padding="15" HasShadow="True">
+                <Frame BorderColor="{StaticResource Gray300Light}" BackgroundColor="{StaticResource SurfaceLight}" CornerRadius="10" Padding="15" HasShadow="True">
                     <VerticalStackLayout Spacing="10">
                         <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="Featured Categories" Style="{StaticResource Headline}" FontAttributes="Bold" FontSize="18" TextColor="{AppThemeBinding Light=#9C27B0, Dark=#BA68C8}" VerticalOptions="Center"/>
+                            <Label Text="Featured Categories" Style="{StaticResource Headline}" FontAttributes="Bold" FontSize="18" TextColor="{AppThemeBinding Light={StaticResource AccentLight}, Dark={StaticResource AccentDark}}" VerticalOptions="Center"/>
                             <Image Grid.Column="1" Source="category.png" HeightRequest="24" WidthRequest="24" VerticalOptions="Center"/>
                         </Grid>
-                        <BoxView HeightRequest="1" BackgroundColor="#E0E0E0" HorizontalOptions="Fill"/>
+                        <BoxView HeightRequest="1" BackgroundColor="{StaticResource Gray300Light}" HorizontalOptions="Fill"/>
                         <CollectionView ItemsSource="{Binding DashboardData.FeaturedCategories}" HeightRequest="100">
                             <CollectionView.ItemsLayout>
                                 <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>

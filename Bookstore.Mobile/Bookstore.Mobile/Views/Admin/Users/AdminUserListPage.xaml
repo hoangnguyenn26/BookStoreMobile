@@ -8,14 +8,6 @@
              x:Class="Bookstore.Mobile.Views.AdminUserListPage"
              Title="{Binding Title}">
 
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <converters:ListToStringConverter x:Key="ListToStringConverter"/>
-            <converters:BoolToStatusTextConverter x:Key="BoolToStatusTextConverter"/>
-            <converters:BoolToStatusColorConverter x:Key="BoolToStatusColorConverter"/>
-        </ResourceDictionary>
-    </ContentPage.Resources>
-
     <Grid RowDefinitions="Auto, Auto, *">
         <Label Grid.Row="0" Text="Manage Users" Style="{StaticResource Headline}" Margin="15,10"/>
 
@@ -55,7 +47,8 @@
                    Command="{Binding LoadUsersCommand}" 
                    IsRefreshing="{Binding IsBusy}" 
                    IsVisible="{Binding ShowContent}">
-            <CollectionView ItemsSource="{Binding Users}"
+            <CollectionView x:Name="UserListView"
+                          ItemsSource="{Binding Users}"
                           SelectionMode="None"
                           Margin="10"
                           RemainingItemsThreshold="5"
@@ -78,7 +71,7 @@
                         <Border Style="{StaticResource CardBorder}" Padding="10,8" Margin="0,0,0,8">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer 
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:AdminUserListViewModel}}, Path=GoToUserDetailsCommand}"
+                                    Command="{Binding Source={x:Reference UserListView}, Path=BindingContext.GoToUserDetailsCommand}"
                                     CommandParameter="{Binding Id}"/>
                             </Border.GestureRecognizers>
                             <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="10">

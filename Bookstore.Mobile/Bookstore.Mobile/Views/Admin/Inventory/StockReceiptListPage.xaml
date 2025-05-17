@@ -92,7 +92,7 @@
             <Button Grid.Column="1" 
                     Text="+ New Receipt" 
                     Command="{Binding GoToCreateReceiptCommand}" 
-                    Style="{StaticResource AddButton}"
+                    Style="{StaticResource BaseButtonStyle}"
                     WidthRequest="150"/>
         </Grid>
 
@@ -104,11 +104,11 @@
             <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="15">
                 <ActivityIndicator IsRunning="{Binding IsBusy}" 
                                   IsVisible="{Binding IsBusy}" 
-                                  Color="{StaticResource Primary}"
+                                  Color="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
                                   HeightRequest="50"
                                   WidthRequest="50"/>
                 <Label Text="Loading receipts..." 
-                       TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark=White}"
+                       TextColor="{AppThemeBinding Light={StaticResource Gray900Light}, Dark={StaticResource Gray900Dark}}"
                        FontSize="14"/>
             </VerticalStackLayout>
         </Grid>
@@ -124,7 +124,7 @@
                 <Label Text="❌ Error" 
                        FontSize="18" 
                        FontAttributes="Bold" 
-                       TextColor="Red"/>
+                       TextColor="{StaticResource ErrorLight}"/>
                 <Label Text="{Binding ErrorMessage}" 
                        Style="{StaticResource ErrorLabel}"/>
                 <Button Text="Try Again" 
@@ -160,14 +160,14 @@
                                    Aspect="AspectFit"
                                    HorizontalOptions="Center"/>
                             <Label Text="No stock receipts found." 
-                                   Style="{StaticResource EmptyTextStyle}"/>
+                                   Style="{StaticResource Caption}"/>
                             <Label Text="Create a new receipt or pull down to refresh."
                                    FontSize="14"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray500}}"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray500Light}, Dark={StaticResource Gray500Dark}}"
                                    HorizontalOptions="Center"/>
                             <Button Text="Create New Receipt" 
                                     Command="{Binding GoToCreateReceiptCommand}"
-                                    Style="{StaticResource AddButton}"
+                                    Style="{StaticResource BaseButtonStyle}"
                                     Margin="0,10,0,0"/>
                         </VerticalStackLayout>
                     </Border>
@@ -181,7 +181,7 @@
                                     <!-- Status Bar - Can be colored based on receipt status if needed -->
                                     <BoxView Grid.Row="0" 
                                              HeightRequest="6" 
-                                             Color="{StaticResource Primary}"
+                                             Color="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
                                              HorizontalOptions="Fill"/>
 
                                     <!-- Receipt ID and Date -->
