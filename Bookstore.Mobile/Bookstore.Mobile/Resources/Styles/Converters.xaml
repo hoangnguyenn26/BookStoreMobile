@@ -38,4 +38,9 @@
     <converters:BoolToStringConverter x:Key="BoolToStringConverter" />
     <!-- Bool to Message -->
     <converters:BoolToMessageConverter x:Key="BoolToMessageConverter" />
+    <!-- Inventory Reason To String -->
+    <converters:InventoryReasonToStringConverter x:Key="InventoryReasonToStringConverter" />
+    <!-- Positive Negative Color -->
+    <converters:PositiveNegativeColorConverter x:Key="PositiveNegativeColorConverter" />
+
 </ResourceDictionary> 

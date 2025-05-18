@@ -11,5 +11,4 @@ namespace Bookstore.Mobile.Enums
         Adjustment = 5,      // Điều chỉnh khác (hỏng, mất,...)
         InitialStock = 6     // Tồn kho ban đầu
     }
-
 }
