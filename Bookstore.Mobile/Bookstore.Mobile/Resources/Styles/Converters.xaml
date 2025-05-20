@@ -42,5 +42,7 @@
     <converters:InventoryReasonToStringConverter x:Key="InventoryReasonToStringConverter" />
     <!-- Positive Negative Color -->
     <converters:PositiveNegativeColorConverter x:Key="PositiveNegativeColorConverter" />
+    <!-- ContainsKeyConverter -->
+    <converters:ContainsKeyConverter x:Key="ContainsKeyConverter"/>
 
 </ResourceDictionary> 

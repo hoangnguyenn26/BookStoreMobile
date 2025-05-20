@@ -324,8 +324,8 @@
                                             <Button Grid.Column="2" 
                                                     Text="Apply" 
                                                     Command="{Binding ReloadLowStockCommand}" 
-                                                    BackgroundColor="{AppThemeBinding Light=#FF9800, Dark=#FFA726}"
-                                                    TextColor="White"
+                                                    BackgroundColor="{AppThemeBinding Light={StaticResource WarningLight}, Dark={StaticResource WarningDark}}"
+                                                    TextColor="{StaticResource White}"
                                                     CornerRadius="4"
                                                     FontSize="12"
                                                     Padding="10,5"
@@ -350,7 +350,7 @@
                                                 <Label Text="All inventory levels are above threshold" 
                                                        HorizontalOptions="Center" 
                                                        FontSize="14"
-                                                       TextColor="#757575"/>
+                                                       TextColor="{StaticResource Gray500Light}"/>
                                             </VerticalStackLayout>
                                         </CollectionView.EmptyView>
                                         <CollectionView.ItemTemplate>
@@ -361,14 +361,14 @@
                                                            WidthRequest="36" 
                                                            CornerRadius="18" 
                                                            Padding="0" 
-                                                           BackgroundColor="{AppThemeBinding Light=#FFECB3, Dark=#FFC107}"
+                                                           BackgroundColor="{AppThemeBinding Light={StaticResource PromotionBackgroundLight}, Dark={StaticResource AccentDark}}"
                                                            HorizontalOptions="Center"
                                                            VerticalOptions="Center">
                                                         <Label Text="{Binding CurrentStockQuantity}" 
                                                                HorizontalOptions="Center" 
                                                                VerticalOptions="Center"
                                                                FontAttributes="Bold"
-                                                               TextColor="{AppThemeBinding Light=#E65100, Dark=#FFFFFF}"/>
+                                                               TextColor="{AppThemeBinding Light={StaticResource ErrorLight}, Dark={StaticResource White}}"/>
                                                     </Frame>
                                                     <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
                                                         <Label Text="{Binding BookTitle}" 
@@ -376,16 +376,16 @@
                                                                LineBreakMode="TailTruncation"/>
                                                         <Label Text="{Binding AuthorName, TargetNullValue='Author Unknown'}" 
                                                                FontSize="Small"
-                                                               TextColor="#757575"
+                                                               TextColor="{StaticResource Gray500Light}"
                                                                LineBreakMode="TailTruncation"/>
                                                     </VerticalStackLayout>
                                                     <Frame Grid.Column="2" 
-                                                           BackgroundColor="#FFECB3" 
+                                                           BackgroundColor="{StaticResource PromotionBackgroundLight}" 
                                                            CornerRadius="4" 
                                                            Padding="8,4"
                                                            VerticalOptions="Center">
                                                         <Label Text="Low Stock" 
-                                                               TextColor="#E65100" 
+                                                               TextColor="{StaticResource ErrorLight}" 
                                                                FontSize="12" 
                                                                FontAttributes="Bold"/>
                                                     </Frame>

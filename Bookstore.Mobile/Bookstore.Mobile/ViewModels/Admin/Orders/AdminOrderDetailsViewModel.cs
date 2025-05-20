@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
+using Bookstore.Mobile.Helpers;
 
 namespace Bookstore.Mobile.ViewModels
 {
@@ -72,7 +73,7 @@ namespace Bookstore.Mobile.ViewModels
                 }
                 else
                 {
-                    ErrorMessage = response.Error?.Content ?? "Failed to load order details.";
+                    ErrorMessage = ErrorMessageHelper.ToFriendlyErrorMessage(response.Error?.Content) ?? "Failed to load order details.";
                 }
             }, nameof(ShowContent));
         }
@@ -122,7 +123,7 @@ namespace Bookstore.Mobile.ViewModels
                 }
                 else
                 {
-                    string errorContent = response.Error?.Content ?? response.ReasonPhrase ?? "Failed to update status.";
+                    string errorContent = ErrorMessageHelper.ToFriendlyErrorMessage(response.Error?.Content) ?? response.ReasonPhrase ?? "Failed to update status.";
                     UpdateStatusMessage = $"Error: {errorContent}";
                     UpdateStatusColor = Colors.Red;
                     _logger.LogWarning("Failed to update status for Order {OrderId}. Status: {StatusCode}, Reason: {Reason}", _actualOrderId, response.StatusCode, UpdateStatusMessage);

@@ -96,7 +96,7 @@
                       Route="InventoryHistoryPage" />
     </FlyoutItem>
 
-    <FlyoutItem Title="My Account" Icon="account_circle.png" IsVisible="{Binding IsLoggedIn}">
+    <FlyoutItem Title="My Account" Icon="account_circle.png">
         <ShellContent Title="Profile"
                       Icon="person.png"
                       ContentTemplate="{DataTemplate views:ProfilePage}"

@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using Bookstore.Mobile.Helpers;
 
 namespace Bookstore.Mobile.ViewModels
 {
@@ -128,7 +129,7 @@ namespace Bookstore.Mobile.ViewModels
                 }
                 else
                 {
-                    string errorContent = response.Error?.Content ?? response.ReasonPhrase ?? "Failed";
+                    string errorContent = ErrorMessageHelper.ToFriendlyErrorMessage(response.Error?.Content) ?? response.ReasonPhrase ?? "Failed";
                     ErrorMessage = $"Adjustment Failed: {errorContent}";
                     _logger.LogWarning("Failed to adjust stock for Book {BookId}. Status: {StatusCode}, Reason: {Reason}", SelectedBookSearchResult!.Id, response.StatusCode, ErrorMessage);
                     await DisplayAlertAsync("Adjustment Failed", ErrorMessage);

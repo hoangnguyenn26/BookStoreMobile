@@ -6,7 +6,7 @@
              x:DataType="vm:AddEditPromotionViewModel"
              x:Class="Bookstore.Mobile.Views.AddEditPromotionPage"
              Title="{Binding Title}"
-             BackgroundColor="#F8F9FA">
+             BackgroundColor="{StaticResource BackgroundLight}">
 
     <ScrollView>
         <Grid RowDefinitions="Auto,*" Padding="20">
@@ -20,7 +20,7 @@
                 <BoxView HeightRequest="2" 
                          HorizontalOptions="Center" 
                          WidthRequest="60"
-                         Color="{AppThemeBinding Light=#3498DB, Dark=#5DADE2}"
+                         Color="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
                          Margin="0,5,0,10"/>
             </VerticalStackLayout>
 
@@ -28,7 +28,7 @@
             <VerticalStackLayout Grid.Row="1" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding IsBusy}">
                 <ActivityIndicator IsRunning="{Binding IsBusy}" 
                                    IsVisible="True"
-                                   Color="{AppThemeBinding Light=#3498DB, Dark=#5DADE2}"
+                                   Color="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
                                    HeightRequest="50" 
                                    WidthRequest="50"/>
                 <Label Text="Loading..." 
@@ -39,15 +39,15 @@
             <!-- Error Message -->
             <Frame Grid.Row="1" 
                    IsVisible="{Binding HasError}"
-                   BackgroundColor="#FFEBEE"
-                   BorderColor="#E57373"
+                   BackgroundColor="{StaticResource ErrorLight}"
+                   BorderColor="{StaticResource ErrorLight}"
                    Padding="15"
                    CornerRadius="8"
                    Margin="0,10,0,15">
                 <StackLayout Orientation="Horizontal" Spacing="10">
                     <Label Text="⚠️" FontSize="20" VerticalOptions="Center"/>
                     <Label Text="{Binding ErrorMessage}" 
-                           TextColor="#D32F2F"
+                           TextColor="{StaticResource ErrorLight}"
                            FontSize="14"
                            VerticalOptions="Center"/>
                 </StackLayout>
@@ -56,8 +56,8 @@
             <!-- Main Form Content -->
             <VerticalStackLayout Grid.Row="1" IsVisible="{Binding ShowContent}" Spacing="16">
                 <!-- Basic Information Card -->
-                <Frame BackgroundColor="White" 
-                       BorderColor="#E0E0E0" 
+                <Frame BackgroundColor="{StaticResource SurfaceLight}" 
+                       BorderColor="{StaticResource Gray300Light}" 
                        CornerRadius="10" 
                        Padding="15" 
                        HasShadow="True">
@@ -65,36 +65,36 @@
                         <Label Text="Promotion Information" 
                                FontAttributes="Bold" 
                                FontSize="16"
-                               TextColor="{AppThemeBinding Light=#3498DB, Dark=#5DADE2}"/>
+                               TextColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"/>
 
                         <Frame Style="{StaticResource EntryFrame}" 
-                               BorderColor="#E0E0E0" 
-                               BackgroundColor="#F5F5F5"
+                               BorderColor="{StaticResource Gray300Light}" 
+                               BackgroundColor="{StaticResource Gray100Light}"
                                Padding="10,2" 
                                CornerRadius="6">
                             <Entry Placeholder="Promotion Code *" 
                                    Text="{Binding Code}" 
                                    ReturnType="Next"
-                                   PlaceholderColor="#BDBDBD"/>
+                                   PlaceholderColor="{StaticResource Gray400Light}"/>
                         </Frame>
 
                         <Frame Style="{StaticResource EntryFrame}" 
                                HeightRequest="90" 
-                               BorderColor="#E0E0E0" 
-                               BackgroundColor="#F5F5F5"
+                               BorderColor="{StaticResource Gray300Light}" 
+                               BackgroundColor="{StaticResource Gray100Light}"
                                Padding="10,2" 
                                CornerRadius="6">
                             <Editor Placeholder="Description (Optional)" 
                                     Text="{Binding Description}" 
                                     AutoSize="TextChanges"
-                                    PlaceholderColor="#BDBDBD"/>
+                                    PlaceholderColor="{StaticResource Gray400Light}"/>
                         </Frame>
                     </VerticalStackLayout>
                 </Frame>
 
                 <!-- Discount Settings Card -->
-                <Frame BackgroundColor="White" 
-                       BorderColor="#E0E0E0" 
+                <Frame BackgroundColor="{StaticResource SurfaceLight}" 
+                       BorderColor="{StaticResource Gray300Light}" 
                        CornerRadius="10" 
                        Padding="15" 
                        HasShadow="True">
@@ -102,7 +102,7 @@
                         <Label Text="Discount Settings" 
                                FontAttributes="Bold" 
                                FontSize="16"
-                               TextColor="{AppThemeBinding Light=#3498DB, Dark=#5DADE2}"/>
+                               TextColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"/>
 
                         <Label Text="Discount Type:" 
                                FontSize="14" 
@@ -111,8 +111,8 @@
                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                             <Frame Grid.Column="0" 
                                    Padding="10" 
-                                   BorderColor="{Binding IsPercentageDiscount, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#3498DB,#E0E0E0'}"
-                                   BackgroundColor="{Binding IsPercentageDiscount, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#EBF5FB,White'}"
+                                   BorderColor="{Binding IsPercentageDiscount, Converter={StaticResource BoolToColorConverter}, ConverterParameter='{StaticResource PrimaryLight},{StaticResource Gray300Light}'}"
+                                   BackgroundColor="{Binding IsPercentageDiscount, Converter={StaticResource BoolToColorConverter}, ConverterParameter='{StaticResource InfoLight},{StaticResource SurfaceLight}'}"
                                    CornerRadius="8">
                                 <RadioButton Content="Percentage" 
                                              IsChecked="{Binding IsPercentageDiscount}" 
@@ -120,8 +120,8 @@
                             </Frame>
                             <Frame Grid.Column="1" 
                                    Padding="10" 
-                                   BorderColor="{Binding IsFixedAmountDiscount, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#3498DB,#E0E0E0'}"
-                                   BackgroundColor="{Binding IsFixedAmountDiscount, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#EBF5FB,White'}"
+                                   BorderColor="{Binding IsFixedAmountDiscount, Converter={StaticResource BoolToColorConverter}, ConverterParameter='{StaticResource PrimaryLight},{StaticResource Gray300Light}'}"
+                                   BackgroundColor="{Binding IsFixedAmountDiscount, Converter={StaticResource BoolToColorConverter}, ConverterParameter='{StaticResource InfoLight},{StaticResource SurfaceLight}'}"
                                    CornerRadius="8">
                                 <RadioButton Content="Fixed Amount" 
                                              IsChecked="{Binding IsFixedAmountDiscount}" 
@@ -131,15 +131,15 @@
 
                         <Frame IsVisible="{Binding IsPercentageDiscount}" 
                                Style="{StaticResource EntryFrame}" 
-                               BorderColor="#E0E0E0" 
-                               BackgroundColor="#F5F5F5"
+                               BorderColor="{StaticResource Gray300Light}" 
+                               BackgroundColor="{StaticResource Gray100Light}"
                                Padding="10,2" 
                                CornerRadius="6">
                             <Grid ColumnDefinitions="*,Auto">
                                 <Entry Placeholder="Discount Percentage *" 
                                        Keyboard="Numeric" 
                                        Text="{Binding DiscountPercentage}"
-                                       PlaceholderColor="#BDBDBD"/>
+                                       PlaceholderColor="{StaticResource Gray400Light}"/>
                                 <Label Grid.Column="1" 
                                        Text="%" 
                                        VerticalOptions="Center" 
@@ -150,8 +150,8 @@
 
                         <Frame IsVisible="{Binding IsFixedAmountDiscount}" 
                                Style="{StaticResource EntryFrame}" 
-                               BorderColor="#E0E0E0" 
-                               BackgroundColor="#F5F5F5"
+                               BorderColor="{StaticResource Gray300Light}" 
+                               BackgroundColor="{StaticResource Gray100Light}"
                                Padding="10,2" 
                                CornerRadius="6">
                             <Grid ColumnDefinitions="Auto,*">
@@ -164,15 +164,15 @@
                                        Placeholder="Discount Amount *" 
                                        Keyboard="Numeric" 
                                        Text="{Binding DiscountAmount}"
-                                       PlaceholderColor="#BDBDBD"/>
+                                       PlaceholderColor="{StaticResource Gray400Light}"/>
                             </Grid>
                         </Frame>
                     </VerticalStackLayout>
                 </Frame>
 
                 <!-- Validity Period Card -->
-                <Frame BackgroundColor="White" 
-                       BorderColor="#E0E0E0" 
+                <Frame BackgroundColor="{StaticResource SurfaceLight}" 
+                       BorderColor="{StaticResource Gray300Light}" 
                        CornerRadius="10" 
                        Padding="15" 
                        HasShadow="True">
@@ -180,13 +180,13 @@
                         <Label Text="Validity Period" 
                                FontAttributes="Bold" 
                                FontSize="16"
-                               TextColor="{AppThemeBinding Light=#3498DB, Dark=#5DADE2}"/>
+                               TextColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"/>
 
                         <Grid ColumnDefinitions="*,*" ColumnSpacing="15" RowSpacing="10">
                             <VerticalStackLayout Grid.Column="0" Spacing="5">
                                 <Label Text="Start Date *" FontSize="14"/>
-                                <Frame BorderColor="#E0E0E0" 
-                                       BackgroundColor="#F5F5F5"
+                                <Frame BorderColor="{StaticResource Gray300Light}" 
+                                       BackgroundColor="{StaticResource Gray100Light}"
                                        Padding="10,0" 
                                        CornerRadius="6">
                                     <DatePicker Date="{Binding StartDate}" 
@@ -202,15 +202,15 @@
                                             IsToggled="{Binding HasEndDate}" 
                                             VerticalOptions="Center"
                                             HorizontalOptions="Start"
-                                            OnColor="{AppThemeBinding Light=#3498DB, Dark=#5DADE2}"/>
+                                            OnColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"/>
                                     <Label Grid.Column="2" 
                                            Text="(Optional)" 
                                            FontSize="12" 
-                                           TextColor="#757575"
+                                           TextColor="{StaticResource Gray500Light}"
                                            VerticalOptions="Center"/>
                                 </Grid>
-                                <Frame BorderColor="{Binding HasEndDate, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#E0E0E0,#BDBDBD'}"
-                                       BackgroundColor="{Binding HasEndDate, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#F5F5F5,#EEEEEE'}"
+                                <Frame BorderColor="{Binding HasEndDate, Converter={StaticResource BoolToColorConverter}, ConverterParameter='{StaticResource Gray300Light},{StaticResource Gray400Light}'}"
+                                       BackgroundColor="{Binding HasEndDate, Converter={StaticResource BoolToColorConverter}, ConverterParameter='{StaticResource Gray100Light},{StaticResource Gray200Light}'}"
                                        Padding="10,0" 
                                        CornerRadius="6">
                                     <DatePicker Date="{Binding EndDateForPicker}" 
@@ -224,8 +224,8 @@
                 </Frame>
 
                 <!-- Additional Settings Card -->
-                <Frame BackgroundColor="White" 
-                       BorderColor="#E0E0E0" 
+                <Frame BackgroundColor="{StaticResource SurfaceLight}" 
+                       BorderColor="{StaticResource Gray300Light}" 
                        CornerRadius="10" 
                        Padding="15" 
                        HasShadow="True">
@@ -233,34 +233,34 @@
                         <Label Text="Additional Settings" 
                                FontAttributes="Bold" 
                                FontSize="16"
-                               TextColor="{AppThemeBinding Light=#3498DB, Dark=#5DADE2}"/>
+                               TextColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"/>
 
                         <Frame Style="{StaticResource EntryFrame}" 
-                               BorderColor="#E0E0E0" 
-                               BackgroundColor="#F5F5F5"
+                               BorderColor="{StaticResource Gray300Light}" 
+                               BackgroundColor="{StaticResource Gray100Light}"
                                Padding="10,2" 
                                CornerRadius="6">
                             <Entry Placeholder="Max Usage (Leave empty for unlimited)" 
                                    Keyboard="Numeric" 
                                    Text="{Binding MaxUsage}"
-                                   PlaceholderColor="#BDBDBD"/>
+                                   PlaceholderColor="{StaticResource Gray400Light}"/>
                         </Frame>
 
-                        <Frame BorderColor="#E0E0E0" 
+                        <Frame BorderColor="{StaticResource Gray300Light}" 
                                Padding="15,10" 
                                CornerRadius="8"
-                               BackgroundColor="{Binding IsActive, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#E8F5E9,#FFEBEE'}">
+                               BackgroundColor="{Binding IsActive, Converter={StaticResource BoolToColorConverter}, ConverterParameter='{StaticResource SuccessLight},{StaticResource ErrorLight}'}">
                             <Grid ColumnDefinitions="Auto,*,Auto">
                                 <Switch Grid.Column="0" 
                                         IsToggled="{Binding IsActive}"
-                                        OnColor="{AppThemeBinding Light=#4CAF50, Dark=#81C784}"/>
+                                        OnColor="{AppThemeBinding Light={StaticResource SuccessLight}, Dark={StaticResource SuccessDark}}"/>
                                 <Label Grid.Column="1" 
                                        Text="Activate Promotion" 
                                        VerticalOptions="Center"
                                        FontSize="14"/>
                                 <Label Grid.Column="2" 
                                        Text="{Binding IsActive, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Active,Inactive'}"
-                                       TextColor="{Binding IsActive, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#4CAF50,#F44336'}"
+                                       TextColor="{Binding IsActive, Converter={StaticResource BoolToColorConverter}, ConverterParameter='{StaticResource SuccessLight},{StaticResource ErrorLight}'}"
                                        FontAttributes="Bold"
                                        FontSize="14"
                                        VerticalOptions="Center"/>
@@ -272,9 +272,8 @@
                 <!-- Save Button -->
                 <Button Text="Save Promotion" 
                         Command="{Binding SavePromotionCommand}" 
-                        IsEnabled="{Binding CanSavePromotion}"
-                        BackgroundColor="{AppThemeBinding Light=#3498DB, Dark=#5DADE2}"
-                        TextColor="White"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
+                        TextColor="{StaticResource White}"
                         FontAttributes="Bold"
                         CornerRadius="25"
                         HeightRequest="50"

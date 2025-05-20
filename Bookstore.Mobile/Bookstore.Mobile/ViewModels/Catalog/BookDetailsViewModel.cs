@@ -9,6 +9,7 @@ using Refit;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using Bookstore.Mobile.Helpers;
 
 namespace Bookstore.Mobile.ViewModels
 {
@@ -119,7 +120,7 @@ namespace Bookstore.Mobile.ViewModels
                 }
                 else
                 {
-                    string errorContent = bookResponse.Error?.Content ?? bookResponse.ReasonPhrase ?? "Failed to load book details.";
+                    string errorContent = ErrorMessageHelper.ToFriendlyErrorMessage(bookResponse.Error?.Content) ?? bookResponse.ReasonPhrase ?? "Failed to load book details.";
                     ErrorMessage = $"Error: {errorContent}";
                     _logger.LogWarning("Failed to load book details for Id {BookId}. Status: {StatusCode}, Reason: {Reason}", _actualBookId, bookResponse.StatusCode, ErrorMessage);
                 }
@@ -159,7 +160,7 @@ namespace Bookstore.Mobile.ViewModels
                 }
                 else
                 {
-                    string errorContent = reviewResponse.Error?.Content ?? reviewResponse.ReasonPhrase ?? "Failed to load reviews.";
+                    string errorContent = ErrorMessageHelper.ToFriendlyErrorMessage(reviewResponse.Error?.Content) ?? reviewResponse.ReasonPhrase ?? "Failed to load reviews.";
                     ErrorMessage = $"Error loading reviews: {errorContent}";
                     _logger.LogWarning("Failed to load reviews for Book {BookId}. Status: {StatusCode}", _actualBookId, reviewResponse.StatusCode);
                 }
@@ -245,7 +246,7 @@ namespace Bookstore.Mobile.ViewModels
                 }
                 else
                 {
-                    string errorContent = response.Error?.Content ?? response.ReasonPhrase ?? "Failed to update wishlist.";
+                    string errorContent = ErrorMessageHelper.ToFriendlyErrorMessage(response.Error?.Content) ?? response.ReasonPhrase ?? "Failed to update wishlist.";
                     ErrorMessage = $"Wishlist Error: {errorContent}";
                     _logger.LogWarning("Failed to toggle wishlist for Book {BookId}. Status: {StatusCode}, Reason: {Reason}", BookDetails.Id, response.StatusCode, ErrorMessage);
                     await DisplayAlertAsync("Wishlist Error", ErrorMessage);
@@ -291,7 +292,7 @@ namespace Bookstore.Mobile.ViewModels
                 }
                 else
                 {
-                    string errorContent = response.Error?.Content ?? response.ReasonPhrase ?? "Failed to add to cart.";
+                    string errorContent = ErrorMessageHelper.ToFriendlyErrorMessage(response.Error?.Content) ?? response.ReasonPhrase ?? "Failed to add to cart.";
                     ErrorMessage = errorContent.Contains("Insufficient stock") ? errorContent : $"Error: {errorContent}";
                     _logger.LogWarning("Failed to add Book {BookId} to cart. Status: {StatusCode}, Reason: {Reason}", _actualBookId, response.StatusCode, ErrorMessage);
                     await DisplayAlertAsync("Error", ErrorMessage);

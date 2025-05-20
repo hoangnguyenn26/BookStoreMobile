@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using Refit;
 using System.Collections.ObjectModel;
+using Bookstore.Mobile.Helpers;
 
 namespace Bookstore.Mobile.ViewModels
 {
@@ -246,7 +247,7 @@ namespace Bookstore.Mobile.ViewModels
                             // Thử đọc như chuỗi trước
                             if (createResponse.Error.Content is string strContent)
                             {
-                                errorContent = strContent;
+                                errorContent = ErrorMessageHelper.ToFriendlyErrorMessage(strContent);
                             }
                             else
                             {
@@ -286,7 +287,7 @@ namespace Bookstore.Mobile.ViewModels
                             else { errorContent = response.ReasonPhrase ?? "Failed to update book"; }
                         }
                         else { errorContent = response?.ReasonPhrase ?? "Failed to update book"; }
-                        ErrorMessage = errorContent;
+                        ErrorMessage = ErrorMessageHelper.ToFriendlyErrorMessage(errorContent);
                     }
                 }
 

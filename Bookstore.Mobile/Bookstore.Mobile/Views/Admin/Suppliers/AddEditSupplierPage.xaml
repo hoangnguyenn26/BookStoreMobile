@@ -129,7 +129,6 @@
                 <!-- Save Button -->
                 <Button Text="Save Supplier" 
                         Command="{Binding SaveSupplierCommand}" 
-                        IsEnabled="{Binding CanSaveSupplier}" 
                         Style="{StaticResource PrimaryButton}"/>
             </VerticalStackLayout>
         </Grid>

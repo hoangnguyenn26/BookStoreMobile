@@ -10,7 +10,7 @@
              x:DataType="vm:BookDetailsViewModel"
              x:Class="Bookstore.Mobile.Views.BookDetailsPage"
              Title="{Binding Title, Mode=OneWay}"
-             BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}">
+             BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -145,7 +145,7 @@
                                 <Border Grid.Column="1"
                                         StrokeThickness="0"
                                         StrokeShape="RoundRectangle 8,8,8,8"
-                                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray700}}"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray100Light}, Dark={StaticResource Gray700Dark}}"
                                         Padding="15,8">
                                     <HorizontalStackLayout HorizontalOptions="Center" Spacing="5">
                                         <Label Text="Stock:" VerticalOptions="Center"/>
@@ -159,14 +159,14 @@
                             </Grid>
 
                             <!-- Add to Cart Section -->
-                            <Border BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray700}}"
+                            <Border BackgroundColor="{AppThemeBinding Light={StaticResource Gray100Light}, Dark={StaticResource Gray700Dark}}"
                                     StrokeThickness="0"
                                     StrokeShape="RoundRectangle 8,8,8,8"
                                     Padding="15,10">
                                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="15">
                                     <VerticalStackLayout Grid.Column="0" Spacing="2">
                                         <Label Text="Quantity" FontSize="Small" TextColor="{StaticResource Gray600Light}"/>
-                                        <Frame BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}"
+                                        <Frame BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800Dark}}"
                                                BorderColor="{StaticResource Transparent}"
                                                CornerRadius="6"
                                                Padding="5"
@@ -315,9 +315,9 @@
                                                WidthRequest="30"/>
 
                             <!-- Error Message cho Reviews -->
-                            <Label Text="{Binding ReviewsErrorMessage}" 
+                            <Label Text="{Binding ErrorMessage}" 
                                    Style="{StaticResource ErrorLabel}" 
-                                   IsVisible="{Binding HasReviewsError}"/>
+                                   IsVisible="{Binding HasError}"/>
 
                             <!-- Reviews Content -->
                             <CollectionView ItemsSource="{Binding Reviews, Mode=OneWay}" 
@@ -337,7 +337,7 @@
                                     <DataTemplate x:DataType="dto:ReviewDto">
                                         <Border StrokeThickness="0"
                                                 StrokeShape="RoundRectangle 8,8,8,8"
-                                                BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray700}}"
+                                                BackgroundColor="{AppThemeBinding Light={StaticResource Gray100Light}, Dark={StaticResource Gray700Dark}}"
                                                 Padding="15" 
                                                 Margin="0,0,0,10">
                                             <VerticalStackLayout Spacing="8">

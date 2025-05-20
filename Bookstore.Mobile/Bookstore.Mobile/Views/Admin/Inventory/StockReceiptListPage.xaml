@@ -7,7 +7,7 @@
              xmlns:system="clr-namespace:System;assembly=netstandard"
              x:DataType="vm:StockReceiptListViewModel"
              x:Class="Bookstore.Mobile.Views.StockReceiptListPage"
-             BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
+             BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}"
              Title="{Binding Title}">
 
     <ContentPage.Resources>
@@ -16,7 +16,7 @@
             <Style x:Key="Headline" TargetType="Label">
                 <Setter Property="FontSize" Value="24"/>
                 <Setter Property="FontAttributes" Value="Bold"/>
-                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"/>
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900Light}, Dark={StaticResource White}}"/>
                 <Setter Property="Margin" Value="0,0,0,5"/>
             </Style>
 
@@ -45,13 +45,13 @@
             </Style>
 
             <Style x:Key="CardBorder" TargetType="Border">
-                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=White, Dark={StaticResource Gray800}}"/>
-                <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray700}}"/>
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"/>
+                <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Gray200Light}, Dark={StaticResource Gray700Dark}}"/>
                 <Setter Property="StrokeShape" Value="RoundRectangle 12"/>
                 <Setter Property="StrokeThickness" Value="1"/>
                 <Setter Property="Shadow">
                     <Setter.Value>
-                        <Shadow Brush="{AppThemeBinding Light={StaticResource Gray300}, Dark=Black}"
+                        <Shadow Brush="{AppThemeBinding Light={StaticResource Gray300Light}, Dark={StaticResource Black}}"
                                 Offset="0,2"
                                 Radius="4"
                                 Opacity="0.2"/>
@@ -61,12 +61,12 @@
 
             <Style x:Key="ReceiptIdStyle" TargetType="Label">
                 <Setter Property="FontSize" Value="13"/>
-                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray600Light}, Dark={StaticResource Gray400Dark}}"/>
             </Style>
 
             <Style x:Key="DateStyle" TargetType="Label">
                 <Setter Property="FontSize" Value="13"/>
-                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"/>
                 <Setter Property="FontAttributes" Value="Bold"/>
             </Style>
 
@@ -99,7 +99,7 @@
         <!-- Loading Indicator -->
         <Grid Grid.Row="0" Grid.RowSpan="2" 
               IsVisible="{Binding IsBusy}"
-              BackgroundColor="{AppThemeBinding Light=White, Dark={StaticResource Gray900}}"
+              BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
               Opacity="0.7">
             <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="15">
                 <ActivityIndicator IsRunning="{Binding IsBusy}" 
@@ -188,7 +188,7 @@
                                     <Grid Grid.Row="1" 
                                           Padding="15,12" 
                                           ColumnDefinitions="*, Auto"
-                                          BackgroundColor="{AppThemeBinding Light={StaticResource Gray50}, Dark={StaticResource Gray800}}">
+                                          BackgroundColor="{AppThemeBinding Light={StaticResource Gray50Light}, Dark={StaticResource Gray800Dark}}">
 
                                         <Label Grid.Column="0" Style="{StaticResource ReceiptIdStyle}">
                                             <Label.FormattedText>
@@ -237,7 +237,7 @@
                 </CollectionView.ItemTemplate>
 
                 <CollectionView.Footer>
-                    <VerticalStackLayout Padding="0,5,0,20" IsVisible="{Binding _isLoadingMore}">
+                    <VerticalStackLayout Padding="0,5,0,20">
                         <ActivityIndicator IsRunning="True" 
                                           HorizontalOptions="Center"
                                           VerticalOptions="Center"

@@ -1,6 +1,7 @@
 ﻿using Bookstore.Mobile.Interfaces.Services;
 using Bookstore.Mobile.Models;
 using Bookstore.Mobile.Views;
+using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
@@ -95,6 +96,7 @@ namespace Bookstore.Mobile.ViewModels
                     {
                         MainThread.BeginInvokeOnMainThread(() => WishlistItems.Remove(itemInCollection));
                     }
+                    await Shell.Current.DisplaySnackbar($"Removed from your wishlist!", duration: TimeSpan.FromSeconds(2));
                 }
                 else
                 {

@@ -1,4 +1,5 @@
 ﻿// Bookstore.Mobile/ViewModels/AddEditPromotionViewModel.cs
+using Bookstore.Mobile.Helpers;
 using Bookstore.Mobile.Interfaces.Apis;
 using Bookstore.Mobile.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -139,7 +140,7 @@ namespace Bookstore.Mobile.ViewModels
                 }
                 else
                 {
-                    ErrorMessage = response.Error?.Content ?? "Failed to load promotion details.";
+                    ErrorMessage = ErrorMessageHelper.ToFriendlyErrorMessage(response.Error?.Content) ?? "Failed to load promotion details.";
                     _logger.LogWarning("Failed to load promotion {PromotionId} for editing. Status: {StatusCode}", promoId, response.StatusCode);
                 }
             }
@@ -205,7 +206,7 @@ namespace Bookstore.Mobile.ViewModels
                     };
                     createResponse = await _promotionApi.CreatePromotion(createDto);
                     success = createResponse.IsSuccessStatusCode;
-                    if (!success) ErrorMessage = createResponse.Error?.Content ?? "Failed to create promotion";
+                    if (!success) ErrorMessage = ErrorMessageHelper.ToFriendlyErrorMessage(createResponse.Error?.Content) ?? "Failed to create promotion";
                 }
                 else
                 {
@@ -221,7 +222,7 @@ namespace Bookstore.Mobile.ViewModels
                     };
                     updateResponse = await _promotionApi.UpdatePromotion(_actualPromotionId, updateDto);
                     success = updateResponse.IsSuccessStatusCode;
-                    if (!success) ErrorMessage = updateResponse.Error?.Content ?? "Failed to update promotion";
+                    if (!success) ErrorMessage = ErrorMessageHelper.ToFriendlyErrorMessage(updateResponse.Error?.Content) ?? "Failed to update promotion";
                 }
 
                 if (success)

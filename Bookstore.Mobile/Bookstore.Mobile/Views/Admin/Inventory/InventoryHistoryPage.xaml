@@ -24,7 +24,7 @@
                       IsVisible="{Binding ShowBookSearchResults}" HeightRequest="100">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="dto:BookDto">
-                        <TextCell Text="{Binding Title}" Detail="{Binding AuthorName}"/>
+                        <TextCell Text="{Binding Title}" Detail="{Binding Author.Name}"/>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>

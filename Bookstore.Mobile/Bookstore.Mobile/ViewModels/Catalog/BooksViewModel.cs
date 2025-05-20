@@ -10,9 +10,11 @@ using System.Collections.ObjectModel;
 namespace Bookstore.Mobile.ViewModels
 {
     [QueryProperty(nameof(CategoryIdQuery), "CategoryId")]
+    [QueryProperty(nameof(SearchTermQuery), "SearchTermQuery")]
     public partial class BooksViewModel : BaseViewModel
     {
         private readonly IBooksApi _booksApi;
+        private readonly ICategoriesApi _categoriesApi;
         private readonly ILogger<BooksViewModel> _logger;
         // private readonly INavigationService _navigationService;
 
@@ -21,9 +23,10 @@ namespace Bookstore.Mobile.ViewModels
         private bool _isLoadingMore = false;
         private bool _canLoadMore = true;
 
-        public BooksViewModel(IBooksApi booksApi, ILogger<BooksViewModel> logger /*, INavigationService navigationService*/)
+        public BooksViewModel(IBooksApi booksApi, ICategoriesApi categoriesApi, ILogger<BooksViewModel> logger /*, INavigationService navigationService*/)
         {
             _booksApi = booksApi;
+            _categoriesApi = categoriesApi;
             _logger = logger;
             // _navigationService = navigationService;
             Title = "Books"; // Sẽ cập nhật sau khi có CategoryId
@@ -56,11 +59,30 @@ namespace Bookstore.Mobile.ViewModels
         }
         [ObservableProperty]
         private string? _searchTerm;
+        private string? _searchTermQuery;
+        public string? SearchTermQuery
+        {
+            get => _searchTermQuery;
+            set
+            {
+                _searchTermQuery = value;
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    SearchTerm = value;
+                    if (LoadBooksCommand.CanExecute(null))
+                    {
+                        Books.Clear();
+                        _currentPage = 1;
+                        _canLoadMore = true;
+                        LoadBooksCommand.Execute(null);
+                    }
+                }
+            }
+        }
 
         partial void OnCategoryIdChanged(Guid? value)
         {
-            _logger.LogInformation("CategoryId received: {CategoryId}", value ?? Guid.Empty);
-            Title = $"Category: {value}";
+            _ = UpdateCategoryTitleAsync(value);
             Books.Clear();
             _currentPage = 1;
             _canLoadMore = true;
@@ -71,6 +93,43 @@ namespace Bookstore.Mobile.ViewModels
             }
         }
 
+        partial void OnSearchTermChanged(string? value)
+        {
+            if (LoadBooksCommand.CanExecute(null))
+            {
+                Books.Clear();
+                _currentPage = 1;
+                _canLoadMore = true;
+                LoadBooksCommand.Execute(null);
+            }
+        }
+
+        private async Task UpdateCategoryTitleAsync(Guid? categoryId)
+        {
+            if (categoryId.HasValue && categoryId.Value != Guid.Empty)
+            {
+                try
+                {
+                    var response = await _categoriesApi.GetCategoryById(categoryId.Value);
+                    if (response.IsSuccessStatusCode && response.Content != null)
+                    {
+                        Title = response.Content.Name;
+                    }
+                    else
+                    {
+                        Title = "Books";
+                    }
+                }
+                catch
+                {
+                    Title = "Books";
+                }
+            }
+            else
+            {
+                Title = "Books";
+            }
+        }
 
         // --- Commands ---
         [RelayCommand]
@@ -79,7 +138,7 @@ namespace Bookstore.Mobile.ViewModels
             await RunSafeAsync(async () =>
             {
                 _logger.LogInformation("Loading books (Page: {Page})", _currentPage);
-                var response = await _booksApi.GetBooks(CategoryId, null, null, _currentPage, PageSize);
+                var response = await _booksApi.GetBooks(CategoryId, null, SearchTerm, _currentPage, PageSize);
                 if (response.IsSuccessStatusCode && response.Content != null)
                 {
                     if (response.Content.Any())

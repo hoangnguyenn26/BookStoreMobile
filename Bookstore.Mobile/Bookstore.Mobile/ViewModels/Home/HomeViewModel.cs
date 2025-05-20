@@ -37,6 +37,9 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty]
         private bool _isLoggedIn;
 
+        [ObservableProperty]
+        private string? _searchTerm;
+
         [RelayCommand]
         private async Task LoadDashboardAsync()
         {
@@ -89,6 +92,15 @@ namespace Bookstore.Mobile.ViewModels
             _logger.LogInformation("Navigating to Books Page for Category Id: {CategoryId}", categoryId.Value);
             await Shell.Current.GoToAsync($"{nameof(BooksPage)}?CategoryId={categoryId.Value}");
             // await _navigationService.NavigateToAsync(nameof(BooksPage), new Dictionary<string, object> { { "CategoryId", categoryId.Value } });
+        }
+
+        [RelayCommand]
+        private async Task SearchBooksAsync()
+        {
+            if (string.IsNullOrWhiteSpace(SearchTerm)) return;
+            _logger.LogInformation($"Searching books with term: {SearchTerm}");
+            // Điều hướng sang BooksPage với SearchTerm
+            await Shell.Current.GoToAsync($"{nameof(BooksPage)}?SearchTermQuery={Uri.EscapeDataString(SearchTerm)}");
         }
 
         public void OnAppearing()

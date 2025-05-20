@@ -11,6 +11,12 @@
     <ScrollView>
         <VerticalStackLayout Spacing="20" Padding="16">
 
+            <!-- SearchBar for book search -->
+            <SearchBar Placeholder="Search books, authors, ISBN..."
+                       Text="{Binding SearchTerm, Mode=TwoWay}"
+                       SearchCommand="{Binding SearchBooksCommand}" 
+                       SearchCommandParameter="{Binding SearchTerm}"/>
+
             <!-- Welcome Message (If logged in) -->
             <Frame IsVisible="{Binding IsLoggedIn}"
                    BorderColor="{StaticResource Gray300Light}"

@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using Refit;
 using System.Collections.ObjectModel;
+using Bookstore.Mobile.Helpers;
 
 namespace Bookstore.Mobile.ViewModels
 {
@@ -105,7 +106,7 @@ namespace Bookstore.Mobile.ViewModels
                 }
                 else
                 {
-                    ErrorMessage = response.Error?.Content ?? "Category not found.";
+                    ErrorMessage = ErrorMessageHelper.ToFriendlyErrorMessage(response.Error?.Content) ?? "Category not found.";
                     _logger.LogWarning("Failed to load category {CategoryId}. Status: {StatusCode}",
                         categoryIdToLoad, response.StatusCode);
                 }
@@ -168,14 +169,14 @@ namespace Bookstore.Mobile.ViewModels
                     var createDto = new CreateCategoryDto { Name = Name!, Description = Description, ParentCategoryId = parentId };
                     createResponse = await _categoriesApi.CreateCategory(createDto);
                     success = createResponse.IsSuccessStatusCode;
-                    if (!success) ErrorMessage = createResponse.Error?.Content ?? "Failed";
+                    if (!success) ErrorMessage = ErrorMessageHelper.ToFriendlyErrorMessage(createResponse.Error?.Content) ?? "Failed";
                 }
                 else // Update
                 {
                     var updateDto = new UpdateCategoryDto { Name = Name!, Description = Description, ParentCategoryId = parentId };
                     response = await _categoriesApi.UpdateCategory(_actualCategoryId, updateDto);
                     success = response.IsSuccessStatusCode;
-                    if (!success) ErrorMessage = response.Error?.Content ?? "Failed";
+                    if (!success) ErrorMessage = ErrorMessageHelper.ToFriendlyErrorMessage(response.Error?.Content) ?? "Failed";
                 }
 
                 if (success)

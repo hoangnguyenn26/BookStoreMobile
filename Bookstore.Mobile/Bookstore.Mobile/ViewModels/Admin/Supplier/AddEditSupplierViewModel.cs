@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using Refit;
+using Bookstore.Mobile.Helpers;
 
 namespace Bookstore.Mobile.ViewModels
 {
@@ -90,7 +91,7 @@ namespace Bookstore.Mobile.ViewModels
                 }
                 else
                 {
-                    ErrorMessage = response.Error?.Content ?? "Supplier not found.";
+                    ErrorMessage = ErrorMessageHelper.ToFriendlyErrorMessage(response.Error?.Content) ?? "Supplier not found.";
                     _logger.LogWarning("Failed to load supplier {SupplierId}. Status: {StatusCode}", supplierIdToLoad, response.StatusCode);
                 }
             }
@@ -129,7 +130,7 @@ namespace Bookstore.Mobile.ViewModels
                     };
                     createResponse = await _supplierApi.CreateSupplier(createDto);
                     success = createResponse.IsSuccessStatusCode;
-                    if (!success) ErrorMessage = createResponse.Error?.Content ?? "Failed";
+                    if (!success) ErrorMessage = ErrorMessageHelper.ToFriendlyErrorMessage(createResponse.Error?.Content) ?? "Failed";
                 }
                 else // Update
                 {
@@ -143,7 +144,7 @@ namespace Bookstore.Mobile.ViewModels
                     };
                     response = await _supplierApi.UpdateSupplier(_actualSupplierId, updateDto);
                     success = response.IsSuccessStatusCode;
-                    if (!success) ErrorMessage = response.Error?.Content ?? "Failed";
+                    if (!success) ErrorMessage = ErrorMessageHelper.ToFriendlyErrorMessage(response.Error?.Content) ?? "Failed";
                 }
 
                 if (success)

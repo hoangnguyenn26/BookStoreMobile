@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using Refit;
 using System.ComponentModel.DataAnnotations;
+using Bookstore.Mobile.Helpers;
 
 namespace Bookstore.Mobile.ViewModels
 {
@@ -94,14 +95,14 @@ namespace Bookstore.Mobile.ViewModels
                     var createDto = new CreateAuthorDto { Name = Name!, Biography = Biography };
                     createResponse = await _authorApi.CreateAuthor(createDto);
                     success = createResponse.IsSuccessStatusCode;
-                    if (!success) ErrorMessage = createResponse.Error?.Content ?? "Failed";
+                    if (!success) ErrorMessage = ErrorMessageHelper.ToFriendlyErrorMessage(createResponse.Error?.Content) ?? "Failed";
                 }
                 else // Update
                 {
                     var updateDto = new UpdateAuthorDto { Name = Name!, Biography = Biography };
                     response = await _authorApi.UpdateAuthor(_actualAuthorId, updateDto);
                     success = response.IsSuccessStatusCode;
-                    if (!success) ErrorMessage = response.Error?.Content ?? "Failed";
+                    if (!success) ErrorMessage = ErrorMessageHelper.ToFriendlyErrorMessage(response.Error?.Content) ?? "Failed";
                 }
 
                 if (success)
