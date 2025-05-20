@@ -1,67 +1,169 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:Bookstore.Mobile.ViewModels"
-             x:DataType="vm:RegisterViewModel"
              x:Class="Bookstore.Mobile.Views.RegisterPage"
-             Title="Register"
-             Shell.PresentationMode="ModalAnimated">
-    <!-- Hiển thị dạng Modal -->
+             xmlns:viewmodels="clr-namespace:Bookstore.Mobile.ViewModels"
+             xmlns:converters="clr-namespace:Bookstore.Mobile.Converters"
+             x:DataType="viewmodels:RegisterViewModel"
+             Title="{Binding Title}">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="10">
-            <Label Text="Create Account" Style="{StaticResource Headline}" HorizontalOptions="Center" Margin="0,20,0,10"/>
+    <Grid RowDefinitions="Auto,*,Auto"
+          ColumnDefinitions="*,*"
+          Padding="20"
+          ColumnSpacing="20"
+          RowSpacing="10">
 
-            <Frame Style="{StaticResource EntryFrame}">
-                <Entry Placeholder="Username" Text="{Binding UserName}" ReturnType="Next"/>
-            </Frame>
-            <Frame Style="{StaticResource EntryFrame}">
-                <Entry Placeholder="Email" Text="{Binding Email}" Keyboard="Email" ReturnType="Next"/>
-            </Frame>
-            <Frame Style="{StaticResource EntryFrame}">
-                <Entry Placeholder="First Name (Optional)" Text="{Binding FirstName}" ReturnType="Next"/>
-            </Frame>
-            <Frame Style="{StaticResource EntryFrame}">
-                <Entry Placeholder="Last Name (Optional)" Text="{Binding LastName}" ReturnType="Next"/>
-            </Frame>
-            <Frame Style="{StaticResource EntryFrame}">
-                <Entry Placeholder="Phone Number (Optional)" Text="{Binding PhoneNumber}" Keyboard="Telephone" ReturnType="Next"/>
-            </Frame>
-            <Frame Style="{StaticResource EntryFrame}">
-                <Entry Placeholder="Password" Text="{Binding Password}" IsPassword="True" ReturnType="Next"/>
-            </Frame>
-            <Frame Style="{StaticResource EntryFrame}">
-                <Entry Placeholder="Confirm Password" Text="{Binding ConfirmPassword}" IsPassword="True" ReturnType="Go"/>
-            </Frame>
+        <!-- Header -->
+        <Label Grid.ColumnSpan="2"
+               Text="Tạo tài khoản mới"
+               FontSize="24"
+               FontAttributes="Bold"
+               HorizontalOptions="Center"
+               Margin="0,20,0,20" />
 
-            <Button Text="Register"
-                     Command="{Binding RegisterCommand}"
-                     IsEnabled="{Binding IsNotBusy}"
-                     Margin="0,20,0,0"/>
+        <!-- Activity Indicator -->
+        <ActivityIndicator Grid.Row="0"
+                           Grid.ColumnSpan="2"
+                           IsRunning="{Binding IsBusy}"
+                           IsVisible="{Binding IsBusy}"
+                           HorizontalOptions="Center" />
 
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HorizontalOptions="Center"/>
+        <ScrollView Grid.Row="1"
+                    Grid.ColumnSpan="2"
+                    IsVisible="{Binding ShowContent}">
+            <VerticalStackLayout Spacing="5">
 
-            <Label Text="{Binding ErrorMessage}"
-                    Style="{StaticResource ErrorLabel}"
-                    IsVisible="{Binding HasError}"/>
+                <!-- Error Message (If Any) -->
+                <Frame IsVisible="{Binding HasError}"
+                       BorderColor="{StaticResource ErrorLight}"
+                       BackgroundColor="{StaticResource ErrorLight}"
+                       Margin="0,0,0,15"
+                       Padding="10">
+                    <Label Text="{Binding ErrorMessage}"
+                           TextColor="{StaticResource ErrorLight}"
+                           FontSize="14" />
+                </Frame>
 
-            <!-- Nút quay lại Login -->
-            <Label HorizontalOptions="Center" Margin="0,15,0,0">
-                <Label.FormattedText>
-                    <FormattedString>
-                        <Span Text="Already have an account? "/>
-                        <Span Text="Login"
-                                  TextColor="{StaticResource PrimaryLight}"
-                                  FontAttributes="Bold"
-                                  TextDecorations="Underline">
-                            <Span.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding GoToLoginCommand}"/>
-                            </Span.GestureRecognizers>
-                        </Span>
-                    </FormattedString>
-                </Label.FormattedText>
-            </Label>
+                <!-- UserName Field -->
+                <Label Text="Tên đăng nhập *" Style="{StaticResource FormLabelStyle}" />
+                <Border Stroke="{OnPlatform Android=#E0E0E0, iOS=Transparent}"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 5">
+                    <Entry Text="{Binding UserName}" 
+                           Placeholder="Nhập tên đăng nhập (tối thiểu 3 ký tự)"
+                           Style="{StaticResource FormFieldStyle}" />
+                </Border>
+                <Label Text="{Binding UserNameError}"
+                       IsVisible="{Binding UserNameError, Converter={StaticResource StringIsNotNullOrEmptyConverter}}"
+                       Style="{StaticResource ValidationErrorStyle}" />
 
-        </VerticalStackLayout>
-    </ScrollView>
+                <!-- Email Field -->
+                <Label Text="Email *" Style="{StaticResource FormLabelStyle}" />
+                <Border Stroke="{OnPlatform Android=#E0E0E0, iOS=Transparent}"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 5">
+                    <Entry Text="{Binding Email}" 
+                           Placeholder="email@example.com"
+                           Keyboard="Email"
+                           Style="{StaticResource FormFieldStyle}" />
+                </Border>
+                <Label Text="{Binding EmailError}"
+                       IsVisible="{Binding EmailError, Converter={StaticResource StringIsNotNullOrEmptyConverter}}"
+                       Style="{StaticResource ValidationErrorStyle}" />
+
+                <!-- First Name Field -->
+                <Label Text="Tên" Style="{StaticResource FormLabelStyle}" />
+                <Border Stroke="{OnPlatform Android=#E0E0E0, iOS=Transparent}"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 5">
+                    <Entry Text="{Binding FirstName}" 
+                           Placeholder="Nhập tên"
+                           Style="{StaticResource FormFieldStyle}" />
+                </Border>
+
+                <!-- Last Name Field -->
+                <Label Text="Họ" Style="{StaticResource FormLabelStyle}" />
+                <Border Stroke="{OnPlatform Android=#E0E0E0, iOS=Transparent}"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 5">
+                    <Entry Text="{Binding LastName}" 
+                           Placeholder="Nhập họ"
+                           Style="{StaticResource FormFieldStyle}" />
+                </Border>
+
+                <!-- Phone Number Field -->
+                <Label Text="Số điện thoại" Style="{StaticResource FormLabelStyle}" />
+                <Border Stroke="{OnPlatform Android=#E0E0E0, iOS=Transparent}"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 5">
+                    <Entry Text="{Binding PhoneNumber}" 
+                           Placeholder="Nhập số điện thoại"
+                           Keyboard="Telephone"
+                           Style="{StaticResource FormFieldStyle}" />
+                </Border>
+                <Label Text="{Binding PhoneNumberError}"
+                       IsVisible="{Binding PhoneNumberError, Converter={StaticResource StringIsNotNullOrEmptyConverter}}"
+                       Style="{StaticResource ValidationErrorStyle}" />
+
+                <!-- Password Field -->
+                <Label Text="Mật khẩu *" Style="{StaticResource FormLabelStyle}" />
+                <Border Stroke="{OnPlatform Android=#E0E0E0, iOS=Transparent}"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 5">
+                    <Entry Text="{Binding Password}" 
+                           Placeholder="Nhập mật khẩu (tối thiểu 6 ký tự)"
+                           IsPassword="True"
+                           Style="{StaticResource FormFieldStyle}" />
+                </Border>
+                <Label Text="{Binding PasswordError}"
+                       IsVisible="{Binding PasswordError, Converter={StaticResource StringIsNotNullOrEmptyConverter}}"
+                       Style="{StaticResource ValidationErrorStyle}" />
+
+                <!-- Confirm Password Field -->
+                <Label Text="Xác nhận mật khẩu *" Style="{StaticResource FormLabelStyle}" />
+                <Border Stroke="{OnPlatform Android=#E0E0E0, iOS=Transparent}"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 5">
+                    <Entry Text="{Binding ConfirmPassword}" 
+                           Placeholder="Nhập lại mật khẩu"
+                           IsPassword="True"
+                           Style="{StaticResource FormFieldStyle}" />
+                </Border>
+                <Label Text="{Binding ConfirmPasswordError}"
+                       IsVisible="{Binding ConfirmPasswordError, Converter={StaticResource StringIsNotNullOrEmptyConverter}}"
+                       Style="{StaticResource ValidationErrorStyle}" />
+
+                <Label Text="(*) Thông tin bắt buộc" 
+                       Margin="5,15,0,10"
+                       FontSize="12"
+                       TextColor="{StaticResource Gray500Light}" />
+
+                <!-- Register Button -->
+                <Button Text="Đăng Ký" 
+                        Command="{Binding RegisterCommand}"
+                        HorizontalOptions="Fill"
+                        BackgroundColor="{StaticResource PrimaryLight}"
+                        TextColor="{StaticResource White}"
+                        Margin="0,15,0,10" />
+
+                <!-- Login Link -->
+                <HorizontalStackLayout HorizontalOptions="Center" Margin="0,15,0,0">
+                    <Label Text="Đã có tài khoản? " VerticalOptions="Center" />
+                    <Button Text="Đăng nhập" 
+                            Command="{Binding GoToLoginCommand}"
+                            BackgroundColor="Transparent"
+                            TextColor="{StaticResource PrimaryLight}"
+                            VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Bottom Area -->
+        <Grid Grid.Row="2" Grid.ColumnSpan="2">
+            <Label Text="© 2025 Bookstore Mobile"
+                   HorizontalOptions="Center"
+                   TextColor="{StaticResource Gray500Light}"
+                   FontSize="12" />
+        </Grid>
+    </Grid>
 </ContentPage>

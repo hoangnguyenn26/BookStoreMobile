@@ -1,5 +1,4 @@
-﻿
-using Bookstore.Mobile.Interfaces.Apis;
+﻿using Bookstore.Mobile.Interfaces.Apis;
 using Bookstore.Mobile.Interfaces.Services;
 using Bookstore.Mobile.Models;
 using Microsoft.Extensions.Logging;
@@ -92,7 +91,7 @@ namespace Bookstore.Mobile.Services
                 }
                 else
                 {
-                    string errorDetail = "Invalid username or password.";
+                    string errorDetail = "Tên đăng nhập hoặc mật khẩu không đúng";
                     if (response.Error != null)
                     {
                         _logger.LogWarning("Login failed for {LoginId}. Status: {StatusCode}. Reason: {Reason}",
@@ -111,13 +110,13 @@ namespace Bookstore.Mobile.Services
             catch (ApiException apiEx)
             {
                 _logger.LogError(apiEx, "API Exception during login for {LoginId}", loginRequest.LoginIdentifier);
-                _lastErrorMessage = "An error occurred during login."; // Lỗi chung
+                _lastErrorMessage = "Đã xảy ra lỗi trong quá trình đăng nhập";
                 return false;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Exception during login for {LoginId}", loginRequest.LoginIdentifier);
-                _lastErrorMessage = $"An unexpected error occurred: {ex.Message}";
+                _lastErrorMessage = $"Đã xảy ra lỗi không mong muốn: {ex.Message}";
                 return false;
             }
         }
@@ -137,7 +136,7 @@ namespace Bookstore.Mobile.Services
                 }
                 else
                 {
-                    string errorDetail = "Unknown registration error";
+                    string errorDetail = "Đã xảy ra lỗi trong quá trình đăng ký";
                     if (response.Error != null)
                     {
                         _logger.LogWarning("Registration failed for {Username}. Status: {StatusCode}. Reason: {Reason}",
@@ -148,20 +147,35 @@ namespace Bookstore.Mobile.Services
                             errorDetail = errorString;
                             try
                             {
-                                var problem = JsonSerializer.Deserialize<ValidationProblemDetails>(errorDetail);
-                                if (problem?.Errors != null && problem.Errors.Any())
+                                // Sử dụng ValidationProblemDetails từ Models namespace
+                                var problem = ValidationProblemDetails.Parse(errorString);
+
+                                if (problem != null)
                                 {
-                                    _lastErrorMessage = string.Join("; ", problem.Errors.SelectMany(e => e.Value));
+                                    // Lấy các thông báo lỗi thân thiện với người dùng
+                                    var friendlyMessages = problem.GetFriendlyMessages();
+                                    if (friendlyMessages.Any())
+                                    {
+                                        _lastErrorMessage = string.Join("\n", friendlyMessages);
+                                    }
+                                    else
+                                    {
+                                        _lastErrorMessage = problem.Detail ?? problem.Title ?? errorDetail;
+                                    }
                                 }
                                 else
                                 {
-                                    _lastErrorMessage = problem?.Detail ?? problem?.Title ?? errorDetail;
+                                    _lastErrorMessage = errorDetail;
                                 }
                             }
                             catch (JsonException jsonEx)
                             {
                                 _logger.LogWarning(jsonEx, "Could not deserialize error content as JSON: {ErrorContent}", errorDetail);
-                                _lastErrorMessage = errorDetail;
+                                // Thông báo lỗi thân thiện
+                                if (errorDetail.Contains("already exists"))
+                                    _lastErrorMessage = "Tên đăng nhập hoặc email đã tồn tại. Vui lòng chọn thông tin khác.";
+                                else
+                                    _lastErrorMessage = errorDetail;
                             }
                         }
                         else
@@ -181,7 +195,7 @@ namespace Bookstore.Mobile.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Exception during registration for {Username}", registerRequest.UserName);
-                _lastErrorMessage = $"An unexpected error occurred: {ex.Message}";
+                _lastErrorMessage = $"Đã xảy ra lỗi không mong muốn: {ex.Message}";
                 return false;
             }
         }
@@ -213,6 +227,4 @@ namespace Bookstore.Mobile.Services
             return CurrentUser.Roles.Contains(roleName, StringComparer.OrdinalIgnoreCase);
         }
     }
-
-    public class ValidationProblemDetails { public Dictionary<string, string[]>? Errors { get; set; } public string? Detail { get; set; } public string? Title { get; set; } }
 }
