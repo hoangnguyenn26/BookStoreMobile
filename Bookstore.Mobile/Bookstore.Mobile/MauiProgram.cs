@@ -6,6 +6,7 @@ using Bookstore.Mobile.Models;
 using Bookstore.Mobile.Services;
 using Bookstore.Mobile.ViewModels;
 using CommunityToolkit.Maui;
+using FluentValidation;
 using Microcharts.Maui;
 using Microsoft.Extensions.Logging;
 using Refit;
@@ -67,6 +68,8 @@ namespace Bookstore.Mobile
 
             // Đăng ký Handler là Transient
             builder.Services.AddTransient<AuthHeaderHandler>();
+            //Đăng ký Validators
+            builder.Services.AddValidatorsFromAssemblyContaining<LoginViewModelValidator>();
             // ----- Register AutoMapper -----
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
