@@ -1,11 +1,11 @@
-﻿using Bookstore.Mobile.Interfaces.Apis;
+﻿using Bookstore.Mobile.Helpers;
+using Bookstore.Mobile.Interfaces.Apis;
 using Bookstore.Mobile.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using Refit;
 using System.Collections.ObjectModel;
-using Bookstore.Mobile.Helpers;
 
 namespace Bookstore.Mobile.ViewModels
 {

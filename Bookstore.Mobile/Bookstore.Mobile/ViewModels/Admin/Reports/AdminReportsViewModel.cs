@@ -224,7 +224,14 @@ namespace Bookstore.Mobile.ViewModels
         }
 
         [RelayCommand]
-        private async Task RefreshAllReports() => await LoadAllReportsAsync();
+        private async Task RefreshAllReports()
+        {
+            // Reset filters to default
+            StartDate = DateTime.Now.Date.AddDays(-6);
+            EndDate = DateTime.Now.Date;
+            LowStockThreshold = 5;
+            await LoadAllReportsAsync();
+        }
 
         [RelayCommand]
         private async Task ReloadLowStock() => await LoadLowStockReportInternalAsync(); // Command for reload button

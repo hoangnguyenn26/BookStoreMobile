@@ -73,14 +73,14 @@
             <Style x:Key="SupplierStyle" TargetType="Label">
                 <Setter Property="FontSize" Value="15"/>
                 <Setter Property="FontAttributes" Value="Bold"/>
-                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark=White}"/>
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900Light}, Dark=White}"/>
             </Style>
 
             <Style x:Key="EmptyTextStyle" TargetType="Label">
                 <Setter Property="HorizontalOptions" Value="Center"/>
                 <Setter Property="VerticalOptions" Value="Center"/>
                 <Setter Property="FontSize" Value="16"/>
-                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray600Light}, Dark={StaticResource Gray400Dark}}"/>
             </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
@@ -207,7 +207,7 @@
                                     <!-- Supplier Info -->
                                     <Grid Grid.Row="2" Padding="15,15">
                                         <Label Style="{StaticResource SupplierStyle}"
-                                               TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark=White}"
+                                               TextColor="{AppThemeBinding Light={StaticResource Gray900Light}, Dark=White}"
                                                VerticalOptions="Center"
                                                IsVisible="{Binding Supplier, Converter={StaticResource ObjectNotNullBoolConverter}}">
                                             <Label.FormattedText>
@@ -247,7 +247,7 @@
                         <Label Text="Loading more..."
                                HorizontalOptions="Center"
                                FontSize="12"
-                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
+                               TextColor="{AppThemeBinding Light={StaticResource Gray600Light}, Dark={StaticResource Gray400Dark}}"/>
                     </VerticalStackLayout>
                 </CollectionView.Footer>
             </CollectionView>

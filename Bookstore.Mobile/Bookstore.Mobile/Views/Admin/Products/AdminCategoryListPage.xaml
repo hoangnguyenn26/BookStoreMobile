@@ -28,13 +28,7 @@
                    Text="{Binding SearchTerm}"
                    Margin="15,0"/>
 
-        <!-- Loading Indicators -->
-        <ActivityIndicator Grid.Row="1" Grid.RowSpan="2" 
-                          IsRunning="{Binding IsBusy}" 
-                          IsVisible="{Binding IsBusy}" 
-                          VerticalOptions="Center" 
-                          HorizontalOptions="Center"/>
-
+        <!-- Error Message -->
         <Label Grid.Row="2" 
                Text="{Binding ErrorMessage}" 
                Style="{StaticResource ErrorLabel}" 
@@ -51,7 +45,7 @@
                            SelectionMode="None"
                            Margin="10"
                            RemainingItemsThreshold="5"
-                           RemainingItemsThresholdReachedCommand="{Binding LoadMoreCategoriesCommand}">
+                           RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}">
 
                 <CollectionView.EmptyView>
                     <Label Text="No categories found." 

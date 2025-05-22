@@ -15,7 +15,6 @@ namespace Bookstore.Mobile.ViewModels
         private int _currentPage = 1;
         private const int PageSize = 15;
         private bool _canLoadMore = true;
-        private bool _hasLoaded = false;
 
         public AdminCategoryListViewModel(ICategoriesApi categoriesApi, ILogger<AdminCategoryListViewModel> logger)
         {
@@ -31,91 +30,79 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty]
         private string? _searchTerm;
 
-        partial void OnSearchTermChanged(string? value) => FilterCategories(value);
-
         [RelayCommand]
-        private async Task LoadCategoriesAsync(bool isRefresh = false)
+        private async Task LoadCategories(bool isRefreshing = false)
         {
-            await RunSafeAsync(async () =>
+            if (IsBusy && !isRefreshing)
+                return;
+
+            try
             {
-                if (isRefresh)
+                IsBusy = true;
+                if (isRefreshing || !string.IsNullOrEmpty(SearchTerm))
                 {
                     _currentPage = 1;
-                    _canLoadMore = true;
                     Categories.Clear();
+                    _canLoadMore = true;
                 }
 
                 var response = await _categoriesApi.GetCategories(_currentPage, PageSize);
+
                 if (response.IsSuccessStatusCode && response.Content != null)
                 {
                     foreach (var cat in response.Content.OrderBy(c => c.Name))
-                        Categories.Add(cat);
+                    {
+                        if (!Categories.Any(c => c.Id == cat.Id))
+                            Categories.Add(cat);
+                    }
+
+                    _currentPage++;
                     _canLoadMore = response.Content.Count() == PageSize;
                 }
                 else
                 {
                     ErrorMessage = response.Error?.Content ?? "Failed to load categories.";
                 }
-            }, showBusy: true);
-        }
-
-        [RelayCommand]
-        private async Task LoadMoreCategoriesAsync()
-        {
-            if (IsBusy || !_canLoadMore) return;
-
-            await RunSafeAsync(async () =>
+            }
+            catch (Exception ex)
             {
-                _currentPage++;
-                var response = await _categoriesApi.GetCategories(_currentPage, PageSize);
-                if (response.IsSuccessStatusCode && response.Content != null)
-                {
-                    foreach (var cat in response.Content.OrderBy(c => c.Name))
-                        Categories.Add(cat);
-                    _canLoadMore = response.Content.Count() == PageSize;
-                }
-            }, showBusy: true);
-        }
-
-        [RelayCommand]
-        private async Task RefreshAsync() => await LoadCategoriesAsync(true);
-
-        private void FilterCategories(string? searchTerm)
-        {
-            MainThread.BeginInvokeOnMainThread(() =>
+                _logger.LogError(ex, "Error loading categories");
+                ErrorMessage = $"Error: {ex.Message}";
+            }
+            finally
             {
-                if (string.IsNullOrWhiteSpace(searchTerm))
-                {
-                    LoadCategoriesCommand.Execute(false);
-                    return;
-                }
-
-                var filtered = Categories
-                    .Where(c => c.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                               (c.Description?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false))
-                    .ToList();
-
-                Categories.Clear();
-                foreach (var cat in filtered)
-                {
-                    Categories.Add(cat);
-                }
-            });
+                IsBusy = false;
+            }
         }
 
         [RelayCommand]
-        private async Task GoToAddCategoryAsync() =>
+        private async Task LoadMore()
+        {
+            if (!_canLoadMore || IsBusy) return;
+            await LoadCategories();
+        }
+
+        [RelayCommand]
+        private async Task Refresh() => await LoadCategories(true);
+
+        partial void OnSearchTermChanged(string? value)
+        {
+            LoadCategoriesCommand.Execute(false);
+        }
+
+        [RelayCommand]
+        private async Task GoToAddCategory() =>
             await Shell.Current.GoToAsync($"{nameof(AddEditCategoryPage)}?CategoryId={Guid.Empty}");
 
         [RelayCommand]
-        private async Task GoToEditCategoryAsync(Guid? categoryId)
+        private async Task GoToEditCategory(Guid? categoryId)
         {
             if (categoryId.HasValue)
                 await Shell.Current.GoToAsync($"{nameof(AddEditCategoryPage)}?CategoryId={categoryId.Value}");
         }
 
         [RelayCommand]
-        private async Task DeleteCategoryAsync(Guid? categoryId)
+        private async Task DeleteCategory(Guid? categoryId)
         {
             if (!categoryId.HasValue || IsBusy) return;
 
@@ -126,8 +113,9 @@ namespace Bookstore.Mobile.ViewModels
                 "No");
             if (!confirm) return;
 
-            await RunSafeAsync(async () =>
+            try
             {
+                IsBusy = true;
                 var response = await _categoriesApi.DeleteCategory(categoryId.Value);
                 if (response.IsSuccessStatusCode)
                 {
@@ -137,20 +125,20 @@ namespace Bookstore.Mobile.ViewModels
                 }
                 else
                 {
-                    throw new Exception(response.Error?.Content ?? "Failed to delete category");
+                    ErrorMessage = response.Error?.Content ?? "Failed to delete category";
                 }
-            }, showBusy: true);
-        }
-
-        public void OnAppearing()
-        {
-            if (!_hasLoaded)
+            }
+            catch (Exception ex)
             {
-                _hasLoaded = true;
-                LoadCategoriesCommand.Execute(false);
+                _logger.LogError(ex, "Error deleting category");
+                ErrorMessage = $"Error: {ex.Message}";
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
 
-        public void OnDisappearing() => _hasLoaded = false;
+        public void OnAppearing() => LoadCategoriesCommand.Execute(false);
     }
 }

@@ -29,7 +29,7 @@ namespace Bookstore.Mobile.ViewModels
             bool isRefreshing = parameter is bool b && b;
             if (IsBusy && !isRefreshing) return;
             IsBusy = true;
-            if (isRefreshing) Promotions.Clear();
+            Promotions.Clear(); // Always clear on refresh or reload
             ErrorMessage = null;
             try
             {
@@ -37,7 +37,6 @@ namespace Bookstore.Mobile.ViewModels
                 var response = await _promotionApi.GetAllPromotions();
                 if (response.IsSuccessStatusCode && response.Content != null)
                 {
-                    if (!isRefreshing) Promotions.Clear(); // Clear if not refreshing (initial load)
                     foreach (var promo in response.Content.OrderByDescending(p => p.CreatedAtUtc))
                     {
                         Promotions.Add(promo);
