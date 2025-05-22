@@ -4,6 +4,8 @@
                     xmlns:converters="clr-namespace:Bookstore.Mobile.Converters">
     <!-- Bool to Wishlist Icon -->
     <converters:BoolToWishlistIconConverter x:Key="BoolToWishlistIconConverter" />
+    <!-- Bool to Wishlist Color -->
+    <converters:BoolToWishlistColorConverter x:Key="BoolToWishlistColorConverter" />
     <!-- Enum to ItemsSource -->
     <converters:EnumToItemsSourceConverter x:Key="EnumToItemsSourceConverter" />
     <!-- Bool to Status Color -->
@@ -19,7 +21,9 @@
     <!-- Order Status to String -->
     <converters:OrderStatusToStringConverter x:Key="OrderStatusToStringConverter" />
     <!-- Rating to Star Icon -->
-    <converters:RatingToStarIconConverter x:Key="RatingToStarIconConverter" />
+    <converters:RatingToStarGlyphConverter x:Key="RatingToStarGlyphConverter" />
+    <!-- Rating to star color -->
+    <converters:RatingToStarColorConverter x:Key="RatingToStarColorConverter"/>
     <!-- Stock to Color -->
     <converters:StockToColorConverter x:Key="StockToColorConverter" />
     <!-- String Not Null Or Empty to Bool -->
@@ -44,5 +48,7 @@
     <converters:PositiveNegativeColorConverter x:Key="PositiveNegativeColorConverter" />
     <!-- ContainsKeyConverter -->
     <converters:ContainsKeyConverter x:Key="ContainsKeyConverter"/>
+    
+    
 
 </ResourceDictionary> 

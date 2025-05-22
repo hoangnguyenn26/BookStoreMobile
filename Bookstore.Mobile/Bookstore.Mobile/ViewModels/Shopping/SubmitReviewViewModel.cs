@@ -6,7 +6,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Bookstore.Mobile.ViewModels
 {
-    [QueryProperty(nameof(BookId), "BookId")]
+    // Change the QueryProperty to use BookIdString instead of BookId
+    [QueryProperty(nameof(BookIdString), "BookId")]
     [QueryProperty(nameof(BookTitle), "BookTitle")]
     public partial class SubmitReviewViewModel : BaseViewModel
     {
@@ -20,8 +21,30 @@ namespace Bookstore.Mobile.ViewModels
             _logger = logger;
         }
 
+        private string _bookIdString;
+
         [ObservableProperty]
-        private Guid _bookId;
+        private Guid? _bookId;
+
+        // Property to handle the string representation of the BookId
+        public string BookIdString
+        {
+            get => _bookIdString;
+            set
+            {
+                _bookIdString = value;
+                if (Guid.TryParse(value, out Guid parsedGuid))
+                {
+                    BookId = parsedGuid;
+                    _logger.LogInformation("Successfully parsed BookId from string: {BookIdString} to Guid: {BookId}", value, parsedGuid);
+                }
+                else
+                {
+                    BookId = null;
+                    _logger.LogWarning("Failed to parse BookId from string value: {BookIdString}", value);
+                }
+            }
+        }
 
         [ObservableProperty]
         private string? _bookTitle;
@@ -33,9 +56,9 @@ namespace Bookstore.Mobile.ViewModels
 
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(CurrentRating))] // Thông báo thay đổi cho CurrentRating để cập nhật sao
+        [NotifyPropertyChangedFor(nameof(CurrentRating))]
         [NotifyCanExecuteChangedFor(nameof(SubmitReviewCommand))]
-        private int _selectedRating = 0; // Lưu rating người dùng chọn
+        private int _selectedRating = 0;
 
         [ObservableProperty]
         private string? _comment;
@@ -49,12 +72,14 @@ namespace Bookstore.Mobile.ViewModels
 
         // --- Commands ---
         [RelayCommand]
-        private void SetRating(object? ratingParam) // Nhận int từ CommandParameter
+        private void SetRating(object ratingParam)
         {
-            if (ratingParam is int rating && rating >= 1 && rating <= 5)
+            if (int.TryParse(ratingParam?.ToString(), out int rating) && rating >= 1 && rating <= 5)
             {
-                SelectedRating = rating; // Cập nhật rating được chọn
+                SelectedRating = rating;
+                OnPropertyChanged(nameof(CurrentRating));
                 _logger.LogInformation("Rating set to: {Rating}", rating);
+                (SubmitReviewCommand as Command)?.ChangeCanExecute();
             }
         }
 
@@ -65,7 +90,7 @@ namespace Bookstore.Mobile.ViewModels
             if (IsBusy) return;
             IsBusy = true;
             ErrorMessage = null;
-            _logger.LogInformation("Submitting review for Book {BookId} with Rating {Rating}", BookId, SelectedRating);
+            _logger.LogInformation("Submitting review for Book {BookId}", BookId);
 
             try
             {
@@ -75,7 +100,15 @@ namespace Bookstore.Mobile.ViewModels
                     Comment = Comment
                 };
 
-                var response = await _reviewApi.SubmitReview(BookId, createDto);
+                if (!BookId.HasValue)
+                {
+                    ErrorMessage = "Invalid book ID.";
+                    _logger.LogWarning("Attempted to submit review with invalid BookId. BookIdString was: {BookIdString}", BookIdString);
+                    await DisplayAlertAsync("Error", ErrorMessage);
+                    return;
+                }
+
+                var response = await _reviewApi.SubmitReview(BookId.Value, createDto);
 
                 if (response.IsSuccessStatusCode)
                 {
