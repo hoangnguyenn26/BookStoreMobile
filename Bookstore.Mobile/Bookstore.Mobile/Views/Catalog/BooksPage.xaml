@@ -45,8 +45,8 @@
                                 </VerticalStackLayout>
                             </StackLayout>
                             <Frame.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=GoToBookDetailsCommand}"
-                                CommandParameter="{Binding Id}"/>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:BooksViewModel}}, Path=GoToBookDetailsCommand}"
+                                                      CommandParameter="{Binding Id}"/>
                             </Frame.GestureRecognizers>
                         </Frame>
                     </DataTemplate>

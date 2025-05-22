@@ -12,13 +12,6 @@
              Title="{Binding Title, Mode=OneWay}"
              BackgroundColor="{AppThemeBinding Light={StaticResource BackgroundLight}, Dark={StaticResource BackgroundDark}}">
 
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <converters:BoolToWishlistIconConverter x:Key="BoolToWishlistIconConverter"/>
-            <converters:BoolToWishlistColorConverter x:Key="BoolToWishlistColorConverter"/>
-        </ResourceDictionary>
-    </ContentPage.Resources>
-
     <Grid RowDefinitions="Auto,*">
         <!-- Loading Indicator và Error Message -->
         <VerticalStackLayout Grid.Row="0" Grid.RowSpan="2" 
@@ -72,7 +65,7 @@
                         <Button x:Name="WishlistButton"
                                 Command="{Binding ToggleWishlistCommand}"
                                 IsEnabled="{Binding CanToggleWishlist, Mode=OneWay}"
-                                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800Dark}}"
                                 WidthRequest="50"
                                 HeightRequest="50"
                                 CornerRadius="25"
@@ -102,7 +95,7 @@
                     <Border Stroke="{StaticResource Transparent}"
                             StrokeThickness="1"
                             StrokeShape="RoundRectangle 12,12,12,12"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800Dark}}"
                             Margin="15,0,15,15"
                             Padding="20"
                             Shadow="{Shadow Brush={StaticResource Black}, Offset='0,4', Radius=8, Opacity=0.1}">
@@ -112,7 +105,7 @@
                                 <Label Text="{Binding BookDetails.Title, Mode=OneWay}" 
                                        FontSize="24" 
                                        FontAttributes="Bold"
-                                       TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray900Light}, Dark={StaticResource White}}"
                                        LineBreakMode="WordWrap"/>
 
                                 <HorizontalStackLayout Spacing="5">
@@ -172,34 +165,32 @@
                                                Padding="5"
                                                HasShadow="False">
                                             <HorizontalStackLayout Spacing="10">
-                                                <Button Text="-" 
+                                                <Button Text="-"
                                                         Command="{Binding DecrementQuantityCommand}"
                                                         WidthRequest="40"
                                                         HeightRequest="40"
                                                         CornerRadius="20"
                                                         Padding="0"
                                                         BorderWidth="0"
-                                                        BackgroundColor="{StaticResource Transparent}"
+                                                        BackgroundColor="{StaticResource Gray200Light}"
                                                         TextColor="{StaticResource PrimaryLight}"
                                                         FontSize="20"
                                                         IsEnabled="{Binding CanDecrement, Mode=OneWay}"/>
-
-                                                <Label Text="{Binding QuantityToAdd, Mode=OneWay}" 
-                                                       VerticalOptions="Center" 
+                                                <Label Text="{Binding QuantityToAdd, Mode=OneWay}"
+                                                       VerticalOptions="Center"
                                                        HorizontalOptions="Center"
                                                        WidthRequest="30"
                                                        HorizontalTextAlignment="Center"
-                                                       FontSize="Medium" 
+                                                       FontSize="Medium"
                                                        FontAttributes="Bold"/>
-
-                                                <Button Text="+" 
+                                                <Button Text="+"
                                                         Command="{Binding IncrementQuantityCommand}"
                                                         WidthRequest="40"
                                                         HeightRequest="40"
                                                         CornerRadius="20"
                                                         Padding="0"
                                                         BorderWidth="0"
-                                                        BackgroundColor="{StaticResource Transparent}"
+                                                        BackgroundColor="{StaticResource Gray200Light}"
                                                         TextColor="{StaticResource PrimaryLight}"
                                                         FontSize="20"
                                                         IsEnabled="{Binding CanIncrement, Mode=OneWay}"/>
@@ -223,7 +214,7 @@
                     </Border>
 
                     <!-- Description Section -->
-                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}"
+                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800Dark}}"
                             Stroke="{StaticResource Transparent}"
                             StrokeThickness="1"
                             StrokeShape="RoundRectangle 12,12,12,12"
@@ -243,7 +234,7 @@
                     </Border>
 
                     <!-- Details Section -->
-                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}"
+                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800Dark}}"
                             Stroke="{StaticResource Transparent}"
                             StrokeThickness="1"
                             StrokeShape="RoundRectangle 12,12,12,12"
@@ -278,7 +269,7 @@
                     </Border>
 
                     <!-- Reviews Section -->
-                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800}}"
+                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray800Dark}}"
                             Stroke="{StaticResource Transparent}"
                             StrokeThickness="1"
                             StrokeShape="RoundRectangle 12,12,12,12"
@@ -295,10 +286,10 @@
                                        VerticalOptions="Center"/>
 
                                 <Button Grid.Column="1"
-                                        Text="Write a Review" 
+                                        Text="Write a Review"
                                         Command="{Binding GoToWriteReviewCommand}"
-                                        TextColor="{StaticResource Primary}"
-                                        BackgroundColor="Transparent"
+                                        TextColor="{StaticResource White}"
+                                        BackgroundColor="{StaticResource PrimaryLight}"
                                         FontSize="Small"
                                         CornerRadius="15"
                                         BorderColor="{StaticResource Primary}"

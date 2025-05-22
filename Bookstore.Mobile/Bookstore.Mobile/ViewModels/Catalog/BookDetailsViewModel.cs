@@ -1,15 +1,14 @@
-﻿using Bookstore.Mobile.Interfaces.Apis;
+﻿using Bookstore.Mobile.Helpers;
+using Bookstore.Mobile.Interfaces.Apis;
 using Bookstore.Mobile.Interfaces.Services;
 using Bookstore.Mobile.Models;
 using Bookstore.Mobile.Views;
+using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using Refit;
 using System.Collections.ObjectModel;
-using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Maui.Core;
-using Bookstore.Mobile.Helpers;
 
 namespace Bookstore.Mobile.ViewModels
 {
@@ -138,8 +137,12 @@ namespace Bookstore.Mobile.ViewModels
                 OnPropertyChanged(nameof(ShowContent));
                 OnPropertyChanged(nameof(CanAddToCart));
                 OnPropertyChanged(nameof(CanToggleWishlist));
+                OnPropertyChanged(nameof(CanIncrement));
+                OnPropertyChanged(nameof(CanDecrement));
                 (AddToCartCommand as Command)?.ChangeCanExecute();
                 (ToggleWishlistCommand as Command)?.ChangeCanExecute();
+                (IncrementQuantityCommand as Command)?.ChangeCanExecute();
+                (DecrementQuantityCommand as Command)?.ChangeCanExecute();
             }
         }
 
@@ -312,6 +315,8 @@ namespace Bookstore.Mobile.ViewModels
                 OnPropertyChanged(nameof(ShowContent));
                 OnPropertyChanged(nameof(CanAddToCart));
                 OnPropertyChanged(nameof(CanToggleWishlist));
+                OnPropertyChanged(nameof(CanIncrement));
+                OnPropertyChanged(nameof(CanDecrement));
                 (AddToCartCommand as Command)?.ChangeCanExecute();
                 (ToggleWishlistCommand as Command)?.ChangeCanExecute();
             }
@@ -321,20 +326,18 @@ namespace Bookstore.Mobile.ViewModels
         private async Task GoToWriteReviewAsync()
         {
             if (BookDetails == null) return;
-
             try
             {
                 IsBusy = true;
-
                 if (!_authService.IsLoggedIn)
                 {
                     await DisplayAlertAsync("Login Required", "Please login to write a review.", "OK");
                     await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
                     return;
                 }
-
-                _logger.LogInformation("Navigating to Submit Review Page for Book {BookId}", _actualBookId);
-                await Shell.Current.GoToAsync($"{nameof(SubmitReviewPage)}?BookId={_actualBookId}&BookTitle={Uri.EscapeDataString(BookDetails.Title)}");
+                string bookIdParam = _actualBookId.ToString();
+                _logger.LogInformation("Navigating to Submit Review Page for Book {BookId}", bookIdParam);
+                await Shell.Current.GoToAsync($"{nameof(SubmitReviewPage)}?BookId={bookIdParam}&BookTitle={Uri.EscapeDataString(BookDetails.Title)}");
             }
             catch (Exception ex)
             {
@@ -350,6 +353,8 @@ namespace Bookstore.Mobile.ViewModels
                 OnPropertyChanged(nameof(ShowContent));
                 OnPropertyChanged(nameof(CanAddToCart));
                 OnPropertyChanged(nameof(CanToggleWishlist));
+                OnPropertyChanged(nameof(CanIncrement));
+                OnPropertyChanged(nameof(CanDecrement));
                 (AddToCartCommand as Command)?.ChangeCanExecute();
                 (ToggleWishlistCommand as Command)?.ChangeCanExecute();
             }
@@ -388,18 +393,20 @@ namespace Bookstore.Mobile.ViewModels
         private void IncrementQuantity()
         {
             if (BookDetails == null || QuantityToAdd >= BookDetails.StockQuantity) return;
-
             QuantityToAdd++;
             _logger.LogDebug("Incremented quantity to {QuantityToAdd}", QuantityToAdd);
+            (IncrementQuantityCommand as Command)?.ChangeCanExecute();
+            (DecrementQuantityCommand as Command)?.ChangeCanExecute();
         }
 
         [RelayCommand(CanExecute = nameof(CanDecrement))]
         private void DecrementQuantity()
         {
             if (QuantityToAdd <= 1) return;
-
             QuantityToAdd--;
             _logger.LogDebug("Decremented quantity to {QuantityToAdd}", QuantityToAdd);
+            (IncrementQuantityCommand as Command)?.ChangeCanExecute();
+            (DecrementQuantityCommand as Command)?.ChangeCanExecute();
         }
     }
 }
