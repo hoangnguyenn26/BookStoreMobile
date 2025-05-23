@@ -46,7 +46,7 @@ namespace Bookstore.Mobile.ViewModels
                     _canLoadMore = true;
                 }
 
-                var response = await _authorApi.GetAuthors(_currentPage, PageSize);
+                var response = await _authorApi.GetAuthors(SearchTerm, _currentPage, PageSize);
 
                 if (response.IsSuccessStatusCode && response.Content != null)
                 {

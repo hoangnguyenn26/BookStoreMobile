@@ -46,7 +46,7 @@ namespace Bookstore.Mobile.ViewModels
                     _canLoadMore = true;
                 }
 
-                var response = await _categoriesApi.GetCategories(_currentPage, PageSize);
+                var response = await _categoriesApi.GetCategories(SearchTerm, _currentPage, PageSize);
 
                 if (response.IsSuccessStatusCode && response.Content != null)
                 {

@@ -149,8 +149,8 @@ namespace Bookstore.Mobile.ViewModels
             try
             {
                 _logger.LogInformation("Loading category and author options for pickers.");
-                var catTask = _categoriesApi.GetCategories();
-                var authTask = _authorApi.GetAuthors();
+                var catTask = _categoriesApi.GetCategories(null);
+                var authTask = _authorApi.GetAuthors(null);
 
                 await Task.WhenAll(catTask, authTask);
 

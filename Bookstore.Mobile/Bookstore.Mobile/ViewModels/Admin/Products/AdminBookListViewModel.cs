@@ -49,14 +49,14 @@ namespace Bookstore.Mobile.ViewModels
         {
             await RunSafeAsync(async () =>
             {
-                var catResponse = await _categoriesApi.GetCategories();
+                var catResponse = await _categoriesApi.GetCategories(null);
                 if (catResponse.IsSuccessStatusCode && catResponse.Content != null)
                 {
                     Categories.Clear();
                     Categories.Add(new CategoryDto { Id = Guid.Empty, Name = "All Categories" });
                     foreach (var cat in catResponse.Content.OrderBy(c => c.Name)) Categories.Add(cat);
                 }
-                var authResponse = await _authorApi.GetAuthors();
+                var authResponse = await _authorApi.GetAuthors(null);
                 if (authResponse.IsSuccessStatusCode && authResponse.Content != null)
                 {
                     Authors.Clear();

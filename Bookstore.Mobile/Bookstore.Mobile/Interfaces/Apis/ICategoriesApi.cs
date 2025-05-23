@@ -6,7 +6,7 @@ namespace Bookstore.Mobile.Interfaces.Apis
     public interface ICategoriesApi
     {
         [Get("/v1/categories")]
-        Task<ApiResponse<IEnumerable<CategoryDto>>> GetCategories([Query] int page = 1, [Query] int pageSize = 10);
+        Task<ApiResponse<IEnumerable<CategoryDto>>> GetCategories([Query] string? search, [Query] int page = 1, [Query] int pageSize = 10);
 
         [Get("/v1/categories/{id}")]
         Task<ApiResponse<CategoryDto>> GetCategoryById(Guid id);

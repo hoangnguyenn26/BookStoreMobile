@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.RegularExpressions;
+using FluentValidation;
 
 namespace Bookstore.Mobile.ViewModels
 {
@@ -14,12 +15,14 @@ namespace Bookstore.Mobile.ViewModels
     {
         private readonly IAuthService _authService;
         private readonly ILogger<RegisterViewModel> _logger;
+        private readonly IValidator<RegisterRequestDto> _registerValidator;
 
-        public RegisterViewModel(IAuthService authService, ILogger<RegisterViewModel> logger)
+        public RegisterViewModel(IAuthService authService, ILogger<RegisterViewModel> logger, IValidator<RegisterRequestDto> registerValidator)
         {
             Title = "Đăng ký";
             _authService = authService;
             _logger = logger;
+            _registerValidator = registerValidator;
         }
 
         [ObservableProperty]
@@ -68,24 +71,30 @@ namespace Bookstore.Mobile.ViewModels
         [RelayCommand(CanExecute = nameof(CanRegister))]
         private async Task RegisterAsync()
         {
-            // Xóa lỗi cũ
             FieldErrors.Clear();
             ErrorMessage = null;
             OnPropertyChanged(nameof(HasError));
 
-            // Validation chi tiết phía client
-            bool isValid = ValidateForm();
-
-            if (!isValid)
+            var registerDto = new RegisterRequestDto
             {
-                // Hiển thị tổng hợp các lỗi trên UI
-                var errorBuilder = new StringBuilder("Vui lòng kiểm tra lại thông tin:");
-                foreach (var error in FieldErrors)
-                {
-                    errorBuilder.AppendLine($"\n• {error.Value}");
-                }
+                UserName = UserName?.Trim(),
+                Email = Email?.Trim(),
+                Password = Password,
+                ConfirmPassword = ConfirmPassword,
+                FirstName = FirstName?.Trim(),
+                LastName = LastName?.Trim(),
+                PhoneNumber = PhoneNumber?.Trim()
+            };
 
-                ErrorMessage = errorBuilder.ToString();
+            // Validate bằng FluentValidation
+            var validationResult = await _registerValidator.ValidateAsync(registerDto);
+            if (!validationResult.IsValid)
+            {
+                foreach (var error in validationResult.Errors)
+                {
+                    FieldErrors[error.PropertyName] = error.ErrorMessage;
+                }
+                ErrorMessage = "Vui lòng kiểm tra lại thông tin:\n" + string.Join("\n", validationResult.Errors.Select(e => "• " + e.ErrorMessage));
                 OnPropertyChanged(nameof(HasError));
                 OnPropertyChanged(nameof(UserNameError));
                 OnPropertyChanged(nameof(EmailError));
@@ -97,17 +106,6 @@ namespace Bookstore.Mobile.ViewModels
 
             await RunSafeAsync(async () =>
             {
-                var registerDto = new RegisterRequestDto
-                {
-                    UserName = UserName!.Trim(),
-                    Email = Email!.Trim(),
-                    Password = Password!,
-                    ConfirmPassword = ConfirmPassword!,
-                    FirstName = FirstName?.Trim(),
-                    LastName = LastName?.Trim(),
-                    PhoneNumber = PhoneNumber?.Trim()
-                };
-
                 _logger.LogInformation("Registration attempt for {Username}", UserName);
 
                 var success = await _authService.RegisterAsync(registerDto);
@@ -120,87 +118,9 @@ namespace Bookstore.Mobile.ViewModels
                 }
                 else
                 {
-                    // Xử lý lỗi từ server
                     ProcessServerErrors();
                 }
             }, nameof(ShowContent));
-        }
-
-        private bool ValidateForm()
-        {
-            bool isValid = true;
-
-            // Kiểm tra UserName
-            if (string.IsNullOrWhiteSpace(UserName))
-            {
-                FieldErrors["UserName"] = "Tên đăng nhập không được để trống";
-                isValid = false;
-            }
-            else if (UserName.Length < 3)
-            {
-                FieldErrors["UserName"] = "Tên đăng nhập phải có ít nhất 3 ký tự";
-                isValid = false;
-            }
-            else if (UserName.Length > 30)
-            {
-                FieldErrors["UserName"] = "Tên đăng nhập không được vượt quá 30 ký tự";
-                isValid = false;
-            }
-            else if (!Regex.IsMatch(UserName, @"^[a-zA-Z0-9._-]+$"))
-            {
-                FieldErrors["UserName"] = "Tên đăng nhập chỉ được chứa chữ cái, số, dấu chấm, dấu gạch ngang và gạch dưới";
-                isValid = false;
-            }
-
-            // Kiểm tra Email
-            if (string.IsNullOrWhiteSpace(Email))
-            {
-                FieldErrors["Email"] = "Email không được để trống";
-                isValid = false;
-            }
-            else if (!new EmailAddressAttribute().IsValid(Email))
-            {
-                FieldErrors["Email"] = "Email không đúng định dạng";
-                isValid = false;
-            }
-
-            // Kiểm tra Password
-            if (string.IsNullOrWhiteSpace(Password))
-            {
-                FieldErrors["Password"] = "Mật khẩu không được để trống";
-                isValid = false;
-            }
-            else if (Password.Length < 6)
-            {
-                FieldErrors["Password"] = "Mật khẩu phải có ít nhất 6 ký tự";
-                isValid = false;
-            }
-            else if (Password.Length > 100)
-            {
-                FieldErrors["Password"] = "Mật khẩu không được vượt quá 100 ký tự";
-                isValid = false;
-            }
-
-            // Kiểm tra ConfirmPassword
-            if (string.IsNullOrWhiteSpace(ConfirmPassword))
-            {
-                FieldErrors["ConfirmPassword"] = "Vui lòng xác nhận mật khẩu";
-                isValid = false;
-            }
-            else if (Password != ConfirmPassword)
-            {
-                FieldErrors["ConfirmPassword"] = "Mật khẩu xác nhận không khớp";
-                isValid = false;
-            }
-
-            // Kiểm tra PhoneNumber nếu được nhập
-            if (!string.IsNullOrWhiteSpace(PhoneNumber) && !Regex.IsMatch(PhoneNumber, @"^[0-9+\-\s()]{6,20}$"))
-            {
-                FieldErrors["PhoneNumber"] = "Số điện thoại không hợp lệ";
-                isValid = false;
-            }
-
-            return isValid;
         }
 
         private void ProcessServerErrors()

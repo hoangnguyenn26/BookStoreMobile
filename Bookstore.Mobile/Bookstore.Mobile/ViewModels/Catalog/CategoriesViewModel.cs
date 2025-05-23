@@ -32,7 +32,7 @@ namespace Bookstore.Mobile.ViewModels
         {
             await RunSafeAsync(async () =>
             {
-                var response = await _categoriesApi.GetCategories();
+                var response = await _categoriesApi.GetCategories(null);
                 if (response.IsSuccessStatusCode && response.Content != null)
                 {
                     Categories.Clear();

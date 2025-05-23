@@ -4,6 +4,7 @@ using Bookstore.Mobile.Models;
 using Microsoft.Extensions.Logging;
 using Refit;
 using System.Text.Json;
+using FluentValidation;
 
 namespace Bookstore.Mobile.Services
 {
@@ -11,6 +12,8 @@ namespace Bookstore.Mobile.Services
     {
         private readonly IAuthApi _authApi;
         private readonly ILogger<AuthService> _logger;
+        private readonly IValidator<LoginRequestDto> _loginValidator;
+        private readonly IValidator<RegisterRequestDto> _registerValidator;
 
         private UserDto? _currentUser;
         private string? _authToken;
@@ -25,10 +28,16 @@ namespace Bookstore.Mobile.Services
         private const string AuthTokenKey = "AuthToken";
         private const string UserInfoKey = "UserInfo";
 
-        public AuthService(IAuthApi authApi, ILogger<AuthService> logger)
+        public AuthService(
+            IAuthApi authApi,
+            ILogger<AuthService> logger,
+            IValidator<LoginRequestDto> loginValidator,
+            IValidator<RegisterRequestDto> registerValidator)
         {
             _authApi = authApi;
             _logger = logger;
+            _loginValidator = loginValidator;
+            _registerValidator = registerValidator;
         }
 
         public async Task InitializeAsync()
@@ -69,6 +78,12 @@ namespace Bookstore.Mobile.Services
 
         public async Task<bool> LoginAsync(LoginRequestDto loginRequest)
         {
+            var validationResult = await _loginValidator.ValidateAsync(loginRequest);
+            if (!validationResult.IsValid)
+            {
+                _lastErrorMessage = string.Join("\n", validationResult.Errors.Select(e => e.ErrorMessage));
+                return false;
+            }
             _logger.LogInformation("Attempting login for {LoginId}", loginRequest.LoginIdentifier);
             _lastErrorMessage = null;
             try
@@ -123,6 +138,12 @@ namespace Bookstore.Mobile.Services
 
         public async Task<bool> RegisterAsync(RegisterRequestDto registerRequest)
         {
+            var validationResult = await _registerValidator.ValidateAsync(registerRequest);
+            if (!validationResult.IsValid)
+            {
+                _lastErrorMessage = string.Join("\n", validationResult.Errors.Select(e => e.ErrorMessage));
+                return false;
+            }
             _logger.LogInformation("Attempting registration for {Username}", registerRequest.UserName);
             _lastErrorMessage = null;
             try
