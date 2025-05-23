@@ -15,6 +15,7 @@ namespace Bookstore.Mobile.ViewModels
         private int _currentPage = 1;
         private const int PageSize = 15;
         private bool _canLoadMore = true;
+        private string? _lastSearchTerm;
 
         public AdminCategoryListViewModel(ICategoriesApi categoriesApi, ILogger<AdminCategoryListViewModel> logger)
         {
@@ -30,6 +31,9 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty]
         private string? _searchTerm;
 
+        [ObservableProperty]
+        private bool _isRefreshing; // New property for RefreshView state
+
         [RelayCommand]
         private async Task LoadCategories(bool isRefreshing = false)
         {
@@ -39,7 +43,11 @@ namespace Bookstore.Mobile.ViewModels
             try
             {
                 IsBusy = true;
-                if (isRefreshing || !string.IsNullOrEmpty(SearchTerm))
+                if (isRefreshing)
+                    IsRefreshing = true; // Set only for refresh
+
+                bool isSearchChanged = _lastSearchTerm != SearchTerm;
+                if (isRefreshing || isSearchChanged)
                 {
                     _currentPage = 1;
                     Categories.Clear();
@@ -63,6 +71,8 @@ namespace Bookstore.Mobile.ViewModels
                 {
                     ErrorMessage = response.Error?.Content ?? "Failed to load categories.";
                 }
+
+                _lastSearchTerm = SearchTerm;
             }
             catch (Exception ex)
             {
@@ -72,6 +82,8 @@ namespace Bookstore.Mobile.ViewModels
             finally
             {
                 IsBusy = false;
+                if (isRefreshing)
+                    IsRefreshing = false; // Reset only for refresh
             }
         }
 

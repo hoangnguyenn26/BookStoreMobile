@@ -33,13 +33,13 @@
 
         <!-- Main Content -->
         <RefreshView Grid.Row="2" 
-                   Command="{Binding RefreshCommand}" 
-                   IsRefreshing="{Binding IsBusy}"
-                   IsVisible="{Binding ShowContent}">
+                     Command="{Binding RefreshCommand}" 
+                     IsRefreshing="{Binding IsRefreshing}" 
+                     IsVisible="{Binding ShowContent}">
             <CollectionView ItemsSource="{Binding Authors}" 
                            SelectionMode="None"
                            Margin="10"
-                           RemainingItemsThreshold="5"
+                           RemainingItemsThreshold="20"
                            RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}">
 
                 <CollectionView.EmptyView>

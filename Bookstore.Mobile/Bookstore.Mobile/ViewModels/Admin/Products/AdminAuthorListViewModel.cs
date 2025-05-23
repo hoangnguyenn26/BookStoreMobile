@@ -15,6 +15,7 @@ namespace Bookstore.Mobile.ViewModels
         private int _currentPage = 1;
         private const int PageSize = 15;
         private bool _canLoadMore = true;
+        private string? _lastSearchTerm;
 
         public AdminAuthorListViewModel(IAuthorApi authorApi, ILogger<AdminAuthorListViewModel> logger)
         {
@@ -30,6 +31,9 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty]
         private string? _searchTerm;
 
+        [ObservableProperty]
+        private bool _isRefreshing; // New property for RefreshView state
+
         [RelayCommand]
         private async Task LoadAuthors(bool isRefreshing = false)
         {
@@ -39,7 +43,11 @@ namespace Bookstore.Mobile.ViewModels
             try
             {
                 IsBusy = true;
-                if (isRefreshing || !string.IsNullOrEmpty(SearchTerm))  // Reset page if refreshing or search term changes
+                if (isRefreshing)
+                    IsRefreshing = true; // Set only for refresh
+
+                bool isSearchChanged = _lastSearchTerm != SearchTerm;
+                if (isRefreshing || isSearchChanged)
                 {
                     _currentPage = 1;
                     Authors.Clear();
@@ -60,6 +68,8 @@ namespace Bookstore.Mobile.ViewModels
                 {
                     ErrorMessage = response.Error?.Content ?? "Failed to load authors.";
                 }
+
+                _lastSearchTerm = SearchTerm;
             }
             catch (Exception ex)
             {
@@ -69,6 +79,8 @@ namespace Bookstore.Mobile.ViewModels
             finally
             {
                 IsBusy = false;
+                if (isRefreshing)
+                    IsRefreshing = false; // Reset only for refresh
             }
         }
 
