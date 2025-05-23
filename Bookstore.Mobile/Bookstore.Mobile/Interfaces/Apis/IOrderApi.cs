@@ -31,5 +31,8 @@ namespace Bookstore.Mobile.Interfaces.Apis
 
         [Put("/admin/orders/{orderId}/status")]
         Task<ApiResponse<object>> UpdateOrderStatus(Guid orderId, [Body] UpdateOrderStatusDto statusDto);
+
+        [Post("/staff/orders")] // API Tạo đơn tại quầy
+        Task<ApiResponse<OrderDto>> CreateInStoreOrder([Body] CreateInStoreOrderRequestDto orderRequest);
     }
 }

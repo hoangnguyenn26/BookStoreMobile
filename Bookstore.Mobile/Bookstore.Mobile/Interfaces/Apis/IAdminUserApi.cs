@@ -11,7 +11,8 @@ namespace Bookstore.Mobile.Interfaces.Apis
             [Query] int page = 1,
             [Query] int pageSize = 15,
             [Query] string? role = null,
-            [Query] bool? isActive = null);
+            [Query] bool? isActive = null,
+            [Query] string? search = null);
 
         [Get("/admin/users/{userId}")]
         Task<ApiResponse<UserDto>> GetUserById(Guid userId);

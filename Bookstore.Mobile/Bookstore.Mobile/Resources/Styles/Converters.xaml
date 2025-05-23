@@ -48,6 +48,12 @@
     <converters:PositiveNegativeColorConverter x:Key="PositiveNegativeColorConverter" />
     <!-- ContainsKeyConverter -->
     <converters:ContainsKeyConverter x:Key="ContainsKeyConverter"/>
+
+    <!-- InStore Order  -->
+    <converters:PaymentMethodToStringConverter x:Key="PaymentMethodToStringConverter"/>
+    <converters:StringToDoubleConverter x:Key="StringToDoubleConverter"/>
+    <converters:StringLengthGreaterThanZeroConverter x:Key="StringLengthGreaterThanZeroConverter"/>
+    
     
     
 
