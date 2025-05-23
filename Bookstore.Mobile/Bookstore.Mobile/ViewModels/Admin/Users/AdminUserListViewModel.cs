@@ -14,12 +14,10 @@ namespace Bookstore.Mobile.ViewModels
         private readonly ILogger<AdminUserListViewModel> _logger;
         private CancellationTokenSource _filterDebounceCts = new();
 
-        // Paging State
         private int _currentPage = 1;
         private const int PageSize = 20;
         private bool _initialLoadPending = true;
 
-        // Filter State
         public ObservableCollection<string> AvailableRoles { get; } = new() { "All", "Admin", "Staff", "User" };
         public ObservableCollection<string> AvailableStatuses { get; } = new() { "All", "Active", "Inactive" };
 
@@ -31,7 +29,6 @@ namespace Bookstore.Mobile.ViewModels
         [NotifyPropertyChangedFor(nameof(HasFiltersApplied))]
         private string _selectedStatusFilter = "All";
 
-        // Data & UI State
         [ObservableProperty]
         private ObservableCollection<UserDto> _users = new();
 
@@ -41,6 +38,9 @@ namespace Bookstore.Mobile.ViewModels
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(LoadMoreUsersCommand))]
         private bool _canLoadMore = true;
+
+        [ObservableProperty]
+        private bool _isRefreshing; // Added for RefreshView
 
         public bool HasFiltersApplied => SelectedRoleFilter != "All" || SelectedStatusFilter != "All";
 
@@ -92,54 +92,47 @@ namespace Bookstore.Mobile.ViewModels
         [RelayCommand]
         private async Task LoadUsers(bool isRefreshing = false)
         {
-            if (IsBusy && !isRefreshing) return;
-
             await RunSafeAsync(async () =>
             {
-                try
+                _logger.LogInformation("Loading users (Page: {Page}, Refreshing: {IsRefreshing})", _currentPage, isRefreshing);
+
+                if (isRefreshing)
                 {
-                    if (isRefreshing)
-                    {
-                        _currentPage = 1;
-                        Users.Clear();
-                        CanLoadMore = true;
-                    }
-
-                    bool? statusFilter = SelectedStatusFilter switch
-                    {
-                        "Active" => true,
-                        "Inactive" => false,
-                        _ => null
-                    };
-
-                    var response = await _userApi.GetUsers(
-                        _currentPage,
-                        PageSize,
-                        SelectedRoleFilter != "All" ? SelectedRoleFilter : null,
-                        statusFilter);
-
-                    if (response.IsSuccessStatusCode && response.Content != null)
-                    {
-                        foreach (var user in response.Content)
-                        {
-                            Users.Add(user);
-                        }
-                        CanLoadMore = response.Content.Count() == PageSize;
-                        _currentPage++;
-                    }
-                    else
-                    {
-                        ErrorMessage = response.Error?.Content ?? "Failed to load users.";
-                        _logger.LogError("Failed to load users. Status: {StatusCode}, Error: {Error}",
-                            response.StatusCode, response.Error?.Content);
-                    }
+                    _currentPage = 1;
+                    Users.Clear();
+                    CanLoadMore = true;
                 }
-                catch (Exception ex)
+
+                bool? statusFilter = SelectedStatusFilter switch
                 {
-                    _logger.LogError(ex, "Error loading users");
-                    ErrorMessage = "An unexpected error occurred while loading users.";
+                    "Active" => true,
+                    "Inactive" => false,
+                    _ => null
+                };
+
+                var response = await _userApi.GetUsers(
+                    _currentPage,
+                    PageSize,
+                    SelectedRoleFilter != "All" ? SelectedRoleFilter : null,
+                    statusFilter);
+
+                if (response.IsSuccessStatusCode && response.Content != null)
+                {
+                    foreach (var user in response.Content)
+                    {
+                        Users.Add(user);
+                    }
+                    CanLoadMore = response.Content.Count() == PageSize;
+                    _currentPage++;
+                    _logger.LogInformation("Successfully loaded {UserCount} users", response.Content.Count());
                 }
-            }, showBusy: true);
+                else
+                {
+                    ErrorMessage = response.Error?.Content ?? "Failed to load users.";
+                    _logger.LogError("Failed to load users. Status: {StatusCode}, Error: {Error}",
+                        response.StatusCode, response.Error?.Content);
+                }
+            }, isRefreshing, nameof(ShowContent)); // Use isRefreshing for showBusy
         }
 
         [RelayCommand(CanExecute = nameof(CanExecuteLoadMore))]
@@ -157,6 +150,7 @@ namespace Bookstore.Mobile.ViewModels
 
             await RunSafeAsync(async () =>
             {
+                _logger.LogInformation("Navigating to user details for ID: {UserId}", user.Id);
                 await Shell.Current.GoToAsync($"{nameof(AdminUserDetailsPage)}?UserId={user.Id}");
             }, showBusy: false);
         }
@@ -166,7 +160,15 @@ namespace Bookstore.Mobile.ViewModels
             if (_initialLoadPending)
             {
                 _initialLoadPending = false;
-                await LoadUsersCommand.ExecuteAsync(false);
+                try
+                {
+                    await LoadUsers(false);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error during initial user load");
+                    ErrorMessage = "Failed to load users on startup.";
+                }
             }
         }
     }

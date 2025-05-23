@@ -55,6 +55,8 @@ namespace Bookstore.Mobile.ViewModels
                     Categories.Clear();
                     Categories.Add(new CategoryDto { Id = Guid.Empty, Name = "All Categories" });
                     foreach (var cat in catResponse.Content.OrderBy(c => c.Name)) Categories.Add(cat);
+                    if (SelectedCategoryFilter == null)
+                        SelectedCategoryFilter = Categories.FirstOrDefault(c => c.Id == Guid.Empty);
                 }
                 var authResponse = await _authorApi.GetAuthors(null);
                 if (authResponse.IsSuccessStatusCode && authResponse.Content != null)
@@ -62,6 +64,8 @@ namespace Bookstore.Mobile.ViewModels
                     Authors.Clear();
                     Authors.Add(new AuthorDto { Id = Guid.Empty, Name = "All Authors" });
                     foreach (var auth in authResponse.Content.OrderBy(a => a.Name)) Authors.Add(auth);
+                    if (SelectedAuthorFilter == null)
+                        SelectedAuthorFilter = Authors.FirstOrDefault(a => a.Id == Guid.Empty);
                 }
             }, nameof(ShowContent));
         }

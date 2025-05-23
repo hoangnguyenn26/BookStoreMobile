@@ -44,9 +44,9 @@
 
         <!-- User List -->
         <RefreshView Grid.Row="2" 
-                   Command="{Binding LoadUsersCommand}" 
-                   IsRefreshing="{Binding IsBusy}" 
-                   IsVisible="{Binding ShowContent}">
+                     Command="{Binding LoadUsersCommand}" 
+                     IsRefreshing="{Binding IsRefreshing}" 
+                     IsVisible="{Binding ShowContent}">
             <CollectionView x:Name="UserListView"
                           ItemsSource="{Binding Users}"
                           SelectionMode="None"
@@ -72,7 +72,7 @@
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer 
                                     Command="{Binding Source={x:Reference UserListView}, Path=BindingContext.GoToUserDetailsCommand}"
-                                    CommandParameter="{Binding Id}"/>
+                                    CommandParameter="{Binding .}"/>
                             </Border.GestureRecognizers>
                             <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="10">
                                 <!-- User Info -->
